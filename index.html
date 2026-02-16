@@ -1,0 +1,2712 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Igelpflegestation Pro</title>
+  <link rel="manifest" href="manifest.json">
+  
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --secondary: #64748b;
+      --success: #2563eb;
+      --danger: #ef4444;
+      --warning: #2563eb;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-600: #475569;
+      --gray-900: #0f172a;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    * { 
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+    
+    body { 
+      overscroll-behavior-y: contain;
+      background: var(--gray-50);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    
+    input, textarea, select { 
+      font-size: 16px !important;
+      transition: all 0.2s ease;
+    }
+    
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .card {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      background: white;
+      border-radius: 10px;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .card:active {
+      transform: translateY(0);
+    }
+    
+    .btn {
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      font-weight: 500;
+      border-radius: 8px;
+    }
+    
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .btn:active {
+      transform: scale(0.98);
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: 8px;
+      padding: 0.75rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      border: 1px solid #e2e8f0;
+      transition: all 0.2s ease;
+    }
+    
+    .stat-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+    
+    .slide-in {
+      animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .input-error {
+      border-color: var(--danger) !important;
+      background-color: #fef2f2 !important;
+    }
+    
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    
+    /* Sidebar CSS */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 240px;
+      height: 100vh;
+      background: white;
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      z-index: 1000;
+    }
+    
+    .sidebar.open {
+      transform: translateX(0);
+    }
+    
+    .sidebar-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 999;
+    }
+    
+    .sidebar-overlay.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      color: #64748b;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    
+    .sidebar-item:hover {
+      background: #f8fafc;
+      color: #2563eb;
+    }
+    
+    .sidebar-item svg {
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4",
+      authDomain: "igelstation-3c3db.firebaseapp.com",
+      projectId: "igelstation-3c3db",
+      storageBucket: "igelstation-3c3db.firebasestorage.app",
+      messagingSenderId: "695889743897",
+      appId: "1:695889743897:web:6ca27f35d25639c66b9a88"
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+
+    // ===========================================
+    // PHASE 1.4 - UTILITY FUNCTIONS
+    // ===========================================
+    
+    // Input Validation (Punkt 3 & 4)
+    const validateInput = {
+      weight: (value) => {
+        if (!value) return { valid: true, value: '', error: '' };
+        const cleaned = value.replace(/[^\d.]/g, '');
+        const parts = cleaned.split('.');
+        if (parts.length > 2) return { valid: false, value, error: 'Ungültiges Format' };
+        const final = parts.length === 2 ? parts[0] + '.' + parts[1] : parts[0];
+        const num = parseFloat(final);
+        if (num > 9999) return { valid: false, value, error: 'Max 9999g' };
+        return { valid: true, value: final, error: '' };
+      },
+      
+      phone: (value) => {
+        if (!value) return { valid: true, value, error: '' };
+        const cleaned = value.replace(/[^\d+\-/() ]/g, '');
+        return { valid: true, value: cleaned, error: '' };
+      },
+      
+      text: (value) => {
+        if (!value) return { valid: true, value, error: '' };
+        const cleaned = value.replace(/[^a-zA-ZäöüÄÖÜß0-9\-,.\\/ ]/g, '');
+        return { valid: true, value: cleaned, error: '' };
+      }
+    };
+    
+    // CSV Export (Punkt 7)
+    
+    // CSV Import Parser (Punkt 8)
+    const parseCSV = (csvText) => {
+      const lines = csvText.split('\n').filter(line => line.trim());
+      if (lines.length < 2) return { success: false, error: 'CSV-Datei ist leer', data: [] };
+      
+      const headerLine = lines[0];
+      const headers = headerLine.split(',').map(h => h.replace(/^"|"$/g, '').trim());
+      
+      const expectedHeaders = ['Igel-ID', 'Name', 'Status', 'Aufnahmedatum', 'Geschlecht'];
+      const hasRequired = expectedHeaders.every(h => headers.includes(h));
+      
+      if (!hasRequired) {
+        return { success: false, error: 'Fehlende Pflichtfelder: ' + expectedHeaders.join(', '), data: [] };
+      }
+      
+      const data = [];
+      const errors = [];
+      
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        if (!line.trim()) continue;
+        
+        const fields = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let j = 0; j < line.length; j++) {
+          const char = line[j];
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            fields.push(current);
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+        fields.push(current);
+        
+        const row = {};
+        headers.forEach((header, index) => {
+          row[header] = fields[index] ? fields[index].trim() : '';
+        });
+        
+        const igelId = row['Igel-ID'] || '';
+        const name = row['Name'] || '';
+        const status = row['Status'] || '';
+        const aufnahmedatum = row['Aufnahmedatum'] || '';
+        const geschlecht = row['Geschlecht'] || '';
+        
+        if (!igelId || !name || !status || !aufnahmedatum || !geschlecht) {
+          errors.push(`Zeile ${i + 1}: Pflichtfelder fehlen`);
+          continue;
+        }
+        
+        const validStatuses = ['aufnahme', 'pflege', 'ueberwinterung', 'auswilderung_bereit', 'ausgewildert', 'verstorben'];
+        if (!validStatuses.includes(status)) {
+          errors.push(`Zeile ${i + 1}: Ungültiger Status`);
+          continue;
+        }
+        
+        data.push({
+          igelId, name, status, aufnahmedatum, geschlecht,
+          alterSchaetzung: row['Alter'] || '',
+          gewichtAktuell: row['Gewicht (g)'] || '',
+          betreuer: row['Betreuer'] || '',
+          fundort: row['Fundort'] || '',
+          finderName: row['Finder Name'] || '',
+          finderKontakt: row['Finder Kontakt'] || '',
+          notizen: row['Notizen'] || '',
+          gewichtsverlauf: [],
+          diagnosen: [],
+          behandlungen: [],
+          statusHistory: [{
+            status, datum: new Date().toISOString(), geaendertVon: 'CSV Import'
+          }]
+        });
+      }
+      
+      if (errors.length > 0 && data.length === 0) {
+        return { success: false, error: errors.join('\n'), data: [] };
+      }
+      
+      return { success: true, error: errors.length > 0 ? errors.join('\n') : '', data };
+    };
+
+    // exportToCSV function
+    const exportToCSV = (hedgehogs) => {
+      const headers = ['Igel-ID', 'Name', 'Status', 'Aufnahmedatum', 'Geschlecht', 'Alter', 'Gewicht (g)', 'Betreuer', 'Fundort', 'Finder Name', 'Finder Kontakt', 'Notizen'];
+      const rows = hedgehogs.map(h => {
+        return [
+          h.igelId || '', h.name || '', h.status || '', h.aufnahmedatum || '', h.geschlecht || '',
+          h.alterSchaetzung || '', h.gewichtAktuell || '', h.betreuer || '', h.fundort || '',
+          h.finderName || '', h.finderKontakt || '',
+          (h.notizen || '').replace(/[\n\r]/g, ' ').replace(/"/g, '""')
+        ].map(field => `"${field}"`).join(',');
+      });
+      const csv = [headers.join(','), ...rows].join('\n');
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `igel-export-${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+    };
+
+    // Main App
+    const App = () => {
+      const [user, setUser] = useState(null);
+      const [userData, setUserData] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [needsSetup, setNeedsSetup] = useState(null);
+
+      useEffect(() => {
+        const init = async () => {
+          // First check if admin exists
+          try {
+            const snapshot = await db.collection('users').where('role', '==', 'admin').get();
+            setNeedsSetup(snapshot.empty);
+          } catch (err) {
+            console.error('Admin check error:', err);
+            setNeedsSetup(false);
+          }
+
+          // Then check auth state
+          auth.onAuthStateChanged(async (authUser) => {
+            if (authUser) {
+              const doc = await db.collection('users').doc(authUser.uid).get();
+              if (doc.exists) {
+                const data = doc.data();
+                
+                // Check if user is deleted
+                if (data.deleted) {
+                  await auth.signOut();
+                  alert('Dein Account wurde gelöscht.');
+                  window.location.reload();
+                  return;
+                }
+                
+                // Check if user is suspended
+                if (!data.active) {
+                  await auth.signOut();
+                  alert('Dein Account wurde gesperrt. Bitte kontaktiere den Administrator.');
+                  window.location.reload();
+                  return;
+                }
+                
+                setUser(authUser);
+                setUserData(data);
+                
+                // Check for notifications
+                if (data.notification) {
+                  // Show notification
+                  setTimeout(() => {
+                    alert(data.notification.message);
+                    // Clear notification after showing
+                    db.collection('users').doc(authUser.uid).update({
+                      notification: firebase.firestore.FieldValue.delete()
+                    });
+                  }, 500);
+                }
+              }
+            } else {
+              setUser(null);
+              setUserData(null);
+            }
+            setLoading(false);
+          });
+        };
+        
+        init();
+      }, []);
+
+      if (loading || needsSetup === null) {
+        return <LoadingScreen />;
+      }
+
+      // Check for invite code
+      const params = new URLSearchParams(window.location.search);
+      const inviteCode = params.get('invite');
+
+      // If user is already logged in and there's an invite code, redirect to clean homepage
+      if (user && inviteCode) {
+        window.location.href = window.location.origin + window.location.pathname;
+        return <LoadingScreen />;
+      }
+
+      if (inviteCode && !user) {
+        return <InviteRegistration inviteCode={inviteCode} />;
+      }
+
+      // Show admin setup if no admin exists
+      if (needsSetup && !user) {
+        return <AdminSetup />;
+      }
+
+      if (!user) {
+        return <LoginScreen />;
+      }
+
+      return <MainApp user={user} userData={userData} />;
+    };
+
+    // Loading Screen
+    const LoadingScreen = () => (
+      <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+        <div className="text-white text-center">
+          <div className="text-6xl mb-4">🦔</div>
+          <div className="text-xl">Lädt...</div>
+        </div>
+      </div>
+    );
+
+    // Login Screen
+    const LoginScreen = () => {
+      const [email, setEmail] = useState('');
+      const [password, setPassword] = useState('');
+      const [error, setError] = useState('');
+      const [loading, setLoading] = useState(false);
+      const [showPasswordSetup, setShowPasswordSetup] = useState(false);
+      const [showPasswordReset, setShowPasswordReset] = useState(false);
+
+      const handleLogin = async (e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+
+        try {
+          await auth.signInWithEmailAndPassword(email, password);
+        } catch (err) {
+          if (err.code === 'auth/user-not-found') {
+            setError('Kein Account gefunden. Bitte "Passwort einrichten" nutzen.');
+          } else if (err.code === 'auth/wrong-password') {
+            setError('Falsches Passwort');
+          } else {
+            setError('Login fehlgeschlagen. Bitte Zugangsdaten prüfen.');
+          }
+        }
+        setLoading(false);
+      };
+
+      if (showPasswordSetup) {
+        return <PasswordSetup onBack={() => setShowPasswordSetup(false)} />;
+      }
+
+      if (showPasswordReset) {
+        return <PasswordReset onBack={() => setShowPasswordReset(false)} />;
+      }
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
+            <div className="text-center mb-8">
+              <div className="text-7xl mb-4">🦔</div>
+              <h1 className="text-2xl font-bold mb-2">Igelpflegestation Pro</h1>
+              <p className="text-gray-600">Cloud-Tierpflege-Software</p>
+            </div>
+
+            <form onSubmit={handleLogin} className="space-y-4">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="E-Mail"
+                required
+                className="w-full border rounded-lg px-4 py-3"
+              />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Passwort"
+                required
+                className="w-full border rounded-lg px-4 py-3"
+              />
+              {error && <div className="bg-red-50 text-red-600 p-3 rounded text-sm">{error}</div>}
+              <button 
+                type="submit" 
+                disabled={loading}
+                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400">
+                {loading ? 'Anmelden...' : 'Anmelden'}
+              </button>
+            </form>
+
+            <div className="mt-6 space-y-2 text-center text-sm">
+              <button
+                onClick={() => setShowPasswordSetup(true)}
+                className="text-blue-600 hover:text-blue-800 font-medium block w-full"
+              >
+                📧 Noch nicht registriert? Passwort einrichten
+              </button>
+              <button
+                onClick={() => setShowPasswordReset(true)}
+                className="text-gray-600 hover:text-gray-800 block w-full"
+              >
+                🔑 Passwort vergessen?
+              </button>
+            </div>
+
+            <div className="mt-6 pt-6 border-t">
+              <p className="text-xs text-gray-500 text-center">
+                Version 1.4.0 • Igelpflegestation Pro
+              </p>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Password Setup Component
+    const PasswordSetup = ({ onBack }) => {
+      const [email, setEmail] = useState('');
+      const [name, setName] = useState('');
+      const [password, setPassword] = useState('');
+      const [confirm, setConfirm] = useState('');
+      const [error, setError] = useState('');
+      const [loading, setLoading] = useState(false);
+      const [inviteFound, setInviteFound] = useState(null);
+      const [inviteData, setInviteData] = useState(null);
+
+      const checkInvite = async () => {
+        if (!email) {
+          setError('Bitte E-Mail eingeben');
+          return;
+        }
+
+        setLoading(true);
+        setError('');
+
+        try {
+          const snapshot = await db.collection('invites')
+            .where('email', '==', email)
+            .where('used', '==', false)
+            .limit(1)
+            .get();
+
+          if (!snapshot.empty) {
+            const data = snapshot.docs[0].data();
+            setInviteData({ ...data, docId: snapshot.docs[0].id });
+            setInviteFound(true);
+          } else {
+            setInviteFound(false);
+            setError('Keine Einladung für diese E-Mail gefunden. Bitte kontaktiere deinen Administrator.');
+          }
+        } catch (err) {
+          setError('Fehler beim Prüfen: ' + err.message);
+        }
+        setLoading(false);
+      };
+
+      const handleRegister = async (e) => {
+        e.preventDefault();
+
+        if (!name.trim()) {
+          setError('Bitte Namen eingeben');
+          return;
+        }
+
+        if (password !== confirm) {
+          setError('Passwörter stimmen nicht überein');
+          return;
+        }
+
+        if (password.length < 6) {
+          setError('Passwort muss mindestens 6 Zeichen haben');
+          return;
+        }
+
+        setLoading(true);
+        setError('');
+
+        try {
+          // Check if user was previously deleted
+          const existingUserQuery = await db.collection('users').where('email', '==', email).get();
+          
+          if (!existingUserQuery.empty) {
+            const existingUserDoc = existingUserQuery.docs[0];
+            const existingUserData = existingUserDoc.data();
+            
+            // If user was deleted, reactivate them
+            if (existingUserData.deleted) {
+              // Try to create auth account (might already exist)
+              try {
+                await auth.createUserWithEmailAndPassword(email, password);
+              } catch (authErr) {
+                // If account exists, that's fine - user will login with new password
+                if (authErr.code !== 'auth/email-already-in-use') {
+                  throw authErr;
+                }
+              }
+              
+              // Reactivate user
+              await db.collection('users').doc(existingUserDoc.id).update({
+                name: name.trim(),
+                role: inviteData.role,
+                active: true,
+                deleted: firebase.firestore.FieldValue.delete(),
+                deletedAt: firebase.firestore.FieldValue.delete(),
+                notification: firebase.firestore.FieldValue.delete()
+              });
+              
+              await db.collection('invites').doc(inviteData.docId).update({ 
+                used: true,
+                usedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                usedBy: existingUserDoc.id
+              });
+              
+              window.location.href = window.location.origin + window.location.pathname;
+              return;
+            }
+          }
+          
+          // Normal registration for new user
+          const userCred = await auth.createUserWithEmailAndPassword(email, password);
+          
+          await db.collection('users').doc(userCred.user.uid).set({
+            name: name.trim(),
+            email: email,
+            role: inviteData.role,
+            active: true,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          
+          await db.collection('invites').doc(inviteData.docId).update({ 
+            used: true,
+            usedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            usedBy: userCred.user.uid
+          });
+
+          // Clean redirect to homepage without invite code
+          window.location.href = window.location.origin + window.location.pathname;
+        } catch (err) {
+          if (err.code === 'auth/email-already-in-use') {
+            setError('Diese E-Mail ist bereits registriert. Nutze "Passwort vergessen" zum Zurücksetzen.');
+          } else {
+            setError('Registrierung fehlgeschlagen: ' + err.message);
+          }
+          setLoading(false);
+        }
+      };
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
+            <div className="flex items-center mb-6">
+              <button onClick={onBack} className="text-gray-600 hover:text-gray-800">
+                ← Zurück
+              </button>
+              <h2 className="text-2xl font-bold ml-4">Passwort einrichten</h2>
+            </div>
+
+            {!inviteFound ? (
+              <div className="space-y-4">
+                <div className="bg-blue-50 p-4 rounded-lg text-sm text-blue-800">
+                  <strong>📧 Bist du eingeladen worden?</strong><br/>
+                  Gib deine E-Mail-Adresse ein, die dein Administrator verwendet hat.
+                </div>
+
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="E-Mail-Adresse"
+                  className="w-full border rounded-lg px-4 py-3"
+                />
+
+                {error && <div className="bg-red-50 text-red-600 p-3 rounded text-sm">{error}</div>}
+
+                <button
+                  onClick={checkInvite}
+                  disabled={loading}
+                  className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 disabled:bg-gray-400"
+                >
+                  {loading ? 'Prüfe...' : 'E-Mail prüfen'}
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleRegister} className="space-y-4">
+                <div className="bg-green-50 p-4 rounded-lg text-sm">
+                  <strong>✅ Einladung gefunden!</strong><br/>
+                  E-Mail: {email}<br/>
+                  Rolle: {inviteData.role === 'admin' ? 'Administrator' : inviteData.role === 'mitarbeiter' ? 'Mitarbeiter' : 'Gast'}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium mb-1">Dein Name</label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Vor- und Nachname"
+                    required
+                    className="w-full border rounded-lg px-4 py-3"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium mb-1">Passwort festlegen</label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Mindestens 6 Zeichen"
+                    required
+                    className="w-full border rounded-lg px-4 py-3"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium mb-1">Passwort bestätigen</label>
+                  <input
+                    type="password"
+                    value={confirm}
+                    onChange={(e) => setConfirm(e.target.value)}
+                    placeholder="Passwort wiederholen"
+                    required
+                    className="w-full border rounded-lg px-4 py-3"
+                  />
+                </div>
+
+                {error && <div className="bg-red-50 text-red-600 p-3 rounded text-sm">{error}</div>}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 disabled:bg-gray-400"
+                >
+                  {loading ? 'Erstelle Account...' : 'Account erstellen'}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    // Password Reset Component
+    const PasswordReset = ({ onBack }) => {
+      const [email, setEmail] = useState('');
+      const [sent, setSent] = useState(false);
+      const [error, setError] = useState('');
+      const [loading, setLoading] = useState(false);
+
+      const handleReset = async (e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+
+        try {
+          await auth.sendPasswordResetEmail(email);
+          setSent(true);
+        } catch (err) {
+          if (err.code === 'auth/user-not-found') {
+            setError('Keine Account mit dieser E-Mail gefunden');
+          } else {
+            setError('Fehler: ' + err.message);
+          }
+        }
+        setLoading(false);
+      };
+
+      if (sent) {
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-green-500 to-blue-600 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
+              <div className="text-6xl mb-4">✅</div>
+              <h2 className="text-2xl font-bold mb-4">E-Mail versendet!</h2>
+              <p className="text-gray-600 mb-6">
+                Wir haben dir einen Link zum Zurücksetzen deines Passworts an <strong>{email}</strong> gesendet.
+              </p>
+              <p className="text-sm text-gray-500 mb-6">
+                Prüfe auch deinen Spam-Ordner, falls die E-Mail nicht ankommt.
+              </p>
+              <button
+                onClick={onBack}
+                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700"
+              >
+                Zurück zum Login
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
+            <div className="flex items-center mb-6">
+              <button onClick={onBack} className="text-gray-600 hover:text-gray-800">
+                ← Zurück
+              </button>
+              <h2 className="text-2xl font-bold ml-4">Passwort zurücksetzen</h2>
+            </div>
+
+            <div className="bg-orange-50 p-4 rounded-lg text-sm text-orange-800 mb-6">
+              <strong>🔑 Passwort vergessen?</strong><br/>
+              Gib deine E-Mail-Adresse ein und wir senden dir einen Link zum Zurücksetzen.
+            </div>
+
+            <form onSubmit={handleReset} className="space-y-4">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="E-Mail-Adresse"
+                required
+                className="w-full border rounded-lg px-4 py-3"
+              />
+
+              {error && <div className="bg-red-50 text-red-600 p-3 rounded text-sm">{error}</div>}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 disabled:bg-gray-400"
+              >
+                {loading ? 'Sende E-Mail...' : 'Passwort zurücksetzen'}
+              </button>
+            </form>
+          </div>
+        </div>
+      );
+    };
+
+    // Admin Setup
+    const AdminSetup = () => {
+      const [name, setName] = useState('');
+      const [email, setEmail] = useState('');
+      const [password, setPassword] = useState('');
+      const [confirm, setConfirm] = useState('');
+      const [error, setError] = useState('');
+
+      const handleSetup = async (e) => {
+        e.preventDefault();
+        if (password !== confirm) {
+          setError('Passwörter stimmen nicht überein');
+          return;
+        }
+        if (password.length < 6) {
+          setError('Passwort muss mind. 6 Zeichen haben');
+          return;
+        }
+
+        try {
+          const userCred = await auth.createUserWithEmailAndPassword(email, password);
+          await db.collection('users').doc(userCred.user.uid).set({
+            name, email,
+            role: 'admin',
+            active: true,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          window.location.reload();
+        } catch (err) {
+          setError(err.message);
+        }
+      };
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-green-500 to-blue-600 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
+            <div className="text-center mb-8">
+              <div className="text-7xl mb-4">🔐</div>
+              <h1 className="text-2xl font-bold mb-2">Admin-Setup</h1>
+              <p className="text-gray-600">Ersten Administrator erstellen</p>
+            </div>
+
+            <form onSubmit={handleSetup} className="space-y-4">
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)} 
+                placeholder="Name" required className="w-full border rounded-lg px-4 py-3" />
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} 
+                placeholder="E-Mail" required className="w-full border rounded-lg px-4 py-3" />
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} 
+                placeholder="Passwort (mind. 6 Zeichen)" required className="w-full border rounded-lg px-4 py-3" />
+              <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} 
+                placeholder="Passwort bestätigen" required className="w-full border rounded-lg px-4 py-3" />
+              {error && <div className="bg-red-50 text-red-600 p-3 rounded text-sm">{error}</div>}
+              <button type="submit" className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700">
+                Admin erstellen
+              </button>
+            </form>
+          </div>
+        </div>
+      );
+    };
+
+    // Invite Registration
+    const InviteRegistration = ({ inviteCode }) => {
+      const [inviteData, setInviteData] = useState(null);
+      const [name, setName] = useState('');
+      const [password, setPassword] = useState('');
+      const [confirm, setConfirm] = useState('');
+      const [error, setError] = useState('');
+      const [loading, setLoading] = useState(true);
+      const [registering, setRegistering] = useState(false);
+
+      useEffect(() => {
+        const loadInvite = async () => {
+          try {
+            const snapshot = await db.collection('invites')
+              .where('code', '==', inviteCode)
+              .where('used', '==', false)
+              .limit(1)
+              .get();
+            
+            if (!snapshot.empty) {
+              const data = snapshot.docs[0].data();
+              setInviteData({ ...data, docId: snapshot.docs[0].id });
+            } else {
+              setError('Einladung ungültig oder bereits verwendet');
+            }
+          } catch (err) {
+            console.error('Invite load error:', err);
+            setError('Fehler beim Laden der Einladung: ' + err.message);
+          }
+          setLoading(false);
+        };
+        loadInvite();
+      }, [inviteCode]);
+
+      const handleRegister = async (e) => {
+        e.preventDefault();
+        
+        if (!name.trim()) {
+          setError('Bitte Namen eingeben');
+          return;
+        }
+        
+        if (password !== confirm) {
+          setError('Passwörter stimmen nicht überein');
+          return;
+        }
+        
+        if (password.length < 6) {
+          setError('Passwort muss mindestens 6 Zeichen haben');
+          return;
+        }
+
+        setRegistering(true);
+        setError('');
+
+        try {
+          // Create auth user
+          const userCred = await auth.createUserWithEmailAndPassword(inviteData.email, password);
+          
+          // Add to users collection
+          await db.collection('users').doc(userCred.user.uid).set({
+            name: name.trim(),
+            email: inviteData.email,
+            role: inviteData.role,
+            active: true,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          
+          // Mark invite as used
+          await db.collection('invites').doc(inviteData.docId).update({ 
+            used: true,
+            usedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            usedBy: userCred.user.uid
+          });
+          
+          // Clean redirect to homepage (remove invite code from URL)
+          window.location.href = window.location.origin + window.location.pathname;
+        } catch (err) {
+          console.error('Registration error:', err);
+          if (err.code === 'auth/email-already-in-use') {
+            setError('Diese E-Mail ist bereits registriert');
+          } else {
+            setError('Registrierung fehlgeschlagen: ' + err.message);
+          }
+          setRegistering(false);
+        }
+      };
+
+      if (loading) {
+        return <LoadingScreen />;
+      }
+
+      if (error && !inviteData) {
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl p-8 text-center max-w-md">
+              <div className="text-6xl mb-4">❌</div>
+              <h2 className="text-2xl font-bold mb-2">Fehler</h2>
+              <p className="text-gray-600 mb-4">{error}</p>
+              <a href={window.location.origin + window.location.pathname} 
+                className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg">
+                Zur Startseite
+              </a>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
+            <div className="text-center mb-8">
+              <div className="text-7xl mb-4">🎉</div>
+              <h1 className="text-2xl font-bold mb-2">Willkommen!</h1>
+              <p className="text-gray-600">Du wurdest zur Igelpflegestation eingeladen</p>
+            </div>
+
+            <div className="bg-blue-50 p-4 rounded-lg mb-6">
+              <p className="text-sm"><strong>E-Mail:</strong> {inviteData?.email}</p>
+              <p className="text-sm"><strong>Rolle:</strong> {
+                inviteData?.role === 'admin' ? 'Administrator' :
+                inviteData?.role === 'mitarbeiter' ? 'Mitarbeiter' :
+                'Gast (nur lesen)'
+              }</p>
+            </div>
+
+            <form onSubmit={handleRegister} className="space-y-4">
+              <div>
+                <label className="block text-xs font-medium mb-1">Dein Name</label>
+                <input 
+                  type="text" 
+                  value={name} 
+                  onChange={(e) => setName(e.target.value)} 
+                  placeholder="Vor- und Nachname" 
+                  required 
+                  className="w-full border rounded-lg px-4 py-3" 
+                />
+              </div>
+              
+              <div>
+                <label className="block text-xs font-medium mb-1">Passwort festlegen</label>
+                <input 
+                  type="password" 
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)} 
+                  placeholder="Mindestens 6 Zeichen" 
+                  required 
+                  className="w-full border rounded-lg px-4 py-3" 
+                />
+              </div>
+              
+              <div>
+                <label className="block text-xs font-medium mb-1">Passwort bestätigen</label>
+                <input 
+                  type="password" 
+                  value={confirm} 
+                  onChange={(e) => setConfirm(e.target.value)} 
+                  placeholder="Passwort wiederholen" 
+                  required 
+                  className="w-full border rounded-lg px-4 py-3" 
+                />
+              </div>
+              
+              {error && <div className="bg-red-50 text-red-600 p-3 rounded text-sm">{error}</div>}
+              
+              <button 
+                type="submit" 
+                disabled={registering}
+                className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 disabled:bg-gray-400">
+                {registering ? 'Erstelle Account...' : 'Account erstellen'}
+              </button>
+            </form>
+
+            <div className="mt-6 p-4 bg-green-50 rounded-lg">
+              <p className="text-xs text-green-800">
+                💡 <strong>Tipp:</strong> Nach der Registrierung kannst du die App auf deinem Homescreen installieren!
+              </p>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Main App
+    const MainApp = ({ user, userData }) => {
+      const [hedgehogs, setHedgehogs] = useState([]);
+      const [users, setUsers] = useState([]);
+      const [view, setView] = useState('overview');
+      const [selected, setSelected] = useState(null);
+      const [search, setSearch] = useState('');
+      const [filter, setFilter] = useState('alle');
+      const [showUserMgmt, setShowUserMgmt] = useState(false);
+      const [showAddForm, setShowAddForm] = useState(false);
+      const [showProfile, setShowProfile] = useState(false);
+      const [showChangelog, setShowChangelog] = useState(false);
+      const [showCSVImport, setShowCSVImport] = useState(false);
+      const [sidebarOpen, setSidebarOpen] = useState(false);
+
+      const isAdmin = userData?.role === 'admin';
+
+      // Browser Back/Forward support (Punkt 9 - simplified)
+      useEffect(() => {
+        const handleHashChange = () => {
+          const hash = window.location.hash;
+          if (!hash || hash === '#') {
+            setSelected(null);
+          }
+        };
+        
+        window.addEventListener('hashchange', handleHashChange);
+        return () => window.removeEventListener('hashchange', handleHashChange);
+      }, []);
+
+      // Load hedgehogs
+      useEffect(() => {
+        const unsubscribe = db.collection('hedgehogs')
+          .orderBy('aufnahmedatum', 'desc')
+          .onSnapshot(snapshot => {
+            setHedgehogs(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+          });
+        return () => unsubscribe();
+      }, []);
+
+      // Load users (admin only)
+      useEffect(() => {
+        if (!isAdmin) return;
+        const unsubscribe = db.collection('users').onSnapshot(snapshot => {
+          setUsers(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        });
+        return () => unsubscribe();
+      }, [isAdmin]);
+
+      const statusOptions = [
+        { value: 'aufnahme', label: 'Aufnahme', color: 'bg-red-100 text-red-800' },
+        { value: 'pflege', label: 'In Pflege', color: 'bg-blue-100 text-blue-800' },
+        { value: 'ueberwinterung', label: 'Überwinterung', color: 'bg-blue-200 text-blue-900' },
+        { value: 'auswilderung_bereit', label: 'Bereit', color: 'bg-blue-100 text-blue-800' },
+        { value: 'ausgewildert', label: 'Ausgewildert', color: 'bg-gray-100 text-gray-800' },
+        { value: 'verstorben', label: 'Verstorben', color: 'bg-black text-white' }
+      ];
+
+      const getStatus = (val) => statusOptions.find(s => s.value === val) || {};
+
+      const filteredHedgehogs = hedgehogs.filter(h => {
+        const matchSearch = (h.name || '').toLowerCase().includes(search.toLowerCase()) ||
+                           (h.igelId || '').toLowerCase().includes(search.toLowerCase()) ||
+                           (h.fundort || '').toLowerCase().includes(search.toLowerCase());
+        const matchFilter = filter === 'alle' || h.status === filter;
+        return matchSearch && matchFilter;
+      });
+
+      if (selected) {
+        return <HedgehogDetail 
+          hedgehog={selected} 
+          userData={userData}
+          users={users}
+          onBack={() => { 
+            setSelected(null); 
+            window.history.pushState({}, '', window.location.pathname);
+          }}
+          onUpdate={(updated) => setSelected(updated)}
+        />;
+      }
+
+      return (
+        <div className="min-h-screen bg-gray-50">
+          {/* Sidebar Overlay */}
+          <div 
+            className={`sidebar-overlay ${sidebarOpen ? 'visible' : ''}`}
+            onClick={() => setSidebarOpen(false)}
+          ></div>
+          
+          {/* Sidebar */}
+          <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+            {/* Profile Section */}
+            <div 
+              className="p-4 border-b border-gray-200 cursor-pointer hover:bg-gray-50 transition-all"
+              onClick={() => { setShowProfile(true); setSidebarOpen(false); }}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-lg shadow-sm">
+                  {userData?.name?.[0] || '?'}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-xs text-gray-900 truncate">
+                    {userData?.name || 'Benutzer'}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {isAdmin ? '👑 Administrator' : 'Mitarbeiter'}
+                  </div>
+                </div>
+                <div className="text-gray-400">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M9 18l6-6-6-6"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            
+            {/* App Title */}
+            <div className="px-4 py-3">
+              <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                🦔 Igelpflege Pro • v1.4.4
+              </div>
+            </div>
+            
+            {/* Menu Items */}
+            <div className="py-2">
+              <div className="sidebar-item" onClick={() => setSidebarOpen(false)}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                </svg>
+                <span>Igelbestand</span>
+              </div>
+              
+              {isAdmin && (
+                <div className="sidebar-item" onClick={() => { setShowUserMgmt(true); setSidebarOpen(false); }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                  <span>Benutzerverwaltung</span>
+                </div>
+              )}
+              
+              <div className="sidebar-item" onClick={() => { setShowChangelog(true); setSidebarOpen(false); }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 16v-4"/>
+                  <path d="M12 8h.01"/>
+                </svg>
+                <span>Info & Changelog</span>
+              </div>
+              
+              <div className="border-t border-gray-200 my-2"></div>
+              
+              <div className="sidebar-item text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => auth.signOut()}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                <span>Abmelden</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Header */}
+          <div className="bg-blue-600/90 backdrop-blur-sm text-white px-3 py-2.5 sticky top-0 z-40 shadow-sm">
+            <div className="flex items-center justify-between">
+              {/* Hamburger */}
+              <button 
+                onClick={() => setSidebarOpen(true)}
+                className="p-2 hover:bg-white/10 rounded-lg transition-all"
+                title="Menü"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M3 12h18M3 6h18M3 18h18"/>
+                </svg>
+              </button>
+              
+              {/* App Name - Center */}
+              <div className="absolute left-1/2 transform -translate-x-1/2">
+                <h1 className="text-xs font-semibold tracking-wide">
+                  IGELPFLEGE PRO
+                </h1>
+              </div>
+              
+              {/* Profile Avatar */}
+              <button
+                onClick={() => { setShowProfile(true); }}
+                className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center text-xs font-semibold transition-all"
+                title="Profil"
+              >
+                {userData?.name?.[0] || '?'}
+              </button>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="p-4 grid grid-cols-2 gap-3 fade-in">
+            <div className="stat-card" style={{borderLeftColor: '#3b82f6'}}>
+              <div className="flex items-center gap-2 text-gray-500 text-[11px] font-medium mb-1">
+                <span className="text-xl">📊</span>
+                <span className="font-medium">Gesamt</span>
+              </div>
+              <div className="text-lg font-bold text-gray-900">{hedgehogs.length}</div>
+            </div>
+            <div className="stat-card" style={{borderLeftColor: '#3b82f6'}}>
+              <div className="flex items-center gap-2 text-gray-500 text-[11px] font-medium mb-1">
+                <span className="text-xl">🏥</span>
+                <span className="font-medium">In Pflege</span>
+              </div>
+              <div className="text-lg font-bold text-gray-900">{hedgehogs.filter(h => h.status === 'pflege').length}</div>
+            </div>
+            <div className="stat-card" style={{borderLeftColor: '#3b82f6'}}>
+              <div className="flex items-center gap-2 text-gray-500 text-[11px] font-medium mb-1">
+                <span className="text-xl">❄️</span>
+                <span className="font-medium">Überwinterung</span>
+              </div>
+              <div className="text-lg font-bold text-gray-900">{hedgehogs.filter(h => h.status === 'ueberwinterung').length}</div>
+            </div>
+            <div className="stat-card" style={{borderLeftColor: '#3b82f6'}}>
+              <div className="flex items-center gap-2 text-gray-500 text-[11px] font-medium mb-1">
+                <span className="text-xl">✅</span>
+                <span className="font-medium">Ausgewildert</span>
+              </div>
+              <div className="text-lg font-bold text-gray-900">{hedgehogs.filter(h => h.status === 'ausgewildert').length}</div>
+            </div>
+          </div>
+
+          {/* Search & Filter */}
+          <div className="px-4 pb-4 space-y-3">
+            <div className="card p-4 space-y-3">
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg">
+                  🔍
+                </span>
+                <input
+                  type="text"
+                  placeholder="Suchen..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                />
+              </div>
+              <select value={filter} onChange={(e) => setFilter(e.target.value)} 
+                className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                <option value="alle">🔽 Alle Status</option>
+                {statusOptions.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+              </select>
+            </div>
+            <button onClick={() => setShowAddForm(true)} 
+              className="w-full bg-blue-600 text-white px-3 py-2 rounded-lg font-medium shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-1.5 text-xs">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              <span>Neuer Igel</span>
+            </button>
+            
+            {isAdmin && (
+              <div className="grid grid-cols-2 gap-2">
+                <button 
+                  onClick={() => exportToCSV(hedgehogs)}
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1.5 rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 text-xs border border-gray-200">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  <span>Export</span>
+                </button>
+                <button 
+                  onClick={() => setShowCSVImport(true)}
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1.5 rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 text-xs border border-gray-200">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                  <span>Import</span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* List */}
+          <div className="px-4 space-y-3 pb-20 fade-in">
+            {filteredHedgehogs.map(h => (
+              <div key={h.id} onClick={() => { 
+                setSelected(h);
+                window.history.pushState({}, '', `#igel-${h.id}`);
+              }}
+                className="card p-4 cursor-pointer active:scale-[0.98]">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-xs text-gray-900 mb-1">{h.name || 'Unbenannt'}</h3>
+                    <p className="text-xs text-gray-500 font-mono bg-gray-100 px-2 py-1 rounded inline-block">
+                      {h.igelId}
+                    </p>
+                  </div>
+                  <span className={`badge ${getStatus(h.status).color}`}>
+                    {getStatus(h.status).label}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <span className="text-base">📅</span>
+                    <span>{h.aufnahmedatum}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <span className="text-base">⚖️</span>
+                    <span>{h.gewichtAktuell ? `${h.gewichtAktuell}g` : '-'}</span>
+                  </div>
+                  <div className="col-span-2 flex items-center gap-2 text-gray-600">
+                    <span className="text-base">📍</span>
+                    <span className="truncate">{h.fundort || '-'}</span>
+                  </div>
+                  {h.betreuer && (
+                    <div className="col-span-2 flex items-center gap-2 text-blue-600 font-medium text-xs bg-blue-50 px-2 py-1 rounded">
+                      <span className="text-base">👤</span>
+                      <span>{h.betreuer}</span>
+                    </div>
+                  )}
+                  {h.erstelltVon && (
+                    <div className="col-span-2 text-xs text-gray-400 mt-1">
+                      Aufgenommen von {h.erstelltVon}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+            {filteredHedgehogs.length === 0 && (
+              <div className="text-center py-16 text-gray-500">
+                <div className="text-7xl mb-4">🦔</div>
+                <p className="text-xl font-semibold mb-2">Keine Igel gefunden</p>
+                <p className="text-sm">Füge deinen ersten Igel hinzu oder ändere die Filter</p>
+              </div>
+            )}
+          </div>
+
+          {/* User Management Modal */}
+          {showUserMgmt && isAdmin && (
+            <UserManagement users={users} onClose={() => setShowUserMgmt(false)} />
+          )}
+
+          {/* User Profile Modal */}
+          {showProfile && (
+            <UserProfile userData={userData} onClose={() => setShowProfile(false)} />
+          )}
+
+          {/* Changelog Modal */}
+          {showChangelog && (
+            <Changelog onClose={() => setShowChangelog(false)} />
+          )}
+
+          {/* Add Form */}
+          {showAddForm && (
+            <AddHedgehogForm 
+              userData={userData} 
+              users={users}
+              onClose={() => setShowAddForm(false)} 
+            />
+          )}
+
+          {showCSVImport && (
+            <CSVImportDialog 
+              userData={userData}
+              onClose={() => setShowCSVImport(false)} 
+            />
+          )}
+        </div>
+      );
+    };
+
+
+    // CSV Import Dialog (Punkt 8)
+    const CSVImportDialog = ({ userData, onClose }) => {
+      const [file, setFile] = useState(null);
+      const [preview, setPreview] = useState(null);
+      const [importing, setImporting] = useState(false);
+      const [result, setResult] = useState(null);
+
+      const handleFileSelect = (e) => {
+        const selectedFile = e.target.files[0];
+        if (!selectedFile) return;
+        if (!selectedFile.name.endsWith('.csv')) {
+          alert('Bitte CSV-Datei auswählen');
+          return;
+        }
+        setFile(selectedFile);
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const csvText = event.target.result;
+          const parsed = parseCSV(csvText);
+          setPreview(parsed);
+        };
+        reader.readAsText(selectedFile);
+      };
+
+      const handleImport = async () => {
+        if (!preview || !preview.success) return;
+        if (!window.confirm(`${preview.data.length} Igel importieren?`)) return;
+
+        setImporting(true);
+        let imported = 0;
+        let errors = 0;
+
+        for (const hedgehog of preview.data) {
+          try {
+            const existing = await db.collection('hedgehogs').where('igelId', '==', hedgehog.igelId).get();
+            const data = {
+              ...hedgehog,
+              erstelltVon: userData.name,
+              erstelltVonId: 'import',
+              erstelltAm: firebase.firestore.FieldValue.serverTimestamp(),
+              zuletztBearbeitetVon: userData.name,
+              zuletztBearbeitetAm: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            if (!existing.empty) {
+              await db.collection('hedgehogs').doc(existing.docs[0].id).update(data);
+            } else {
+              await db.collection('hedgehogs').add(data);
+            }
+            imported++;
+          } catch (err) {
+            errors++;
+          }
+        }
+
+        setResult({ imported, errors });
+        setImporting(false);
+      };
+
+      return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b px-4 py-3 flex justify-between items-center">
+              <h2 className="text-lg font-semibold">CSV Import</h2>
+              <button onClick={onClose} className="text-2xl text-gray-400 hover:text-gray-600">×</button>
+            </div>
+
+            <div className="p-4 space-y-3">
+              {!result ? (
+                <>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <p className="text-xs text-blue-800">
+                      <strong>Format:</strong> Igel-ID, Name, Status, Aufnahmedatum, Geschlecht
+                    </p>
+                  </div>
+
+                  <input
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileSelect}
+                    className="w-full border border-gray-300 rounded-lg p-2 text-sm"
+                  />
+
+                  {preview && (
+                    <div className="border rounded-lg p-3">
+                      {preview.success ? (
+                        <div className="space-y-2">
+                          <div className="text-sm text-green-600 font-medium">
+                            ✅ {preview.data.length} Igel bereit
+                          </div>
+                          {preview.error && (
+                            <div className="bg-yellow-50 p-2 rounded text-xs text-yellow-800">
+                              {preview.error}
+                            </div>
+                          )}
+                          <div className="flex gap-2">
+                            <button
+                              onClick={handleImport}
+                              disabled={importing}
+                              className="flex-1 bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-medium hover:bg-blue-700 disabled:bg-gray-400">
+                              {importing ? 'Importiere...' : 'Importieren'}
+                            </button>
+                            <button
+                              onClick={() => { setFile(null); setPreview(null); }}
+                              className="px-3 py-2 border rounded-lg text-sm hover:bg-gray-50">
+                              Abbrechen
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <div className="text-sm text-red-600 font-medium">❌ Fehler</div>
+                          <div className="bg-red-50 p-2 rounded text-xs text-red-800">
+                            {preview.error}
+                          </div>
+                          <button
+                            onClick={() => { setFile(null); setPreview(null); }}
+                            className="w-full px-3 py-2 border rounded-lg text-sm hover:bg-gray-50">
+                            Andere Datei wählen
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="text-center py-6">
+                  <div className="text-4xl mb-3">✅</div>
+                  <h3 className="text-base font-semibold mb-2">Import abgeschlossen</h3>
+                  <p className="text-sm text-gray-600">
+                    {result.imported} Igel importiert
+                    {result.errors > 0 && ` • ${result.errors} Fehler`}
+                  </p>
+                  <button
+                    onClick={onClose}
+                    className="mt-4 w-full bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-medium">
+                    Schließen
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Changelog Component
+    const Changelog = ({ onClose }) => {
+      return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b p-4 flex justify-between">
+              <h2 className="text-2xl font-bold">ℹ️ Über die App</h2>
+              <button onClick={onClose} className="text-2xl">✕</button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* Version Info */}
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h3 className="font-semibold text-base mb-2">🦔 Igelpflegestation Pro</h3>
+                <p className="text-sm text-gray-700 font-medium">Version 1.4.4</p>
+                <p className="text-xs text-gray-500 mt-1">Cloud-basierte Tierpflege-Software</p>
+              </div>
+
+              {/* Changelog */}
+              <div>
+                <h3 className="font-semibold text-base mb-3">📝 Änderungsprotokoll</h3>
+                
+                {/* v1.4.4 */}
+                <div className="mb-4 border-l-4 border-blue-500 pl-4">
+                  <div className="font-semibold text-xs text-blue-600">Version 1.4.4 (Minimalistisch)</div>
+                  <ul className="text-xs text-gray-700 mt-2 space-y-1">
+                    <li>• 📐 Noch kleinere Schriftgrößen überall</li>
+                    <li>• ⚫ Schwarz-Weiß SVG Icons statt Emojis</li>
+                    <li>• 🔧 Sidebar-Menü nun voll funktional</li>
+                    <li>• 🎯 Minimaler Header (nur Hamburger + Name + Profil)</li>
+                    <li>• 📦 Kleinere Buttons (Neuer Igel, CSV etc.)</li>
+                    <li>• 🎨 Transparentes Blau im Banner</li>
+                  </ul>
+                  <div className="text-xs text-gray-500 mt-1">Datum: {new Date().toLocaleDateString('de-DE')}</div>
+                </div>
+
+                {/* v1.4.2 */}
+                <div className="mb-4 border-l-4 border-gray-300 pl-4">
+                  <div className="font-semibold text-xs text-gray-600">Version 1.4.2 (Design & Sidebar)</div>
+                  <ul className="text-xs text-gray-700 mt-2 space-y-1">
+                    <li>• 🎨 Professionelleres, minimalistisches Design</li>
+                    <li>• 👤 Profilbild in Sidebar</li>
+                  </ul>
+                  <div className="text-xs text-gray-500 mt-1">Datum: {new Date().toLocaleDateString('de-DE')}</div>
+                </div>
+
+                {/* v1.4.1 */}
+                <div className="mb-4 border-l-4 border-gray-300 pl-4">
+                  <div className="font-semibold text-sm text-gray-600">Version 1.4.1 (Sidebar)</div>
+                  <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                    <li>• 🔧 Sidebar-Navigation implementiert</li>
+                    <li>• 🐛 Self-closing div Bug behoben</li>
+                  </ul>
+                  <div className="text-xs text-gray-500 mt-2">Datum: {new Date().toLocaleDateString('de-DE')}</div>
+                </div>
+                
+                {/* v1.4.0 */}
+                <div className="mb-4 border-l-4 border-gray-300 pl-4">
+                  <div className="font-semibold text-sm text-gray-600">Version 1.4.0 (Features & Design)</div>
+                  <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                    <li>• 🐛 Gelöschte User können sich neu registrieren</li>
+                    <li>• 📝 Changelog Version korrigiert</li>
+                  </ul>
+                </div>
+
+                {/* v1.3 */}
+                <div className="mb-4 border-l-4 border-indigo-500 pl-4">
+                  <div className="font-semibold text-indigo-600">Version 1.3 (UI-Redesign Komplett)</div>
+                  <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                    <li>• 🎨 Moderne CSS mit Variablen & Animationen</li>
+                    <li>• ✨ Gradient-Header & verbesserte Navigation</li>
+                    <li>• 📊 Modernisierte Statistik-Cards mit Icons</li>
+                    <li>• 🦔 Neue Igel-Cards mit besserer Übersicht</li>
+                    <li>• 📝 Modernisierte Formulare & Inputs</li>
+                    <li>• 🔘 Verbesserte Buttons mit Hover-Effekten</li>
+                    <li>• 👥 Modernisierte Benutzerverwaltung</li>
+                    <li>• 🎯 Detail-Views mit besserem Design</li>
+                    <li>• 💫 Smooth Transitions überall</li>
+                  </ul>
+                </div>
+
+                {/* v1.2.3.1 */}
+                <div className="mb-4 border-l-4 border-red-500 pl-4">
+                  <div className="font-semibold text-red-600">Version 1.2.3.1 (Hotfix)</div>
+                  <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                    <li>• 🐛 KRITISCHER FIX: serverTimestamp() in Arrays</li>
+                    <li>• Igel-Speichern funktioniert jetzt!</li>
+                  </ul>
+                </div>
+
+                {/* v1.2.3 */}
+                <div className="mb-4 border-l-4 border-purple-500 pl-4">
+                  <div className="font-semibold text-purple-600">Version 1.2.3</div>
+                  <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                    <li>• Igel-Speichern Bugfix</li>
+                    <li>• Pflichtfeld-Validierung</li>
+                    <li>• Fehleranzeigen in Formularen</li>
+                  </ul>
+                </div>
+
+                {/* v1.2.2 */}
+                <div className="mb-4 border-l-4 border-blue-500 pl-4">
+                  <div className="font-semibold text-blue-600">Version 1.2.2</div>
+                  <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                    <li>• Admin kann User löschen</li>
+                    <li>• Verbesserte User-Sperrung</li>
+                    <li>• In-App Benachrichtigungen</li>
+                    <li>• Changelog/About-Seite</li>
+                  </ul>
+                </div>
+
+                {/* v1.2.1 */}
+                <div className="mb-4 border-l-4 border-blue-500 pl-4">
+                  <div className="font-semibold text-blue-600">Version 1.2.1</div>
+                  <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                    <li>• Saubere URL nach Registrierung</li>
+                    <li>• Keine Redirect-Loops</li>
+                  </ul>
+                </div>
+
+                {/* v1.2 */}
+                <div className="mb-4 border-l-4 border-purple-500 pl-4">
+                  <div className="font-semibold text-purple-600">Version 1.2</div>
+                  <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                    <li>• "Passwort einrichten" Flow</li>
+                    <li>• "Passwort vergessen" Funktion</li>
+                    <li>• E-Mail Einladungs-Prüfung</li>
+                  </ul>
+                </div>
+
+                {/* v1.1 */}
+                <div className="mb-4 border-l-4 border-orange-500 pl-4">
+                  <div className="font-semibold text-blue-600">Version 1.1</div>
+                  <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                    <li>• WhatsApp & E-Mail Share</li>
+                    <li>• User-Profil mit Bearbeitung</li>
+                    <li>• Admin kann Rollen ändern</li>
+                    <li>• Eingeladene setzen eigenen Namen</li>
+                  </ul>
+                </div>
+
+                {/* v1.0 */}
+                <div className="border-l-4 border-gray-500 pl-4">
+                  <div className="font-semibold text-gray-600">Version 1.0 (Phase 1)</div>
+                  <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                    <li>• Firebase Cloud-Synchronisation</li>
+                    <li>• Benutzerverwaltung & Einladungen</li>
+                    <li>• Audit-Trail (wer/wann)</li>
+                    <li>• Standardansprechpartner</li>
+                    <li>• Igel-Verwaltung komplett</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Credits */}
+              <div className="bg-gray-50 p-4 rounded-lg text-center">
+                <p className="text-xs text-gray-600">
+                  Entwickelt mit ❤️ für Igelpflegestationen<br/>
+                  Powered by Firebase & React
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // User Profile Component
+    const UserProfile = ({ userData, onClose }) => {
+      const [name, setName] = useState(userData.name);
+      const [currentPassword, setCurrentPassword] = useState('');
+      const [newPassword, setNewPassword] = useState('');
+      const [confirmPassword, setConfirmPassword] = useState('');
+      const [error, setError] = useState('');
+      const [success, setSuccess] = useState('');
+      const [saving, setSaving] = useState(false);
+
+      const handleSaveName = async () => {
+        if (!name.trim()) {
+          setError('Name darf nicht leer sein');
+          return;
+        }
+
+        setSaving(true);
+        setError('');
+        try {
+          await db.collection('users').doc(auth.currentUser.uid).update({
+            name: name.trim()
+          });
+          setSuccess('Name gespeichert!');
+          setTimeout(() => setSuccess(''), 3000);
+        } catch (err) {
+          setError('Fehler beim Speichern: ' + err.message);
+        }
+        setSaving(false);
+      };
+
+      const handleChangePassword = async () => {
+        setError('');
+        setSuccess('');
+
+        if (!currentPassword || !newPassword || !confirmPassword) {
+          setError('Bitte alle Felder ausfüllen');
+          return;
+        }
+
+        if (newPassword !== confirmPassword) {
+          setError('Neue Passwörter stimmen nicht überein');
+          return;
+        }
+
+        if (newPassword.length < 6) {
+          setError('Neues Passwort muss mind. 6 Zeichen haben');
+          return;
+        }
+
+        setSaving(true);
+
+        try {
+          // Re-authenticate user
+          const credential = firebase.auth.EmailAuthProvider.credential(
+            auth.currentUser.email,
+            currentPassword
+          );
+          await auth.currentUser.reauthenticateWithCredential(credential);
+
+          // Update password
+          await auth.currentUser.updatePassword(newPassword);
+
+          setSuccess('Passwort erfolgreich geändert!');
+          setCurrentPassword('');
+          setNewPassword('');
+          setConfirmPassword('');
+          setTimeout(() => setSuccess(''), 3000);
+        } catch (err) {
+          if (err.code === 'auth/wrong-password') {
+            setError('Aktuelles Passwort ist falsch');
+          } else {
+            setError('Fehler: ' + err.message);
+          }
+        }
+        setSaving(false);
+      };
+
+      return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b p-4 flex justify-between">
+              <div className="flex items-center gap-2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <h2 className="text-base font-semibold">Mein Profil</h2>
+              </div>
+              <button onClick={onClose} className="text-2xl">✕</button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* Account Info */}
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h3 className="font-bold mb-2">Account-Informationen</h3>
+                <div className="space-y-1 text-sm">
+                  <div><strong>E-Mail:</strong> {userData.email}</div>
+                  <div><strong>Rolle:</strong> {
+                    userData.role === 'admin' ? 'Administrator' :
+                    userData.role === 'mitarbeiter' ? 'Mitarbeiter' :
+                    'Gast (nur lesen)'
+                  }</div>
+                </div>
+              </div>
+
+              {/* Edit Name */}
+              <div>
+                <h3 className="font-bold mb-3">Name ändern</h3>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full border rounded-lg px-4 py-2 mb-3"
+                />
+                <button
+                  onClick={handleSaveName}
+                  disabled={saving || name === userData.name}
+                  className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+                >
+                  {saving ? 'Speichert...' : 'Name speichern'}
+                </button>
+              </div>
+
+              {/* Change Password */}
+              <div>
+                <h3 className="font-bold mb-3">Passwort ändern</h3>
+                <div className="space-y-3">
+                  <input
+                    type="password"
+                    placeholder="Aktuelles Passwort"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    className="w-full border rounded-lg px-4 py-2"
+                  />
+                  <input
+                    type="password"
+                    placeholder="Neues Passwort (mind. 6 Zeichen)"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full border rounded-lg px-4 py-2"
+                  />
+                  <input
+                    type="password"
+                    placeholder="Neues Passwort bestätigen"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full border rounded-lg px-4 py-2"
+                  />
+                  <button
+                    onClick={handleChangePassword}
+                    disabled={saving}
+                    className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+                  >
+                    {saving ? 'Ändert...' : 'Passwort ändern'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Messages */}
+              {error && (
+                <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
+              {success && (
+                <div className="bg-blue-50 text-blue-600 p-3 rounded-lg text-sm">
+                  ✓ {success}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // User Management
+    const UserManagement = ({ users, onClose }) => {
+      const [showInvite, setShowInvite] = useState(false);
+      const [email, setEmail] = useState('');
+      const [role, setRole] = useState('mitarbeiter');
+      const [link, setLink] = useState('');
+      const [loading, setLoading] = useState(false);
+
+      const generateInvite = async () => {
+        if (!email) {
+          alert('Bitte E-Mail eingeben');
+          return;
+        }
+        
+        setLoading(true);
+        try {
+          const code = Math.random().toString(36).substring(2, 15);
+          await db.collection('invites').add({
+            code, 
+            email, 
+            role,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            createdBy: auth.currentUser.uid,
+            used: false
+          });
+          const inviteLink = `${window.location.origin}${window.location.pathname}?invite=${code}`;
+          setLink(inviteLink);
+        } catch (err) {
+          alert('Fehler beim Erstellen: ' + err.message);
+        }
+        setLoading(false);
+      };
+
+      const shareViaWhatsApp = () => {
+        const text = `Hey! Du wurdest zur Igelpflegestation eingeladen. 🦔\n\nRegistriere dich hier und installiere die App:\n${link}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+      };
+
+      const shareViaEmail = () => {
+        const subject = 'Einladung zur Igelpflegestation';
+        const body = `Hallo!\n\nDu wurdest zur Igelpflegestation eingeladen. 🦔\n\nBitte registriere dich hier und installiere die App auf deinem Smartphone:\n\n${link}\n\nViele Grüße\nDein Team`;
+        window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      };
+
+      const changeRole = async (userId, currentRole) => {
+        const newRole = prompt('Neue Rolle:\n\nadmin = Administrator\nmitarbeiter = Mitarbeiter\ngast = Gast (nur lesen)', currentRole);
+        if (newRole && ['admin', 'mitarbeiter', 'gast'].includes(newRole)) {
+          await db.collection('users').doc(userId).update({ role: newRole });
+        }
+      };
+
+      const deleteUser = async (userId, userName) => {
+        if (!window.confirm(`Benutzer "${userName}" wirklich LÖSCHEN?\n\nDies kann nicht rückgängig gemacht werden!`)) {
+          return;
+        }
+
+        try {
+          // Mark user as deleted and add notification
+          await db.collection('users').doc(userId).update({
+            deleted: true,
+            deletedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            notification: {
+              type: 'account_deleted',
+              message: 'Dein Account wurde vom Administrator gelöscht.',
+              timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }
+          });
+          
+          alert(`Benutzer "${userName}" wurde gelöscht.`);
+        } catch (err) {
+          alert('Fehler beim Löschen: ' + err.message);
+        }
+      };
+
+      const suspendUser = async (userId, userName, currentActive) => {
+        const action = currentActive ? 'sperren' : 'entsperren';
+        if (!window.confirm(`Benutzer "${userName}" wirklich ${action}?`)) {
+          return;
+        }
+
+        try {
+          const notification = currentActive ? {
+            type: 'account_suspended',
+            message: 'Dein Account wurde vom Administrator gesperrt. Bitte kontaktiere den Administrator.',
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          } : {
+            type: 'account_activated',
+            message: 'Dein Account wurde wieder aktiviert.',
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          };
+
+          await db.collection('users').doc(userId).update({ 
+            active: !currentActive,
+            notification
+          });
+        } catch (err) {
+          alert('Fehler: ' + err.message);
+        }
+      };
+
+      return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 fade-in">
+          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-blue-600 text-white p-6 flex justify-between items-center rounded-t-3xl">
+              <div className="flex items-center gap-3">
+                <span className="text-3xl">👥</span>
+                <h2 className="text-2xl font-bold">Benutzerverwaltung</h2>
+              </div>
+              <button onClick={onClose} className="text-2xl hover:bg-white hover:bg-opacity-20 w-10 h-10 rounded-full transition-all">
+                ✕
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              <button onClick={() => setShowInvite(!showInvite)} 
+                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold">
+                ➕ Benutzer einladen
+              </button>
+
+              {showInvite && (
+                <div className="bg-blue-50 p-4 rounded-lg space-y-3">
+                  <h3 className="font-bold">Einladung erstellen</h3>
+                  <input 
+                    type="email" 
+                    placeholder="E-Mail des neuen Benutzers" 
+                    value={email} 
+                    onChange={(e) => setEmail(e.target.value)} 
+                    className="w-full border rounded-lg px-3 py-2" 
+                  />
+                  <select value={role} onChange={(e) => setRole(e.target.value)} 
+                    className="w-full border rounded-lg px-3 py-2">
+                    <option value="mitarbeiter">Mitarbeiter (kann alles bearbeiten)</option>
+                    <option value="gast">Gast (nur lesen)</option>
+                    <option value="admin">Administrator (volle Rechte)</option>
+                  </select>
+                  <button onClick={generateInvite} disabled={loading}
+                    className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400">
+                    {loading ? 'Erstelle...' : 'Einladungslink generieren'}
+                  </button>
+
+                  {link && (
+                    <div className="bg-white p-4 rounded border space-y-3">
+                      <p className="text-sm font-semibold">Einladung erstellt!</p>
+                      <div className="flex gap-2">
+                        <input type="text" value={link} readOnly 
+                          className="flex-1 bg-gray-50 px-3 py-2 rounded text-sm" />
+                        <button onClick={() => navigator.clipboard.writeText(link)} 
+                          className="bg-blue-600 text-white px-4 py-2 rounded text-sm whitespace-nowrap">
+                          Kopieren
+                        </button>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <button onClick={shareViaWhatsApp}
+                          className="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600 flex items-center justify-center gap-2">
+                          WhatsApp
+                        </button>
+                        <button onClick={shareViaEmail}
+                          className="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600 flex items-center justify-center gap-2">
+                          E-Mail
+                        </button>
+                      </div>
+
+                      <p className="text-xs text-gray-600">
+                        Der eingeladene Benutzer kann seinen Namen und Passwort selbst festlegen.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div>
+                <h3 className="font-bold text-lg mb-3">Benutzer ({users.filter(u => !u.deleted).length})</h3>
+                <div className="space-y-3">
+                  {users.filter(u => !u.deleted).map(u => (
+                    <div key={u.id} className="card p-4">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex-1">
+                          <div className="font-bold text-gray-900 flex items-center gap-2">
+                            {u.name} 
+                            
+                          </div>
+                          <div className="text-sm text-gray-600 mt-1">{u.email}</div>
+                          <div className={`inline-flex items-center gap-1 mt-2 px-2 py-1 rounded-full text-xs font-medium ${
+                            u.role === 'admin' ? 'bg-blue-100 bg-blue-800' :
+                            u.role === 'mitarbeiter' ? 'bg-blue-100 text-blue-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {u.role === 'admin' ? 'Administrator' : u.role === 'mitarbeiter' ? 'Mitarbeiter' : 'Gast'}
+                          </div>
+                        </div>
+                        <button onClick={() => suspendUser(u.id, u.name, u.active)} 
+                          className={`badge ${u.active ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800'}`}>
+                          {u.active ? 'Aktiv' : 'Gesperrt'}
+                        </button>
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => changeRole(u.id, u.role)}
+                          className="px-3 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-xs font-medium flex items-center gap-1 transition-all">
+                          Rolle ändern
+                        </button>
+                        <button onClick={() => deleteUser(u.id, u.name)}
+                          className="px-3 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-medium flex items-center gap-1 transition-all">
+                          Löschen
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Add Hedgehog Form
+    const AddHedgehogForm = ({ userData, users, onClose }) => {
+      const [form, setForm] = useState({
+        name: '',
+        aufnahmedatum: new Date().toISOString().split('T')[0],
+        status: 'aufnahme',
+        fundort: '',
+        finderName: '',
+        finderKontakt: '',
+        geschlecht: '',
+        alterSchaetzung: '',
+        gewichtAktuell: '',
+        betreuer: userData.name,
+        notizen: '',
+        ueberwinterungAktiv: false,
+        ueberwinterungStart: '',
+        ueberwinterungGewicht: ''
+      });
+      const [errors, setErrors] = useState({});
+      const [saving, setSaving] = useState(false);
+
+      const validate = () => {
+        const newErrors = {};
+        
+        if (!form.name.trim()) newErrors.name = 'Name erforderlich';
+        if (!form.aufnahmedatum) newErrors.aufnahmedatum = 'Aufnahmedatum erforderlich';
+        if (!form.fundort.trim()) newErrors.fundort = 'Fundort erforderlich';
+        if (!form.finderName.trim()) newErrors.finderName = 'Finder Name erforderlich';
+        if (!form.finderKontakt.trim()) newErrors.finderKontakt = 'Finder Kontakt erforderlich';
+        if (!form.geschlecht) newErrors.geschlecht = 'Geschlecht erforderlich';
+        if (!form.alterSchaetzung.trim()) newErrors.alterSchaetzung = 'Alter erforderlich';
+        if (!form.gewichtAktuell) newErrors.gewichtAktuell = 'Gewicht erforderlich';
+        if (!form.betreuer) newErrors.betreuer = 'Betreuer erforderlich';
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+      };
+
+      const handleSubmit = async () => {
+        if (!validate()) {
+          alert('Bitte alle Pflichtfelder ausfüllen!');
+          return;
+        }
+
+        setSaving(true);
+        
+        try {
+          const igelId = `IGL-${Date.now()}`;
+          await db.collection('hedgehogs').add({
+            ...form,
+            igelId,
+            gewichtsverlauf: form.gewichtAktuell ? [{
+              datum: form.aufnahmedatum,
+              gewicht: parseFloat(form.gewichtAktuell),
+              notiz: 'Aufnahme',
+              erfasstVon: userData.name,
+              erfasstAm: new Date().toISOString()
+            }] : [],
+            diagnosen: [],
+            behandlungen: [],
+            ueberwinterung: form.ueberwinterungAktiv ? {
+              aktiv: true,
+              startdatum: form.ueberwinterungStart || form.aufnahmedatum,
+              gewichtStart: form.ueberwinterungGewicht || form.gewichtAktuell,
+              notizen: ''
+            } : undefined,
+            statusHistory: [{
+              status: 'aufnahme',
+              datum: new Date().toISOString(),
+              geaendertVon: userData.name
+            }],
+            erstelltVon: userData.name,
+            erstelltVonId: auth.currentUser.uid,
+            erstelltAm: firebase.firestore.FieldValue.serverTimestamp(),
+            zuletztBearbeitetVon: userData.name,
+            zuletztBearbeitetAm: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          onClose();
+        } catch (err) {
+          alert('Fehler beim Speichern: ' + err.message);
+          setSaving(false);
+        }
+      };
+
+      const activeUsers = users.filter(u => u.active && !u.deleted);
+
+      return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end slide-in">
+          <div className="bg-white rounded-t-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 flex justify-between items-center rounded-t-3xl">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">🦔</span>
+                <h2 className="text-xl font-bold">Neuer Igel</h2>
+              </div>
+              <button onClick={onClose} className="text-2xl hover:bg-white hover:bg-opacity-20 w-10 h-10 rounded-full transition-all">
+                ✕
+              </button>
+            </div>
+
+            <div className="p-4 space-y-4">
+              <input type="text" placeholder="Name" value={form.name} 
+                onChange={(e) => setForm({...form, name: e.target.value})} 
+                className="w-full border rounded-lg px-3 py-2" />
+
+              <div className="grid grid-cols-2 gap-3">
+                <select value={form.geschlecht} onChange={(e) => setForm({...form, geschlecht: e.target.value})} 
+                  className="border rounded-lg px-3 py-2">
+                  <option value="">Geschlecht</option>
+                  <option value="männlich">Männlich</option>
+                  <option value="weiblich">Weiblich</option>
+                </select>
+                <input type="text" placeholder="Alter" value={form.alterSchaetzung} 
+                  onChange={(e) => setForm({...form, alterSchaetzung: e.target.value})} 
+                  className="border rounded-lg px-3 py-2" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <input type="date" value={form.aufnahmedatum} 
+                  onChange={(e) => setForm({...form, aufnahmedatum: e.target.value})} 
+                  className="border rounded-lg px-3 py-2" />
+                <input type="number" placeholder="Gewicht (g)" value={form.gewichtAktuell} 
+                  onChange={(e) => setForm({...form, gewichtAktuell: e.target.value})} 
+                  className="border rounded-lg px-3 py-2" />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium mb-1">Betreuer (Standardansprechpartner)</label>
+                <select value={form.betreuer} onChange={(e) => setForm({...form, betreuer: e.target.value})} 
+                  className="w-full border rounded-lg px-3 py-2">
+                  {activeUsers.map(u => <option key={u.id} value={u.name}>{u.name}</option>)}
+                </select>
+              </div>
+
+              <input type="text" placeholder="Fundort" value={form.fundort} 
+                onChange={(e) => setForm({...form, fundort: e.target.value})} 
+                className="w-full border rounded-lg px-3 py-2" />
+
+              <div className="grid grid-cols-2 gap-3">
+                <input type="text" placeholder="Finder Name" value={form.finderName} 
+                  onChange={(e) => setForm({...form, finderName: e.target.value})} 
+                  className="border rounded-lg px-3 py-2" />
+                <input type="text" placeholder="Finder Kontakt" value={form.finderKontakt} 
+                  onChange={(e) => setForm({...form, finderKontakt: e.target.value})} 
+                  className="border rounded-lg px-3 py-2" />
+              </div>
+
+              <textarea placeholder="Notizen" value={form.notizen} 
+                onChange={(e) => setForm({...form, notizen: e.target.value})} 
+                className="w-full border rounded-lg px-3 py-2 min-h-20" />
+
+              <button onClick={handleSubmit} 
+                disabled={saving}
+                className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-4 rounded-lg font-medium shadow-md hover:shadow-lg transition-all btn flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                <span className="text-xl">{saving ? '⏳' : '✅'}</span>
+                <span>{saving ? 'Speichert...' : 'Igel aufnehmen'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Hedgehog Detail View
+    const HedgehogDetail = ({ hedgehog, userData, users, onBack, onUpdate }) => {
+      const [edit, setEdit] = useState(false);
+      const [data, setData] = useState(hedgehog);
+      const [showMenu, setShowMenu] = useState(false);
+
+      const saveChanges = async () => {
+        await db.collection('hedgehogs').doc(hedgehog.id).update({
+          ...data,
+          zuletztBearbeitetVon: userData.name,
+          zuletztBearbeitetAm: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        setEdit(false);
+        onUpdate(data);
+      };
+
+      const addWeight = async () => {
+        const weight = prompt('Gewicht in Gramm:');
+        if (!weight) return;
+        
+        const newEntry = {
+          datum: new Date().toISOString().split('T')[0],
+          gewicht: parseFloat(weight),
+          notiz: '',
+          erfasstVon: userData.name,
+          erfasstAm: new Date().toISOString()
+        };
+
+        const updated = {
+          ...data,
+          gewichtsverlauf: [...(data.gewichtsverlauf || []), newEntry],
+          gewichtAktuell: weight
+        };
+
+        await db.collection('hedgehogs').doc(hedgehog.id).update({
+          gewichtsverlauf: updated.gewichtsverlauf,
+          gewichtAktuell: weight,
+          zuletztBearbeitetVon: userData.name,
+          zuletztBearbeitetAm: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        setData(updated);
+      };
+
+      const addDiagnosis = async () => {
+        const diag = prompt('Diagnose:');
+        if (!diag) return;
+
+        const newDiag = {
+          datum: new Date().toISOString().split('T')[0],
+          diagnose: diag,
+          erfasstVon: userData.name,
+          erfasstAm: new Date().toISOString()
+        };
+
+        const updated = {
+          ...data,
+          diagnosen: [...(data.diagnosen || []), newDiag]
+        };
+
+        await db.collection('hedgehogs').doc(hedgehog.id).update({
+          diagnosen: updated.diagnosen,
+          zuletztBearbeitetVon: userData.name,
+          zuletztBearbeitetAm: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        setData(updated);
+      };
+
+      const addTreatment = async () => {
+        const treat = prompt('Behandlung:');
+        if (!treat) return;
+
+        const newTreat = {
+          datum: new Date().toISOString().split('T')[0],
+          behandlung: treat,
+          durchgefuehrtVon: userData.name,
+          durchgefuehrtAm: new Date().toISOString()
+        };
+
+        const updated = {
+          ...data,
+          behandlungen: [...(data.behandlungen || []), newTreat]
+        };
+
+        await db.collection('hedgehogs').doc(hedgehog.id).update({
+          behandlungen: updated.behandlungen,
+          zuletztBearbeitetVon: userData.name,
+          zuletztBearbeitetAm: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        setData(updated);
+      };
+
+      const changeStatus = async (newStatus) => {
+        const statusEntry = {
+          status: newStatus,
+          datum: new Date().toISOString(),
+          geaendertVon: userData.name
+        };
+
+        await db.collection('hedgehogs').doc(hedgehog.id).update({
+          status: newStatus,
+          statusHistory: firebase.firestore.FieldValue.arrayUnion(statusEntry),
+          zuletztBearbeitetVon: userData.name,
+          zuletztBearbeitetAm: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        setData({ ...data, status: newStatus });
+      };
+
+      const activeUsers = users.filter(u => u.active);
+
+      return (
+        <div className="min-h-screen bg-gray-50">
+          <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 sticky top-0 z-40 shadow-lg">
+            <div className="flex justify-between items-center">
+              <button onClick={onBack} className="px-3 py-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-all flex items-center gap-2">
+                <span>←</span>
+                <span>Zurück</span>
+              </button>
+              <h1 className="font-bold truncate mx-2 text-lg">{data.name || 'Igel'}</h1>
+              <button onClick={() => setShowMenu(!showMenu)} className="px-3 py-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-all">
+                <span className="text-xl">☰</span>
+              </button>
+            </div>
+          </div>
+
+          {showMenu && (
+            <div className="absolute right-4 top-16 bg-white rounded-xl shadow-xl z-50 overflow-hidden">
+              {edit ? (
+                <>
+                  <button onClick={saveChanges} className="w-full px-6 py-3 text-left hover:bg-blue-50 text-blue-600 font-medium flex items-center gap-2 transition-all">
+                    <span>💾</span> Speichern
+                  </button>
+                  <button onClick={() => setEdit(false)} className="w-full px-6 py-3 text-left hover:bg-red-50 text-red-600 font-medium flex items-center gap-2 border-t transition-all">
+                    <span>✕</span> Abbrechen
+                  </button>
+                </>
+              ) : (
+                <button onClick={() => setEdit(true)} className="w-full px-6 py-3 text-left hover:bg-blue-50 text-blue-600 font-medium flex items-center gap-2 transition-all">
+                  <span>✏️</span> Bearbeiten
+                </button>
+              )}
+            </div>
+          )}
+
+          <div className="p-4 space-y-4 pb-20">
+            {/* Info Box */}
+            <div className="bg-blue-50 p-4 rounded-lg text-sm">
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <strong>ID:</strong> {data.igelId}
+                </div>
+                <div>
+                  <strong>Status:</strong> {data.status}
+                </div>
+                <div className="col-span-2">
+                  <strong>Betreuer:</strong> {data.betreuer || '-'}
+                </div>
+                <div className="col-span-2 text-xs text-gray-600">
+                  Erstellt: {data.erstelltVon} am {data.aufnahmedatum}
+                </div>
+                {data.zuletztBearbeitetVon && (
+                  <div className="col-span-2 text-xs text-gray-600">
+                    Zuletzt bearbeitet: {data.zuletztBearbeitetVon}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Basisdaten */}
+            <div className="bg-white rounded-lg shadow p-4">
+              <h2 className="font-bold mb-3">Basisdaten</h2>
+              <div className="space-y-2">
+                <div>
+                  <strong>Name:</strong>
+                  {edit ? (
+                    <input type="text" value={data.name} onChange={(e) => setData({...data, name: e.target.value})} 
+                      className="w-full border rounded px-2 py-1 mt-1" />
+                  ) : (
+                    <span className="ml-2">{data.name || '-'}</span>
+                  )}
+                </div>
+                <div>
+                  <strong>Geschlecht:</strong>
+                  {edit ? (
+                    <select value={data.geschlecht} onChange={(e) => setData({...data, geschlecht: e.target.value})} 
+                      className="w-full border rounded px-2 py-1 mt-1">
+                      <option value="">-</option>
+                      <option value="männlich">Männlich</option>
+                      <option value="weiblich">Weiblich</option>
+                    </select>
+                  ) : (
+                    <span className="ml-2">{data.geschlecht || '-'}</span>
+                  )}
+                </div>
+                <div>
+                  <strong>Alter:</strong>
+                  {edit ? (
+                    <input type="text" value={data.alterSchaetzung} onChange={(e) => setData({...data, alterSchaetzung: e.target.value})} 
+                      className="w-full border rounded px-2 py-1 mt-1" />
+                  ) : (
+                    <span className="ml-2">{data.alterSchaetzung || '-'}</span>
+                  )}
+                </div>
+                <div>
+                  <strong>Betreuer:</strong>
+                  {edit ? (
+                    <select value={data.betreuer} onChange={(e) => setData({...data, betreuer: e.target.value})} 
+                      className="w-full border rounded px-2 py-1 mt-1">
+                      {activeUsers.map(u => <option key={u.id} value={u.name}>{u.name}</option>)}
+                    </select>
+                  ) : (
+                    <span className="ml-2">{data.betreuer || '-'}</span>
+                  )}
+                </div>
+                <div>
+                  <strong>Status ändern:</strong>
+                  {edit && (
+                    <select value={data.status} onChange={(e) => changeStatus(e.target.value)} 
+                      className="w-full border rounded px-2 py-1 mt-1">
+                      <option value="aufnahme">Aufnahme</option>
+                      <option value="pflege">In Pflege</option>
+                      <option value="ueberwinterung">Überwinterung</option>
+                      <option value="auswilderung_bereit">Bereit</option>
+                      <option value="ausgewildert">Ausgewildert</option>
+                      <option value="verstorben">Verstorben</option>
+                    </select>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Fundort */}
+            <div className="bg-white rounded-lg shadow p-4">
+              <h2 className="font-bold mb-3">📍 Fundort</h2>
+              <div className="space-y-2 text-sm">
+                <div><strong>Ort:</strong> {data.fundort || '-'}</div>
+                <div><strong>Finder:</strong> {data.finderName || '-'}</div>
+                <div><strong>Kontakt:</strong> {data.finderKontakt || '-'}</div>
+              </div>
+            </div>
+
+            {/* Gewicht */}
+            <div className="bg-white rounded-lg shadow p-4">
+              <div className="flex justify-between items-center mb-3">
+                <h2 className="font-bold text-lg">⚖️ Gewicht</h2>
+                {edit && (
+                  <button onClick={addWeight} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-medium transition-all btn flex items-center gap-1">
+                    <span>➕</span> Messung
+                  </button>
+                )}
+              </div>
+              <div className="space-y-2">
+                {(data.gewichtsverlauf || []).slice().reverse().map((w, i) => (
+                  <div key={i} className="card p-3 flex justify-between items-center">
+                    <span className="font-semibold text-xs text-gray-900">{w.gewicht}g</span>
+                    <div className="text-right text-sm">
+                      <div className="text-gray-600 flex items-center gap-1">
+                        <span>📅</span> {w.datum}
+                      </div>
+                      <div className="text-xs text-blue-600 flex items-center gap-1">
+                        <span>👤</span> {w.erfasstVon}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {(!data.gewichtsverlauf || data.gewichtsverlauf.length === 0) && (
+                  <div className="text-center py-8 text-gray-400">
+                    <div className="text-4xl mb-2">⚖️</div>
+                    <p className="text-sm">Noch keine Messungen</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Gesundheit */}
+            <div className="bg-white rounded-lg shadow p-4">
+              <h2 className="font-bold mb-3">💊 Gesundheit</h2>
+              
+              <div className="mb-4">
+                <div className="flex justify-between mb-2">
+                  <strong className="text-sm">Diagnosen</strong>
+                  {edit && <button onClick={addDiagnosis} className="bg-blue-600 text-white px-2 py-1 rounded text-xs">+</button>}
+                </div>
+                <div className="space-y-2">
+                  {(data.diagnosen || []).map((d, i) => (
+                    <div key={i} className="bg-red-50 p-2 rounded text-sm">
+                      <div className="text-xs text-gray-600">{d.datum} • {d.erfasstVon}</div>
+                      <div>{d.diagnose}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="flex justify-between mb-2">
+                  <strong className="text-sm">Behandlungen</strong>
+                  {edit && <button onClick={addTreatment} className="bg-blue-600 text-white px-2 py-1 rounded text-xs">+</button>}
+                </div>
+                <div className="space-y-2">
+                  {(data.behandlungen || []).map((t, i) => (
+                    <div key={i} className="bg-blue-50 p-2 rounded text-sm">
+                      <div className="text-xs text-gray-600">{t.datum} • {t.durchgefuehrtVon}</div>
+                      <div>{t.behandlung}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Status Historie */}
+            {data.statusHistory && data.statusHistory.length > 0 && (
+              <div className="bg-white rounded-lg shadow p-4">
+                <h2 className="font-bold mb-3">📋 Status-Historie</h2>
+                <div className="space-y-2">
+                  {data.statusHistory.map((s, i) => (
+                    <div key={i} className="text-sm bg-gray-50 p-2 rounded">
+                      <strong>{s.status}</strong>
+                      <div className="text-xs text-gray-600">
+                        Geändert von: {s.geaendertVon}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Notizen */}
+            <div className="bg-white rounded-lg shadow p-4">
+              <h2 className="font-bold mb-3">📝 Notizen</h2>
+              {edit ? (
+                <textarea value={data.notizen} onChange={(e) => setData({...data, notizen: e.target.value})} 
+                  className="w-full border rounded px-3 py-2 min-h-24" />
+              ) : (
+                <p className="text-sm whitespace-pre-wrap">{data.notizen || 'Keine Notizen'}</p>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Render
+    // Render App
+    ReactDOM.render(<App />, document.getElementById('root'));
+
+    // Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
