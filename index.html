@@ -1,0 +1,3151 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Igelpflegestation Pro</title>
+  <link rel="manifest" href="manifest.json">
+  
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --secondary: #64748b;
+      --success: #2563eb;
+      --danger: #ef4444;
+      --warning: #2563eb;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-600: #475569;
+      --gray-900: #0f172a;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    * { 
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+    
+    body { 
+      overscroll-behavior-y: contain;
+      background: var(--gray-50);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    
+    input, textarea, select { 
+      font-size: 16px !important;
+      transition: all 0.2s ease;
+    }
+    
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .card {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      background: white;
+      border-radius: 10px;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .card:active {
+      transform: translateY(0);
+    }
+    
+    .btn {
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      font-weight: 500;
+      border-radius: 8px;
+    }
+    
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .btn:active {
+      transform: scale(0.98);
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: 8px;
+      padding: 0.75rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      border: 1px solid #e2e8f0;
+      transition: all 0.2s ease;
+    }
+    
+    .stat-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+    
+    .slide-in {
+      animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .input-error {
+      border-color: var(--danger) !important;
+      background-color: #fef2f2 !important;
+    }
+    
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    
+    /* Sidebar CSS */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 240px;
+      height: 100vh;
+      background: white;
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      z-index: 1000;
+    }
+    
+    .sidebar.open {
+      transform: translateX(0);
+    }
+    
+    .sidebar-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 999;
+    }
+    
+    .sidebar-overlay.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      color: #64748b;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    
+    .sidebar-item:hover {
+      background: #f8fafc;
+      color: #2563eb;
+    }
+    
+    .sidebar-item svg {
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4",
+      authDomain: "igelstation-3c3db.firebaseapp.com",
+      projectId: "igelstation-3c3db",
+      storageBucket: "igelstation-3c3db.firebasestorage.app",
+      messagingSenderId: "695889743897",
+      appId: "1:695889743897:web:6ca27f35d25639c66b9a88"
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+
+    // ===========================================
+    // PHASE 1.4 - UTILITY FUNCTIONS
+    // ===========================================
+    
+    // Input Validation (Punkt 3 & 4)
+    const validateInput = {
+      weight: (value) => {
+        if (!value) return { valid: true, value: '', error: '' };
+        const cleaned = value.replace(/[^\d.]/g, '');
+        const parts = cleaned.split('.');
+        if (parts.length > 2) return { valid: false, value, error: 'Ungültiges Format' };
+        const final = parts.length === 2 ? parts[0] + '.' + parts[1] : parts[0];
+        const num = parseFloat(final);
+        if (num > 9999) return { valid: false, value, error: 'Max 9999g' };
+        return { valid: true, value: final, error: '' };
+      },
+      
+      phone: (value) => {
+        if (!value) return { valid: true, value, error: '' };
+        const cleaned = value.replace(/[^\d+\-/() ]/g, '');
+        return { valid: true, value: cleaned, error: '' };
+      },
+      
+      text: (value) => {
+        if (!value) return { valid: true, value, error: '' };
+        const cleaned = value.replace(/[^a-zA-ZäöüÄÖÜß0-9\-,.\\/ ]/g, '');
+        return { valid: true, value: cleaned, error: '' };
+      }
+    };
+    
+    // CSV Export (Punkt 7)
+    
+    // CSV Import Parser (Punkt 8)
+    const parseCSV = (csvText) => {
+      const lines = csvText.split('\n').filter(line => line.trim());
+      if (lines.length < 2) return { success: false, error: 'CSV-Datei ist leer', data: [] };
+      
+      const headerLine = lines[0];
+      const headers = headerLine.split(',').map(h => h.replace(/^"|"$/g, '').trim());
+      
+      const expectedHeaders = ['Igel-ID', 'Name', 'Status', 'Aufnahmedatum', 'Geschlecht'];
+      const hasRequired = expectedHeaders.every(h => headers.includes(h));
+      
+      if (!hasRequired) {
+        return { success: false, error: 'Fehlende Pflichtfelder: ' + expectedHeaders.join(', '), data: [] };
+      }
+      
+      const data = [];
+      const errors = [];
+      
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        if (!line.trim()) continue;
+        
+        const fields = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let j = 0; j < line.length; j++) {
+          const char = line[j];
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            fields.push(current);
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+        fields.push(current);
+        
+        const row = {};
+        headers.forEach((header, index) => {
+          row[header] = fields[index] ? fields[index].trim() : '';
+        });
+        
+        const igelId = row['Igel-ID'] || '';
+        const name = row['Name'] || '';
+        const status = row['Status'] || '';
+        const aufnahmedatum = row['Aufnahmedatum'] || '';
+        const geschlecht = row['Geschlecht'] || '';
+        
+        if (!igelId || !name || !status || !aufnahmedatum || !geschlecht) {
+          errors.push(`Zeile ${i + 1}: Pflichtfelder fehlen`);
+          continue;
+        }
+        
+        const validStatuses = ['aufnahme', 'pflege', 'ueberwinterung', 'auswilderung_bereit', 'ausgewildert', 'verstorben'];
+        if (!validStatuses.includes(status)) {
+          errors.push(`Zeile ${i + 1}: Ungültiger Status`);
+          continue;
+        }
+        
+        data.push({
+          igelId, name, status, aufnahmedatum, geschlecht,
+          alterSchaetzung: row['Alter'] || '',
+          gewichtAktuell: row['Gewicht (g)'] || '',
+          betreuer: row['Betreuer'] || '',
+          fundort: row['Fundort'] || '',
+          finderName: row['Finder Name'] || '',
+          finderKontakt: row['Finder Kontakt'] || '',
+          notizen: row['Notizen'] || '',
+          gewichtsverlauf: [],
+          diagnosen: [],
+          behandlungen: [],
+          statusHistory: [{
+            status, datum: new Date().toISOString(), geaendertVon: 'CSV Import'
+          }]
+        });
+      }
+      
+      if (errors.length > 0 && data.length === 0) {
+        return { success: false, error: errors.join('\n'), data: [] };
+      }
+      
+      return { success: true, error: errors.length > 0 ? errors.join('\n') : '', data };
+    };
+
+    // exportToCSV function
+    const exportToCSV = (hedgehogs) => {
+      const headers = ['Igel-ID', 'Name', 'Status', 'Aufnahmedatum', 'Geschlecht', 'Alter', 'Gewicht (g)', 'Betreuer', 'Fundort', 'Finder Name', 'Finder Kontakt', 'Notizen'];
+      const rows = hedgehogs.map(h => {
+        return [
+          h.igelId || '', h.name || '', h.status || '', h.aufnahmedatum || '', h.geschlecht || '',
+          h.alterSchaetzung || '', h.gewichtAktuell || '', h.betreuer || '', h.fundort || '',
+          h.finderName || '', h.finderKontakt || '',
+          (h.notizen || '').replace(/[\n\r]/g, ' ').replace(/"/g, '""')
+        ].map(field => `"${field}"`).join(',');
+      });
+      const csv = [headers.join(','), ...rows].join('\n');
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `igel-export-${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+    };
+
+    // Main App
+    const App = () => {
+      const [user, setUser] = useState(null);
+      const [userData, setUserData] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [needsSetup, setNeedsSetup] = useState(null);
+
+      useEffect(() => {
+        const init = async () => {
+          // First check if admin exists
+          try {
+            const snapshot = await db.collection('users').where('role', '==', 'admin').get();
+            setNeedsSetup(snapshot.empty);
+          } catch (err) {
+            console.error('Admin check error:', err);
+            setNeedsSetup(false);
+          }
+
+          // Then check auth state
+          auth.onAuthStateChanged(async (authUser) => {
+            if (authUser) {
+              const doc = await db.collection('users').doc(authUser.uid).get();
+              const data = doc.exists ? doc.data() : null;
+              
+              if (doc.exists && data && !data.deleted) {
+                // Normal login - user doc exists and is not deleted
+                
+                // Check if user is suspended
+                if (!data.active) {
+                  await auth.signOut();
+                  alert('Dein Account wurde gesperrt. Bitte kontaktiere den Administrator.');
+                  window.location.reload();
+                  return;
+                }
+                
+                setUser(authUser);
+                setUserData(data);
+                
+                // Check for notifications
+                if (data.notification) {
+                  // Show notification
+                  setTimeout(() => {
+                    alert(data.notification.message);
+                    // Clear notification after showing
+                    db.collection('users').doc(authUser.uid).update({
+                      notification: firebase.firestore.FieldValue.delete()
+                    });
+                  }, 500);
+                }
+              } else {
+                // User has Auth account but NO Firestore doc.
+                // This means either:
+                //   A) A newly invited user logging in for the first time
+                //   B) A deleted user trying to sneak back in
+                //
+                // RULE: Auto-create ONLY if a valid unused invite exists for this email.
+                // Deleted users have no new invite → they are blocked.
+
+                let validInvite = null;
+                try {
+                  const inviteSnap = await db.collection('invites')
+                    .where('email', '==', authUser.email)
+                    .where('used', '==', false)
+                    .get();
+
+                  if (!inviteSnap.empty) {
+                    // Sort by newest invite
+                    const sorted = inviteSnap.docs
+                      .map(d => ({ id: d.id, ...d.data() }))
+                      .sort((a, b) =>
+                        (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0)
+                      );
+                    validInvite = sorted[0];
+                  }
+                } catch (err) {
+                  console.error('Invite check failed:', err);
+                }
+
+                if (!validInvite) {
+                  // No valid invite → either deleted user or unknown → block
+                  await auth.signOut();
+                  alert('Kein Zugang. Bitte wende dich an den Administrator.');
+                  setLoading(false);
+                  return;
+                }
+
+                // Valid invite found → create user doc with name & role from invite
+                const newUserData = {
+                  name: validInvite.userName || authUser.email.split('@')[0],
+                  email: authUser.email,
+                  role: validInvite.role || 'mitarbeiter',
+                  active: true,
+                  createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                try {
+                  await db.collection('users').doc(authUser.uid).set(newUserData);
+
+                  // Mark invite as used
+                  await db.collection('invites').doc(validInvite.id).update({
+                    used: true,
+                    usedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    usedBy: authUser.uid
+                  });
+
+                  setUser(authUser);
+                  setUserData(newUserData);
+                  alert(`Willkommen ${newUserData.name}!`);
+                } catch (err) {
+                  console.error('Error creating user doc:', err);
+                  await auth.signOut();
+                  alert('Fehler beim Erstellen des Accounts. Bitte kontaktiere den Administrator.');
+                }
+              }
+            } else {
+              setUser(null);
+              setUserData(null);
+            }
+            setLoading(false);
+          });
+        };
+        
+        init();
+      }, []);
+
+      if (loading || needsSetup === null) {
+        return <LoadingScreen />;
+      }
+
+      // Invite flow: Users go directly to login page, no special invite page
+      // They use "Passwort vergessen oder Einladung erhalten" to set password
+
+      // Show admin setup if no admin exists
+      if (needsSetup && !user) {
+        return <AdminSetup />;
+      }
+
+      if (!user) {
+        return <LoginScreen />;
+      }
+
+      return <MainApp user={user} userData={userData} />;
+    };
+
+    // Loading Screen
+    const LoadingScreen = () => (
+      <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+        <div className="text-white text-center">
+          <div className="text-6xl mb-4">🦔</div>
+          <div className="text-xl">Lädt...</div>
+        </div>
+      </div>
+    );
+
+    // Login Screen
+    const LoginScreen = () => {
+      const [email, setEmail] = useState('');
+      const [password, setPassword] = useState('');
+      const [error, setError] = useState('');
+      const [loading, setLoading] = useState(false);
+      const [showPasswordSetup, setShowPasswordSetup] = useState(false);
+      const [showPasswordReset, setShowPasswordReset] = useState(false);
+
+      const handleLogin = async (e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+
+        try {
+          await auth.signInWithEmailAndPassword(email, password);
+        } catch (err) {
+          if (err.code === 'auth/user-not-found') {
+            setError('Kein Account gefunden. Bitte "Passwort einrichten" nutzen.');
+          } else if (err.code === 'auth/wrong-password') {
+            setError('Falsches Passwort');
+          } else {
+            setError('Login fehlgeschlagen. Bitte Zugangsdaten prüfen.');
+          }
+        }
+        setLoading(false);
+      };
+
+      if (showPasswordSetup) {
+        return <PasswordSetup onBack={() => setShowPasswordSetup(false)} />;
+      }
+
+      if (showPasswordReset) {
+        return <PasswordReset onBack={() => setShowPasswordReset(false)} />;
+      }
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
+            <div className="text-center mb-8">
+              <div className="text-7xl mb-4">🦔</div>
+              <h1 className="text-base font-semibold mb-2">Igelpflegestation Pro</h1>
+              <p className="text-gray-600">Cloud-Tierpflege-Software</p>
+            </div>
+
+            <form onSubmit={handleLogin} className="space-y-4">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="E-Mail"
+                required
+                className="w-full border rounded-lg px-3 py-1 text-xs"
+              />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Passwort"
+                required
+                className="w-full border rounded-lg px-3 py-1 text-xs"
+              />
+              {error && <div className="bg-red-50 text-red-600 p-3 rounded text-sm">{error}</div>}
+              <button 
+                type="submit" 
+                disabled={loading}
+                className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400">
+                {loading ? 'Anmelden...' : 'Anmelden'}
+              </button>
+            </form>
+
+            <div className="mt-6 text-center text-sm">
+              <button
+                onClick={() => setShowPasswordReset(true)}
+                className="text-blue-600 hover:text-blue-800 font-medium"
+              >
+                Passwort vergessen oder Einladung erhalten?
+              </button>
+            </div>
+
+            <div className="mt-6 pt-6 border-t">
+              <p className="text-xs text-gray-500 text-center">
+              </p>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Password Setup Component
+    const PasswordSetup = ({ onBack }) => {
+      const [email, setEmail] = useState('');
+      const [name, setName] = useState('');
+      const [password, setPassword] = useState('');
+      const [confirm, setConfirm] = useState('');
+      const [error, setError] = useState('');
+      const [loading, setLoading] = useState(false);
+      const [inviteFound, setInviteFound] = useState(null);
+      const [inviteData, setInviteData] = useState(null);
+
+      const checkInvite = async () => {
+        if (!email) {
+          setError('Bitte E-Mail eingeben');
+          return;
+        }
+
+        setLoading(true);
+        setError('');
+
+        try {
+          const snapshot = await db.collection('invites')
+            .where('email', '==', email)
+            .where('used', '==', false)
+            .limit(1)
+            .get();
+
+          if (!snapshot.empty) {
+            const data = snapshot.docs[0].data();
+            setInviteData({ ...data, docId: snapshot.docs[0].id });
+            setInviteFound(true);
+          } else {
+            setInviteFound(false);
+            setError('Keine Einladung für diese E-Mail gefunden. Bitte kontaktiere deinen Administrator.');
+          }
+        } catch (err) {
+          setError('Fehler beim Prüfen: ' + err.message);
+        }
+        setLoading(false);
+      };
+
+      const handleRegister = async (e) => {
+        e.preventDefault();
+
+        if (!name.trim()) {
+          setError('Bitte Namen eingeben');
+          return;
+        }
+
+        if (password !== confirm) {
+          setError('Passwörter stimmen nicht überein');
+          return;
+        }
+
+        if (password.length < 6) {
+          setError('Passwort muss mindestens 6 Zeichen haben');
+          return;
+        }
+
+        setLoading(true);
+        setError('');
+
+        try {
+          // Check if user was previously deleted
+          const existingUserQuery = await db.collection('users').where('email', '==', email).get();
+          
+          if (!existingUserQuery.empty) {
+            const existingUserDoc = existingUserQuery.docs[0];
+            const existingUserData = existingUserDoc.data();
+            
+            // If user was deleted, reactivate them
+            if (existingUserData.deleted) {
+              // Try to create auth account (might already exist)
+              try {
+                await auth.createUserWithEmailAndPassword(email, password);
+              } catch (authErr) {
+                // If account exists, that's fine - user will login with new password
+                if (authErr.code !== 'auth/email-already-in-use') {
+                  throw authErr;
+                }
+              }
+              
+              // Reactivate user
+              await db.collection('users').doc(existingUserDoc.id).update({
+                name: name.trim(),
+                role: inviteData.role,
+                active: true,
+                deleted: firebase.firestore.FieldValue.delete(),
+                deletedAt: firebase.firestore.FieldValue.delete(),
+                notification: firebase.firestore.FieldValue.delete()
+              });
+              
+              await db.collection('invites').doc(inviteData.docId).update({ 
+                used: true,
+                usedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                usedBy: existingUserDoc.id
+              });
+              
+              window.location.href = window.location.origin + window.location.pathname;
+              return;
+            }
+          }
+          
+          // Normal registration for new user
+          const userCred = await auth.createUserWithEmailAndPassword(email, password);
+          
+          await db.collection('users').doc(userCred.user.uid).set({
+            name: name.trim(),
+            email: email,
+            role: inviteData.role,
+            active: true,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          
+          await db.collection('invites').doc(inviteData.docId).update({ 
+            used: true,
+            usedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            usedBy: userCred.user.uid
+          });
+
+          // Clean redirect to homepage without invite code
+          window.location.href = window.location.origin + window.location.pathname;
+        } catch (err) {
+          if (err.code === 'auth/email-already-in-use') {
+            setError('Diese E-Mail ist bereits registriert. Nutze "Passwort vergessen" zum Zurücksetzen.');
+          } else {
+            setError('Registrierung fehlgeschlagen: ' + err.message);
+          }
+          setLoading(false);
+        }
+      };
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
+            <div className="flex items-center mb-6">
+              <button onClick={onBack} className="text-gray-600 hover:text-gray-800">
+                ← Zurück
+              </button>
+              <h2 className="text-base font-semibold ml-4">Passwort einrichten</h2>
+            </div>
+
+            {!inviteFound ? (
+              <div className="space-y-4">
+                <div className="bg-blue-50 p-4 rounded-lg text-sm text-blue-800">
+                  <strong>📧 Bist du eingeladen worden?</strong><br/>
+                  Gib deine E-Mail-Adresse ein, die dein Administrator verwendet hat.
+                </div>
+
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="E-Mail-Adresse"
+                  className="w-full border rounded-lg px-3 py-1 text-xs"
+                />
+
+                {error && <div className="bg-red-50 text-red-600 p-3 rounded text-sm">{error}</div>}
+
+                <button
+                  onClick={checkInvite}
+                  disabled={loading}
+                  className="w-full bg-purple-600 text-white py-2 rounded-lg font-semibold hover:bg-purple-700 disabled:bg-gray-400"
+                >
+                  {loading ? 'Prüfe...' : 'E-Mail prüfen'}
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleRegister} className="space-y-4">
+                <div className="bg-green-50 p-4 rounded-lg text-sm">
+                  <strong>✅ Einladung gefunden!</strong><br/>
+                  E-Mail: {email}<br/>
+                  Rolle: {inviteData.role === 'admin' ? 'Administrator' : inviteData.role === 'mitarbeiter' ? 'Mitarbeiter' : 'Gast'}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium mb-1">Dein Name</label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Vor- und Nachname"
+                    required
+                    className="w-full border rounded-lg px-3 py-1 text-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium mb-1">Passwort festlegen</label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Mindestens 6 Zeichen"
+                    required
+                    className="w-full border rounded-lg px-3 py-1 text-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium mb-1">Passwort bestätigen</label>
+                  <input
+                    type="password"
+                    value={confirm}
+                    onChange={(e) => setConfirm(e.target.value)}
+                    placeholder="Passwort wiederholen"
+                    required
+                    className="w-full border rounded-lg px-3 py-1 text-xs"
+                  />
+                </div>
+
+                {error && <div className="bg-red-50 text-red-600 p-3 rounded text-sm">{error}</div>}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 disabled:bg-gray-400"
+                >
+                  {loading ? 'Erstelle Account...' : 'Account erstellen'}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    // Password Reset Component
+    const PasswordReset = ({ onBack }) => {
+      const [email, setEmail] = useState('');
+      const [sent, setSent] = useState(false);
+      const [error, setError] = useState('');
+      const [loading, setLoading] = useState(false);
+
+      const handleReset = async (e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+
+        try {
+          await auth.sendPasswordResetEmail(email);
+          setSent(true);
+        } catch (err) {
+          if (err.code === 'auth/user-not-found') {
+            setError('Keine Account mit dieser E-Mail gefunden');
+          } else {
+            setError('Fehler: ' + err.message);
+          }
+        }
+        setLoading(false);
+      };
+
+      if (sent) {
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
+              <div className="text-5xl mb-4">✉️</div>
+              <h2 className="text-base font-semibold mb-4">E-Mail gesendet</h2>
+              <p className="text-gray-600 mb-4 text-sm">
+                Wir haben einen Link zum Zurücksetzen des Passworts an <strong>{email}</strong> gesendet.
+              </p>
+              <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-6 text-left">
+                <p className="text-sm text-gray-700 font-medium mb-2">So weiter:</p>
+                <p className="text-sm text-gray-600">1. E-Mail öffnen</p>
+                <p className="text-sm text-gray-600">2. Link klicken & Passwort setzen</p>
+                <p className="text-sm text-gray-600">3. Zurück zur App kommen & einloggen</p>
+              </div>
+              <p className="text-xs text-gray-400 mb-6">
+                Kein E-Mail erhalten? Prüfe deinen Spam-Ordner.
+              </p>
+              <button
+                onClick={onBack}
+                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700"
+              >
+                Zurück zum Login
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
+            <div className="flex items-center mb-6">
+              <button onClick={onBack} className="text-gray-600 hover:text-gray-800">
+                ← Zurück
+              </button>
+              <h2 className="text-base font-semibold ml-4">Passwort zurücksetzen</h2>
+            </div>
+
+            <div className="bg-blue-50 p-4 rounded-lg text-sm text-blue-900 mb-6">
+              <strong>Passwort vergessen oder Einladung erhalten?</strong><br/>
+              Gib deine E-Mail-Adresse ein. Du erhältst einen Link zum Passwort-Zurücksetzen.
+            </div>
+
+            <form onSubmit={handleReset} className="space-y-4">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="E-Mail-Adresse"
+                required
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-400"
+              />
+
+              {error && <div className="bg-red-50 text-red-600 p-3 rounded text-sm">{error}</div>}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400"
+              >
+                {loading ? 'Sende E-Mail...' : 'Link senden'}
+              </button>
+            </form>
+          </div>
+        </div>
+      );
+    };
+
+    // Admin Setup
+    const AdminSetup = () => {
+      const [name, setName] = useState('');
+      const [email, setEmail] = useState('');
+      const [password, setPassword] = useState('');
+      const [confirm, setConfirm] = useState('');
+      const [error, setError] = useState('');
+
+      const handleSetup = async (e) => {
+        e.preventDefault();
+        if (password !== confirm) {
+          setError('Passwörter stimmen nicht überein');
+          return;
+        }
+        if (password.length < 6) {
+          setError('Passwort muss mind. 6 Zeichen haben');
+          return;
+        }
+
+        try {
+          const userCred = await auth.createUserWithEmailAndPassword(email, password);
+          await db.collection('users').doc(userCred.user.uid).set({
+            name, email,
+            role: 'admin',
+            active: true,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          window.location.reload();
+        } catch (err) {
+          setError(err.message);
+        }
+      };
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
+            <div className="text-center mb-8">
+              <div className="text-7xl mb-4">🔐</div>
+              <h1 className="text-base font-semibold mb-2">Admin-Setup</h1>
+              <p className="text-gray-600">Ersten Administrator erstellen</p>
+            </div>
+
+            <form onSubmit={handleSetup} className="space-y-4">
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)} 
+                placeholder="Name" required className="w-full border rounded-lg px-3 py-1 text-xs" />
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} 
+                placeholder="E-Mail" required className="w-full border rounded-lg px-3 py-1 text-xs" />
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} 
+                placeholder="Passwort (mind. 6 Zeichen)" required className="w-full border rounded-lg px-3 py-1 text-xs" />
+              <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} 
+                placeholder="Passwort bestätigen" required className="w-full border rounded-lg px-3 py-1 text-xs" />
+              {error && <div className="bg-red-50 text-red-600 p-3 rounded text-sm">{error}</div>}
+              <button type="submit" className="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700">
+                Admin erstellen
+              </button>
+            </form>
+          </div>
+        </div>
+      );
+    };
+
+    // Invite Registration
+    const InviteRegistration = ({ inviteCode }) => {
+      const [inviteData, setInviteData] = useState(null);
+      const [name, setName] = useState('');
+      const [password, setPassword] = useState('');
+      const [confirm, setConfirm] = useState('');
+      const [error, setError] = useState('');
+      const [loading, setLoading] = useState(true);
+      const [registering, setRegistering] = useState(false);
+
+      useEffect(() => {
+        const loadInvite = async () => {
+          try {
+            const snapshot = await db.collection('invites')
+              .where('code', '==', inviteCode)
+              .where('used', '==', false)
+              .limit(1)
+              .get();
+            
+            if (!snapshot.empty) {
+              const data = snapshot.docs[0].data();
+              setInviteData({ ...data, docId: snapshot.docs[0].id });
+            } else {
+              setError('Einladung ungültig oder bereits verwendet');
+            }
+          } catch (err) {
+            console.error('Invite load error:', err);
+            setError('Fehler beim Laden der Einladung: ' + err.message);
+          }
+          setLoading(false);
+        };
+        loadInvite();
+      }, [inviteCode]);
+
+      const handleRegister = async (e) => {
+        e.preventDefault();
+
+        setRegistering(true);
+        setError('');
+
+        try {
+          // Send password reset email
+          await auth.sendPasswordResetEmail(inviteData.email);
+          
+          // Show success message
+          alert(`Perfekt!\n\nWir haben dir eine E-Mail an ${inviteData.email} gesendet.\n\nBitte:\n1. E-Mail öffnen\n2. "Passwort zurücksetzen" klicken\n3. Neues Passwort festlegen\n4. Auf der Login-Seite einloggen\n\nBeim Login wird dein Account automatisch erstellt!`);
+          
+          // Redirect to login page
+          window.location.href = window.location.origin + window.location.pathname;
+        } catch (err) {
+          console.error('Password reset error:', err);
+          setError('Fehler beim Senden der E-Mail: ' + err.message);
+          setRegistering(false);
+        }
+      };
+
+      if (loading) {
+        return <LoadingScreen />;
+      }
+
+      if (error && !inviteData) {
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl p-8 text-center max-w-md">
+              <div className="text-6xl mb-4">❌</div>
+              <h2 className="text-base font-semibold mb-2">Fehler</h2>
+              <p className="text-gray-600 mb-4">{error}</p>
+              <a href={window.location.origin + window.location.pathname} 
+                className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg">
+                Zur Startseite
+              </a>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
+            <div className="text-center mb-8">
+              <div className="text-7xl mb-4">🎉</div>
+              <h1 className="text-base font-semibold mb-2">Willkommen!</h1>
+              <p className="text-gray-600">Du wurdest zur Igelpflegestation eingeladen</p>
+            </div>
+
+            <div className="bg-blue-50 p-4 rounded-lg mb-6">
+              <p className="text-sm"><strong>E-Mail:</strong> {inviteData?.email}</p>
+              <p className="text-sm"><strong>Rolle:</strong> {
+                inviteData?.role === 'admin' ? 'Administrator' :
+                inviteData?.role === 'mitarbeiter' ? 'Mitarbeiter' :
+                'Gast (nur lesen)'
+              }</p>
+            </div>
+
+            <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg mb-4">
+              <p className="text-sm text-gray-800 font-semibold mb-2">🔑 So geht's:</p>
+              <p className="text-sm text-gray-700">
+                1. Klick "Weiter" unten<br/>
+                2. Du bekommst eine E-Mail zum Passwort-Zurücksetzen<br/>
+                3. Klick den Link in der E-Mail<br/>
+                4. Setze dein Passwort<br/>
+                5. Logge dich ein<br/>
+                6. Fertig! 🎉
+              </p>
+            </div>
+
+            <form onSubmit={handleRegister} className="space-y-4">
+              {error && <div className="bg-red-50 text-red-600 p-3 rounded text-sm">{error}</div>}
+              
+              <button 
+                type="submit" 
+                disabled={registering}
+                className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 disabled:bg-gray-400 transition-all">
+                {registering ? 'Sende E-Mail...' : 'Weiter →'}
+              </button>
+            </form>
+
+            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+              <p className="text-xs text-gray-600">
+                💡 Prüfe auch deinen Spam-Ordner, falls die E-Mail nicht ankommt!
+              </p>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Main App
+    const MainApp = ({ user, userData }) => {
+      const [hedgehogs, setHedgehogs] = useState([]);
+      const [users, setUsers] = useState([]);
+      const [view, setView] = useState('overview');
+      const [selected, setSelected] = useState(null);
+      const [search, setSearch] = useState('');
+      // const [filter, setFilter] = useState('alle'); // Removed - using statusFilter only
+      const [showUserMgmt, setShowUserMgmt] = useState(false);
+      const [showAddForm, setShowAddForm] = useState(false);
+      const [showProfile, setShowProfile] = useState(false);
+      const [showChangelog, setShowChangelog] = useState(false);
+      const [showCSVImport, setShowCSVImport] = useState(false);
+      const [sidebarOpen, setSidebarOpen] = useState(false);
+      const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'in_pflege', 'ueberwinterung', 'ausgewildert'
+      const [betreuerFilter, setBetreuerFilter] = useState([]); // Array of caretaker names
+      const [showBetreuerDialog, setShowBetreuerDialog] = useState(false);
+      const [showDatabaseDialog, setShowDatabaseDialog] = useState(false);
+
+      const isAdmin = userData?.role === 'admin';
+
+      // Browser Back/Forward support (Punkt 9 - simplified)
+      useEffect(() => {
+        const handleHashChange = () => {
+          const hash = window.location.hash;
+          if (!hash || hash === '#') {
+            setSelected(null);
+          }
+        };
+        
+        window.addEventListener('hashchange', handleHashChange);
+        return () => window.removeEventListener('hashchange', handleHashChange);
+      }, []);
+
+      // Load hedgehogs
+      useEffect(() => {
+        const unsubscribe = db.collection('hedgehogs')
+          .orderBy('aufnahmedatum', 'desc')
+          .onSnapshot(snapshot => {
+            setHedgehogs(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+          });
+        return () => unsubscribe();
+      }, []);
+
+      // Load users (admin only)
+      useEffect(() => {
+        if (!isAdmin) return;
+        const unsubscribe = db.collection('users').onSnapshot(snapshot => {
+          setUsers(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        });
+        return () => unsubscribe();
+      }, [isAdmin]);
+
+      const statusOptions = [
+        { value: 'aufnahme', label: 'Aufnahme', color: 'bg-red-100 text-red-800' },
+        { value: 'pflege', label: 'In Pflege', color: 'bg-blue-100 text-blue-800' },
+        { value: 'ueberwinterung', label: 'Überwinterung', color: 'bg-blue-200 text-blue-900' },
+        { value: 'auswilderung_bereit', label: 'Auswilderungsbereit', color: 'bg-blue-100 text-blue-800' },
+        { value: 'ausgewildert', label: 'Ausgewildert', color: 'bg-gray-100 text-gray-800' },
+        { value: 'verstorben', label: 'Verstorben', color: 'bg-black text-white' }
+      ];
+
+      const getStatus = (val) => statusOptions.find(s => s.value === val) || {};
+
+      const filteredHedgehogs = hedgehogs.filter(h => {
+        // Status filter from clickable cards
+        if (statusFilter !== 'all' && h.status !== statusFilter) {
+          return false;
+        }
+        
+        // Betreuer filter (multiple select)
+        if (betreuerFilter.length > 0 && !betreuerFilter.includes(h.betreuer)) {
+          return false;
+        }
+        
+        // Search filter
+        if (search.trim()) {
+          const s = search.toLowerCase();
+          return (
+            (h.name || '').toLowerCase().includes(s) ||
+            (h.igelId || '').toLowerCase().includes(s) ||
+            (h.fundort || '').toLowerCase().includes(s) ||
+            (h.finderName || '').toLowerCase().includes(s)
+          );
+        }
+        
+        return true;
+      });
+
+      if (selected) {
+        return <HedgehogDetail 
+          hedgehog={selected} 
+          userData={userData}
+          users={users}
+          onBack={() => { 
+            setSelected(null); 
+            window.history.pushState({}, '', window.location.pathname);
+          }}
+          onUpdate={(updated) => setSelected(updated)}
+        />;
+      }
+
+      return (
+        <div className="min-h-screen bg-gray-50">
+          {/* Sidebar Overlay */}
+          <div 
+            className={`sidebar-overlay ${sidebarOpen ? 'visible' : ''}`}
+            onClick={() => setSidebarOpen(false)}
+          ></div>
+          
+          {/* Sidebar */}
+          <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+            {/* Profile Section */}
+            <div 
+              className="p-4 border-b border-gray-200 cursor-pointer hover:bg-gray-50 transition-all"
+              onClick={() => { setShowProfile(true); setSidebarOpen(false); }}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-lg shadow-sm">
+                  {userData?.name?.[0] || '?'}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-xs text-gray-900 truncate">
+                    {userData?.name || 'Benutzer'}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {isAdmin ? '👑 Administrator' : 'Mitarbeiter'}
+                  </div>
+                </div>
+                <div className="text-gray-400">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M9 18l6-6-6-6"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            
+            {/* App Title */}
+            <div className="px-3 py-1 text-xs">
+              <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                IGELPFLEGE PRO
+              </div>
+            </div>
+            
+            {/* Menu Items */}
+            <div className="py-2">
+              {isAdmin && (
+                <div className="sidebar-item" onClick={() => { setShowDatabaseDialog(true); setSidebarOpen(false); }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
+                    <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                  </svg>
+                  <span>Datenbank</span>
+                </div>
+              )}
+              
+              {isAdmin && (
+                <div className="sidebar-item" onClick={() => { setShowUserMgmt(true); setSidebarOpen(false); }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                  <span>Benutzerverwaltung</span>
+                </div>
+              )}
+              
+              <div className="sidebar-item" onClick={() => { setShowChangelog(true); setSidebarOpen(false); }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 16v-4"/>
+                  <path d="M12 8h.01"/>
+                </svg>
+                <span>Info & Changelog</span>
+              </div>
+              
+              <div className="border-t border-gray-200 my-2"></div>
+              
+              <div className="sidebar-item text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => auth.signOut()}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                <span>Abmelden</span>
+              </div>
+            </div>
+            
+            {/* Version - bottom */}
+            <div className="px-3 py-2 border-t border-gray-200 mt-auto">
+              <div className="text-[10px] text-gray-400 text-center">
+                Version 1.8.19
+              </div>
+            </div>
+          </div>
+          
+          {/* Header */}
+          <div className="bg-blue-600/90 backdrop-blur-sm text-white px-3 py-2.5 sticky top-0 z-40 shadow-sm">
+            <div className="flex items-center justify-between">
+              {/* Hamburger */}
+              <button 
+                onClick={() => setSidebarOpen(true)}
+                className="p-2 hover:bg-white/10 rounded-lg transition-all"
+                title="Menü"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M3 12h18M3 6h18M3 18h18"/>
+                </svg>
+              </button>
+              
+              {/* App Name - Center */}
+              <div className="absolute left-1/2 transform -translate-x-1/2">
+                <h1 className="text-xs font-semibold tracking-wide">
+                  IGELPFLEGE PRO
+                </h1>
+              </div>
+              
+              {/* Profile Avatar */}
+              <button
+                onClick={() => { setShowProfile(true); }}
+                className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center text-xs font-semibold transition-all"
+                title="Profil"
+              >
+                {userData?.name?.[0] || '?'}
+              </button>
+            </div>
+          </div>
+
+          {/* Dashboard Header */}
+          <div className="px-3 pt-3 pb-1">
+            <h2 className="text-lg font-bold text-gray-900">Dashboard</h2>
+          </div>
+
+          {/* Stats - Compact */}
+          <div className="p-3 fade-in">
+            <div className="grid grid-cols-2 gap-1.5">
+              {/* Alle */}
+              <button onClick={() => setStatusFilter('all')} 
+                className={`stat-card text-left transition-all ${statusFilter === 'all' ? 'ring-2 ring-blue-500' : 'hover:shadow-md'}`}>
+                <div className="flex items-center gap-2 text-gray-500 text-[10px] font-medium mb-1">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="3" width="7" height="7"/>
+                    <rect x="14" y="3" width="7" height="7"/>
+                    <rect x="14" y="14" width="7" height="7"/>
+                    <rect x="3" y="14" width="7" height="7"/>
+                  </svg>
+                  <span>Alle</span>
+                </div>
+                <div className="text-base font-bold text-gray-900">{hedgehogs.length}</div>
+              </button>
+
+              {/* Aufnahme */}
+              <button onClick={() => setStatusFilter('aufnahme')} 
+                className={`stat-card text-left transition-all ${statusFilter === 'aufnahme' ? 'ring-2 ring-red-500' : 'hover:shadow-md'}`}>
+                <div className="flex items-center gap-2 text-red-600 text-[10px] font-medium mb-1">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  </svg>
+                  <span>Aufnahme</span>
+                </div>
+                <div className="text-base font-bold text-gray-900">{hedgehogs.filter(h => h.status === 'aufnahme').length}</div>
+              </button>
+
+              {/* In Pflege */}
+              <button onClick={() => setStatusFilter('pflege')} 
+                className={`stat-card text-left transition-all ${statusFilter === 'pflege' ? 'ring-2 ring-blue-500' : 'hover:shadow-md'}`}>
+                <div className="flex items-center gap-2 text-blue-600 text-[10px] font-medium mb-1">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                  </svg>
+                  <span>In Pflege</span>
+                </div>
+                <div className="text-base font-bold text-gray-900">{hedgehogs.filter(h => h.status === 'pflege').length}</div>
+              </button>
+
+              {/* Überwinterung */}
+              <button onClick={() => setStatusFilter('ueberwinterung')} 
+                className={`stat-card text-left transition-all ${statusFilter === 'ueberwinterung' ? 'ring-2 ring-blue-500' : 'hover:shadow-md'}`}>
+                <div className="flex items-center gap-2 text-blue-700 text-[10px] font-medium mb-1">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z"/>
+                  </svg>
+                  <span>Überwinterung</span>
+                </div>
+                <div className="text-base font-bold text-gray-900">{hedgehogs.filter(h => h.status === 'ueberwinterung').length}</div>
+              </button>
+
+              {/* Auswilderungsbereit */}
+              <button onClick={() => setStatusFilter('auswilderung_bereit')} 
+                className={`stat-card text-left transition-all ${statusFilter === 'auswilderung_bereit' ? 'ring-2 ring-green-500' : 'hover:shadow-md'}`}>
+                <div className="flex items-center gap-2 text-green-600 text-[10px] font-medium mb-1">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  <span>Auswilderungsbereit</span>
+                </div>
+                <div className="text-base font-bold text-gray-900">{hedgehogs.filter(h => h.status === 'auswilderung_bereit').length}</div>
+              </button>
+
+              {/* Ausgewildert */}
+              <button onClick={() => setStatusFilter('ausgewildert')} 
+                className={`stat-card text-left transition-all ${statusFilter === 'ausgewildert' ? 'ring-2 ring-gray-500' : 'hover:shadow-md'}`}>
+                <div className="flex items-center gap-2 text-gray-600 text-[10px] font-medium mb-1">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  <span>Ausgewildert</span>
+                </div>
+                <div className="text-base font-bold text-gray-900">{hedgehogs.filter(h => h.status === 'ausgewildert').length}</div>
+              </button>
+
+              {/* Verstorben */}
+              <button onClick={() => setStatusFilter('verstorben')} 
+                className={`stat-card text-left transition-all ${statusFilter === 'verstorben' ? 'ring-2 ring-gray-900' : 'hover:shadow-md'}`}>
+                <div className="flex items-center gap-2 text-gray-800 text-[10px] font-medium mb-1">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                  <span>Verstorben</span>
+                </div>
+                <div className="text-base font-bold text-gray-900">{hedgehogs.filter(h => h.status === 'verstorben').length}</div>
+              </button>
+
+              {/* Neuer Igel */}
+              <button onClick={() => setShowAddForm(true)} 
+                className="stat-card text-left hover:shadow-md transition-all bg-blue-600 text-white border-blue-700">
+                <div className="flex items-center gap-2 text-white/80 text-[10px] font-medium mb-1">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M12 5v14M5 12h14"/>
+                  </svg>
+                  <span>Neuer Igel</span>
+                </div>
+                <div className="text-base font-semibold text-white">Erfassen</div>
+              </button>
+            </div>
+          </div>
+
+          {/* Section: Igelsuche */}
+          <div className="px-3 pb-3 space-y-2">
+            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-1 mb-2">Igelsuche</h3>
+            <div className="card p-3">
+              <div className="relative">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Igel suchen..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Betreuer Filter */}
+            <button 
+              onClick={() => setShowBetreuerDialog(true)}
+              className={`card p-3 w-full text-left hover:shadow-md transition-all ${betreuerFilter.length > 0 ? 'ring-2 ring-purple-500' : ''}`}>
+              <div className="flex items-center gap-2 text-gray-500 text-[10px] font-medium mb-1">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span>Betreuer</span>
+              </div>
+              <div className="text-base font-bold text-gray-900">
+                {betreuerFilter.length > 0 ? `${betreuerFilter.length} ausgewählt` : `${users.filter(u => u.active && !u.deleted).length} registriert`}
+              </div>
+              {betreuerFilter.length > 0 && (
+                <div className="text-[10px] text-purple-600 mt-1 truncate">
+                  {betreuerFilter.join(', ')}
+                </div>
+              )}
+            </button>
+          </div>
+
+          {/* Section: Igelbestand */}
+          <div className="px-3 pb-20 fade-in">
+            <h3 className="text-base font-bold text-gray-900 px-1 mb-3">Igelbestand ({filteredHedgehogs.length})</h3>
+            <div className="space-y-2">
+            {filteredHedgehogs.map(h => (
+              <div key={h.id} onClick={() => { 
+                setSelected(h);
+                window.history.pushState({}, '', `#igel-${h.id}`);
+              }}
+                className="bg-white border border-gray-200 rounded-lg p-3 cursor-pointer hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="font-bold text-sm text-gray-900">{h.name || 'Unbenannt'}</h3>
+                  <span className="text-[10px] text-gray-500 font-mono">{h.igelId}</span>
+                </div>
+                <div className="space-y-1 text-xs text-gray-600">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Finder:</span>
+                    <span className="font-medium text-gray-900">{h.finderName || '-'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Fundort:</span>
+                    <span className="font-medium text-gray-900 truncate ml-2">{h.fundort || '-'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Betreuer:</span>
+                    <span className="font-medium text-gray-900">{h.betreuer || '-'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Geschlecht:</span>
+                    <span className="font-medium text-gray-900">{h.geschlecht || '-'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Alter:</span>
+                    <span className="font-medium text-gray-900">{h.alterSchaetzung || '-'}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {filteredHedgehogs.length === 0 && (
+              <div className="text-center py-16 text-gray-500">
+                <div className="text-7xl mb-4">🦔</div>
+                <p className="text-xl font-semibold mb-2">Keine Igel gefunden</p>
+                <p className="text-sm">Füge deinen ersten Igel hinzu oder ändere die Filter</p>
+              </div>
+            )}
+            </div>
+          </div>
+
+          {/* User Management Modal */}
+          {showUserMgmt && isAdmin && (
+            <UserManagement users={users} onClose={() => setShowUserMgmt(false)} />
+          )}
+
+          {/* User Profile Modal */}
+          {showProfile && (
+            <UserProfile userData={userData} onClose={() => setShowProfile(false)} />
+          )}
+
+          {/* Changelog Modal */}
+          {showChangelog && (
+            <Changelog onClose={() => setShowChangelog(false)} />
+          )}
+
+          {/* Add Form */}
+          {showAddForm && (
+            <AddHedgehogForm 
+              userData={userData} 
+              users={users}
+              onClose={() => setShowAddForm(false)} 
+            />
+          )}
+
+          {showCSVImport && (
+            <CSVImportDialog 
+              userData={userData}
+              onClose={() => setShowCSVImport(false)} 
+            />
+          )}
+
+          {showBetreuerDialog && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onClick={() => setShowBetreuerDialog(false)}>
+              <div className="bg-white rounded-2xl w-full max-w-md shadow-xl" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center justify-between p-5 border-b border-gray-100">
+                  <div className="flex items-center gap-3">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-700">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                      <circle cx="9" cy="7" r="4"/>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    <h2 className="text-base font-semibold text-gray-900">Betreuer filtern</h2>
+                  </div>
+                  <button onClick={() => setShowBetreuerDialog(false)} className="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-all">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </div>
+                <div className="p-5 space-y-2 max-h-80 overflow-y-auto">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs text-gray-500">
+                      {betreuerFilter.length > 0 ? `${betreuerFilter.length} ausgewählt` : 'Alle Betreuer'}
+                    </span>
+                    {betreuerFilter.length > 0 && (
+                      <button
+                        onClick={() => setBetreuerFilter([])}
+                        className="text-xs text-gray-500 hover:text-gray-700 underline">
+                        Alle abwählen
+                      </button>
+                    )}
+                  </div>
+                  {users.filter(u => u.active && !u.deleted).map(user => (
+                    <label
+                      key={user.id}
+                      className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:bg-gray-50 cursor-pointer transition-all">
+                      <input
+                        type="checkbox"
+                        checked={betreuerFilter.includes(user.name)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setBetreuerFilter([...betreuerFilter, user.name]);
+                          } else {
+                            setBetreuerFilter(betreuerFilter.filter(n => n !== user.name));
+                          }
+                        }}
+                        className="w-4 h-4"
+                      />
+                      <div className="flex-1">
+                        <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                        <div className="text-xs text-gray-400">{user.email}</div>
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {hedgehogs.filter(h => h.betreuer === user.name).length} Igel
+                      </div>
+                    </label>
+                  ))}
+                </div>
+                <div className="p-5 border-t border-gray-100">
+                  <button
+                    onClick={() => setShowBetreuerDialog(false)}
+                    className="w-full bg-gray-900 hover:bg-gray-700 text-white py-3 rounded-xl text-sm font-medium transition-all">
+                    Anwenden
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Database Dialog */}
+          {showDatabaseDialog && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onClick={() => setShowDatabaseDialog(false)}>
+              <div className="bg-white rounded-2xl w-full max-w-md shadow-xl" onClick={(e) => e.stopPropagation()}>
+
+                {/* Header – same as UserManagement */}
+                <div className="flex items-center justify-between p-5 border-b border-gray-100">
+                  <div className="flex items-center gap-3">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-700">
+                      <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                      <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                      <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                    </svg>
+                    <h2 className="text-base font-semibold text-gray-900">Datenbank</h2>
+                  </div>
+                  <button onClick={() => setShowDatabaseDialog(false)} className="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-all">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </div>
+
+                <div className="p-5 space-y-3">
+                  <p className="text-xs text-gray-500">Igeldaten als CSV-Datei exportieren oder importieren.</p>
+                  <button
+                    onClick={() => { exportToCSV(hedgehogs); setShowDatabaseDialog(false); }}
+                    className="w-full bg-gray-900 hover:bg-gray-700 text-white py-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    CSV exportieren
+                  </button>
+                  <button
+                    onClick={() => { setShowCSVImport(true); setShowDatabaseDialog(false); }}
+                    className="w-full border border-gray-200 hover:bg-gray-50 text-gray-700 py-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="17 8 12 3 7 8"/>
+                      <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    CSV importieren
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+
+    // CSV Import Dialog (Punkt 8)
+    const CSVImportDialog = ({ userData, onClose }) => {
+      const [file, setFile] = useState(null);
+      const [preview, setPreview] = useState(null);
+      const [importing, setImporting] = useState(false);
+      const [result, setResult] = useState(null);
+
+      const handleFileSelect = (e) => {
+        const selectedFile = e.target.files[0];
+        if (!selectedFile) return;
+        if (!selectedFile.name.endsWith('.csv')) {
+          alert('Bitte CSV-Datei auswählen');
+          return;
+        }
+        setFile(selectedFile);
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const csvText = event.target.result;
+          const parsed = parseCSV(csvText);
+          setPreview(parsed);
+        };
+        reader.readAsText(selectedFile);
+      };
+
+      const handleImport = async () => {
+        if (!preview || !preview.success) return;
+        if (!window.confirm(`${preview.data.length} Igel importieren?`)) return;
+
+        setImporting(true);
+        let imported = 0;
+        let errors = 0;
+
+        for (const hedgehog of preview.data) {
+          try {
+            const existing = await db.collection('hedgehogs').where('igelId', '==', hedgehog.igelId).get();
+            const data = {
+              ...hedgehog,
+              erstelltVon: userData.name,
+              erstelltVonId: 'import',
+              erstelltAm: firebase.firestore.FieldValue.serverTimestamp(),
+              zuletztBearbeitetVon: userData.name,
+              zuletztBearbeitetAm: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            if (!existing.empty) {
+              await db.collection('hedgehogs').doc(existing.docs[0].id).update(data);
+            } else {
+              await db.collection('hedgehogs').add(data);
+            }
+            imported++;
+          } catch (err) {
+            errors++;
+          }
+        }
+
+        setResult({ imported, errors });
+        setImporting(false);
+      };
+
+      return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b px-3 py-2 flex justify-between items-center">
+              <h2 className="text-lg font-semibold">CSV Import</h2>
+              <button onClick={onClose} className="text-2xl text-gray-400 hover:text-gray-600">×</button>
+            </div>
+
+            <div className="p-4 space-y-3">
+              {!result ? (
+                <>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <p className="text-xs text-blue-800">
+                      <strong>Format:</strong> Igel-ID, Name, Status, Aufnahmedatum, Geschlecht
+                    </p>
+                  </div>
+
+                  <input
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileSelect}
+                    className="w-full border border-gray-300 rounded-lg p-1 text-xs"
+                  />
+
+                  {preview && (
+                    <div className="border rounded-lg p-3">
+                      {preview.success ? (
+                        <div className="space-y-2">
+                          <div className="text-sm text-green-600 font-medium">
+                            ✅ {preview.data.length} Igel bereit
+                          </div>
+                          {preview.error && (
+                            <div className="bg-yellow-50 p-2 rounded text-xs text-yellow-800">
+                              {preview.error}
+                            </div>
+                          )}
+                          <div className="flex gap-2">
+                            <button
+                              onClick={handleImport}
+                              disabled={importing}
+                              className="flex-1 bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-medium hover:bg-blue-700 disabled:bg-gray-400">
+                              {importing ? 'Importiere...' : 'Importieren'}
+                            </button>
+                            <button
+                              onClick={() => { setFile(null); setPreview(null); }}
+                              className="px-3 py-2 border rounded-lg text-sm hover:bg-gray-50">
+                              Abbrechen
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <div className="text-sm text-red-600 font-medium">❌ Fehler</div>
+                          <div className="bg-red-50 p-2 rounded text-xs text-red-800">
+                            {preview.error}
+                          </div>
+                          <button
+                            onClick={() => { setFile(null); setPreview(null); }}
+                            className="w-full px-3 py-2 border rounded-lg text-sm hover:bg-gray-50">
+                            Andere Datei wählen
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="text-center py-6">
+                  <div className="text-4xl mb-3">✅</div>
+                  <h3 className="text-base font-semibold mb-2">Import abgeschlossen</h3>
+                  <p className="text-sm text-gray-600">
+                    {result.imported} Igel importiert
+                    {result.errors > 0 && ` • ${result.errors} Fehler`}
+                  </p>
+                  <button
+                    onClick={onClose}
+                    className="mt-4 w-full bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-medium">
+                    Schließen
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Changelog Component
+    const Changelog = ({ onClose }) => {
+      return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b p-4 flex justify-between">
+              <h2 className="text-base font-semibold">ℹ️ Über die App</h2>
+              <button onClick={onClose} className="text-2xl">✕</button>
+            </div>
+
+            <div className="p-4 space-y-3">
+              {/* Version Info */}
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h3 className="font-semibold text-base mb-2">🦔 Igelpflegestation Pro</h3>
+                <p className="text-sm text-gray-700 font-medium">Version 1.8.19</p>
+                <p className="text-xs text-gray-500 mt-1">Cloud-basierte Tierpflege-Software</p>
+              </div>
+
+              {/* Changelog */}
+              <div>
+                <h3 className="font-semibold text-base mb-3">📝 Änderungsprotokoll</h3>
+                
+                {/* v1.8.19 */}
+                <div className="mb-4 border-l-4 border-blue-500 pl-4">
+                  <div className="font-semibold text-xs text-blue-600">Version 1.8.19 (Minimalistisch)</div>
+                  <ul className="text-xs text-gray-700 mt-2 space-y-1">
+                    <li>• 📐 Noch kleinere Schriftgrößen überall</li>
+                    <li>• ⚫ Schwarz-Weiß SVG Icons statt Emojis</li>
+                    <li>• 🔧 Sidebar-Menü nun voll funktional</li>
+                    <li>• 🎯 Minimaler Header (nur Hamburger + Name + Profil)</li>
+                    <li>• 📦 Kleinere Buttons (Neuer Igel, CSV etc.)</li>
+                    <li>• 🎨 Transparentes Blau im Banner</li>
+                  </ul>
+                  <div className="text-xs text-gray-500 mt-1">Datum: {new Date().toLocaleDateString('de-DE')}</div>
+                </div>
+
+                {/* v1.4.2 */}
+                <div className="mb-4 border-l-4 border-gray-300 pl-4">
+                  <div className="font-semibold text-xs text-gray-600">Version 1.4.2 (Design & Sidebar)</div>
+                  <ul className="text-xs text-gray-700 mt-2 space-y-1">
+                    <li>• 🎨 Professionelleres, minimalistisches Design</li>
+                    <li>• 👤 Profilbild in Sidebar</li>
+                  </ul>
+                  <div className="text-xs text-gray-500 mt-1">Datum: {new Date().toLocaleDateString('de-DE')}</div>
+                </div>
+
+                {/* v1.4.1 */}
+                <div className="mb-4 border-l-4 border-gray-300 pl-4">
+                  <div className="font-semibold text-sm text-gray-600">Version 1.4.1 (Sidebar)</div>
+                  <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                    <li>• 🔧 Sidebar-Navigation implementiert</li>
+                    <li>• 🐛 Self-closing div Bug behoben</li>
+                  </ul>
+                  <div className="text-xs text-gray-500 mt-2">Datum: {new Date().toLocaleDateString('de-DE')}</div>
+                </div>
+                
+                {/* v1.4.0 */}
+                <div className="mb-4 border-l-4 border-gray-300 pl-4">
+                  <div className="font-semibold text-sm text-gray-600">Version 1.4.0 (Features & Design)</div>
+                  <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                    <li>• 🐛 Gelöschte User können sich neu registrieren</li>
+                    <li>• 📝 Changelog Version korrigiert</li>
+                  </ul>
+                </div>
+
+                {/* v1.3 */}
+                <div className="mb-4 border-l-4 border-indigo-500 pl-4">
+                  <div className="font-semibold text-indigo-600">Version 1.3 (UI-Redesign Komplett)</div>
+                  <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                    <li>• 🎨 Moderne CSS mit Variablen & Animationen</li>
+                    <li>• ✨ Gradient-Header & verbesserte Navigation</li>
+                    <li>• 📊 Modernisierte Statistik-Cards mit Icons</li>
+                    <li>• 🦔 Neue Igel-Cards mit besserer Übersicht</li>
+                    <li>• 📝 Modernisierte Formulare & Inputs</li>
+                    <li>• 🔘 Verbesserte Buttons mit Hover-Effekten</li>
+                    <li>• 👥 Modernisierte Benutzerverwaltung</li>
+                    <li>• 🎯 Detail-Views mit besserem Design</li>
+                    <li>• 💫 Smooth Transitions überall</li>
+                  </ul>
+                </div>
+
+                {/* v1.2.3.1 */}
+                <div className="mb-4 border-l-4 border-red-500 pl-4">
+                  <div className="font-semibold text-red-600">Version 1.2.3.1 (Hotfix)</div>
+                  <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                    <li>• 🐛 KRITISCHER FIX: serverTimestamp() in Arrays</li>
+                    <li>• Igel-Speichern funktioniert jetzt!</li>
+                  </ul>
+                </div>
+
+                {/* v1.2.3 */}
+                <div className="mb-4 border-l-4 border-purple-500 pl-4">
+                  <div className="font-semibold text-purple-600">Version 1.2.3</div>
+                  <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                    <li>• Igel-Speichern Bugfix</li>
+                    <li>• Pflichtfeld-Validierung</li>
+                    <li>• Fehleranzeigen in Formularen</li>
+                  </ul>
+                </div>
+
+                {/* v1.2.2 */}
+                <div className="mb-4 border-l-4 border-blue-500 pl-4">
+                  <div className="font-semibold text-blue-600">Version 1.2.2</div>
+                  <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                    <li>• Admin kann User löschen</li>
+                    <li>• Verbesserte User-Sperrung</li>
+                    <li>• In-App Benachrichtigungen</li>
+                    <li>• Changelog/About-Seite</li>
+                  </ul>
+                </div>
+
+                {/* v1.2.1 */}
+                <div className="mb-4 border-l-4 border-blue-500 pl-4">
+                  <div className="font-semibold text-blue-600">Version 1.2.1</div>
+                  <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                    <li>• Saubere URL nach Registrierung</li>
+                    <li>• Keine Redirect-Loops</li>
+                  </ul>
+                </div>
+
+                {/* v1.2 */}
+                <div className="mb-4 border-l-4 border-purple-500 pl-4">
+                  <div className="font-semibold text-purple-600">Version 1.2</div>
+                  <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                    <li>• "Passwort einrichten" Flow</li>
+                    <li>• "Passwort vergessen" Funktion</li>
+                    <li>• E-Mail Einladungs-Prüfung</li>
+                  </ul>
+                </div>
+
+                {/* v1.1 */}
+                <div className="mb-4 border-l-4 border-orange-500 pl-4">
+                  <div className="font-semibold text-blue-600">Version 1.1</div>
+                  <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                    <li>• WhatsApp & E-Mail Share</li>
+                    <li>• User-Profil mit Bearbeitung</li>
+                    <li>• Admin kann Rollen ändern</li>
+                    <li>• Eingeladene setzen eigenen Namen</li>
+                  </ul>
+                </div>
+
+                {/* v1.0 */}
+                <div className="border-l-4 border-gray-500 pl-4">
+                  <div className="font-semibold text-gray-600">Version 1.0 (Phase 1)</div>
+                  <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                    <li>• Firebase Cloud-Synchronisation</li>
+                    <li>• Benutzerverwaltung & Einladungen</li>
+                    <li>• Audit-Trail (wer/wann)</li>
+                    <li>• Standardansprechpartner</li>
+                    <li>• Igel-Verwaltung komplett</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Credits */}
+              <div className="bg-gray-50 p-4 rounded-lg text-center">
+                <p className="text-xs text-gray-600">
+                  Entwickelt mit ❤️ für Igelpflegestationen<br/>
+                  Powered by Firebase & React
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // User Profile Component
+    const UserProfile = ({ userData, onClose }) => {
+      const [name, setName] = useState(userData.name);
+      const [currentPassword, setCurrentPassword] = useState('');
+      const [newPassword, setNewPassword] = useState('');
+      const [confirmPassword, setConfirmPassword] = useState('');
+      const [error, setError] = useState('');
+      const [success, setSuccess] = useState('');
+      const [saving, setSaving] = useState(false);
+
+      const handleSaveName = async () => {
+        if (!name.trim()) {
+          setError('Name darf nicht leer sein');
+          return;
+        }
+
+        setSaving(true);
+        setError('');
+        try {
+          await db.collection('users').doc(auth.currentUser.uid).update({
+            name: name.trim()
+          });
+          setSuccess('Name gespeichert!');
+          setTimeout(() => setSuccess(''), 3000);
+        } catch (err) {
+          setError('Fehler beim Speichern: ' + err.message);
+        }
+        setSaving(false);
+      };
+
+      const handleChangePassword = async () => {
+        setError('');
+        setSuccess('');
+
+        if (!currentPassword || !newPassword || !confirmPassword) {
+          setError('Bitte alle Felder ausfüllen');
+          return;
+        }
+
+        if (newPassword !== confirmPassword) {
+          setError('Neue Passwörter stimmen nicht überein');
+          return;
+        }
+
+        if (newPassword.length < 6) {
+          setError('Neues Passwort muss mind. 6 Zeichen haben');
+          return;
+        }
+
+        setSaving(true);
+
+        try {
+          // Re-authenticate user
+          const credential = firebase.auth.EmailAuthProvider.credential(
+            auth.currentUser.email,
+            currentPassword
+          );
+          await auth.currentUser.reauthenticateWithCredential(credential);
+
+          // Update password
+          await auth.currentUser.updatePassword(newPassword);
+
+          setSuccess('Passwort erfolgreich geändert!');
+          setCurrentPassword('');
+          setNewPassword('');
+          setConfirmPassword('');
+          setTimeout(() => setSuccess(''), 3000);
+        } catch (err) {
+          if (err.code === 'auth/wrong-password') {
+            setError('Aktuelles Passwort ist falsch');
+          } else {
+            setError('Fehler: ' + err.message);
+          }
+        }
+        setSaving(false);
+      };
+
+      return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto shadow-xl">
+
+            {/* Header – identical to UserManagement */}
+            <div className="flex items-center justify-between p-5 border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-700">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <h2 className="text-base font-semibold text-gray-900">Mein Profil</h2>
+              </div>
+              <button onClick={onClose} className="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-all">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+
+            <div className="p-5 space-y-5">
+
+              {/* Account Info */}
+              <div className="bg-gray-50 rounded-xl p-4">
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Account</p>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-500">E-Mail</span>
+                    <span className="text-sm font-medium text-gray-900">{userData.email}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-500">Rolle</span>
+                    <span className="text-sm font-medium text-gray-900">{
+                      userData.role === 'admin' ? 'Administrator' :
+                      userData.role === 'mitarbeiter' ? 'Mitarbeiter' : 'Gast'
+                    }</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-gray-100"></div>
+
+              {/* Name */}
+              <div>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Name ändern</p>
+                <div className="space-y-3">
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400"
+                  />
+                  <button
+                    onClick={handleSaveName}
+                    disabled={saving || name === userData.name}
+                    className="w-full bg-gray-900 text-white py-3 rounded-xl text-sm font-medium hover:bg-gray-700 disabled:bg-gray-200 disabled:text-gray-400 transition-all"
+                  >
+                    {saving ? 'Speichert...' : 'Name speichern'}
+                  </button>
+                </div>
+              </div>
+
+              <div className="border-t border-gray-100"></div>
+
+              {/* Password */}
+              <div>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Passwort ändern</p>
+                <div className="space-y-3">
+                  <input
+                    type="password"
+                    placeholder="Aktuelles Passwort"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400"
+                  />
+                  <input
+                    type="password"
+                    placeholder="Neues Passwort (mind. 6 Zeichen)"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400"
+                  />
+                  <input
+                    type="password"
+                    placeholder="Neues Passwort bestätigen"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400"
+                  />
+                  <button
+                    onClick={handleChangePassword}
+                    disabled={saving}
+                    className="w-full bg-gray-900 text-white py-3 rounded-xl text-sm font-medium hover:bg-gray-700 disabled:bg-gray-200 disabled:text-gray-400 transition-all"
+                  >
+                    {saving ? 'Ändert...' : 'Passwort ändern'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Messages */}
+              {error && (
+                <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm">
+                  {error}
+                </div>
+              )}
+              {success && (
+                <div className="bg-gray-50 text-gray-700 p-3 rounded-xl text-sm border border-gray-200">
+                  ✓ {success}
+                </div>
+              )}
+
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // User Management
+    const UserManagement = ({ users, onClose }) => {
+      const [showInvite, setShowInvite] = useState(false);
+      const [email, setEmail] = useState('');
+      const [userName, setUserName] = useState('');
+      const [role, setRole] = useState('mitarbeiter');
+      const [link, setLink] = useState('');
+      const [loading, setLoading] = useState(false);
+      const [roleModal, setRoleModal] = useState(null); // { userId, currentRole, name }
+
+      const generateInvite = async () => {
+        if (!userName || !email) {
+          alert('Bitte Name und E-Mail eingeben');
+          return;
+        }
+        
+        setLoading(true);
+        try {
+          const code = Math.random().toString(36).substring(2, 15);
+          await db.collection('invites').add({
+            code, 
+            email, 
+            userName,
+            role,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            createdBy: auth.currentUser.uid,
+            used: false
+          });
+          // Link to login page (not invite page)
+          const inviteLink = `${window.location.origin}${window.location.pathname}`;
+          setLink(inviteLink);
+        } catch (err) {
+          alert('Fehler beim Erstellen: ' + err.message);
+        }
+        setLoading(false);
+      };
+
+      const shareViaWhatsApp = () => {
+        const text = `Du wurdest zur Igelpflegestation eingeladen.\n\nÖffne diesen Link:\n${link}\n\nKlicke auf "Passwort vergessen oder Einladung erhalten" und gib diese E-Mail ein:\n${email}\n\nDu erhältst dann eine E-Mail zum Passwort-Zurücksetzen.`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+      };
+
+      const shareViaEmail = () => {
+        const subject = 'Einladung zur Igelpflegestation';
+        const body = `Hallo,\n\ndu wurdest zur Igelpflegestation eingeladen.\n\nÖffne diesen Link:\n${link}\n\nKlicke auf "Passwort vergessen oder Einladung erhalten" und gib deine E-Mail ein:\n${email}\n\nDu erhältst dann eine E-Mail zum Passwort-Zurücksetzen. Nach dem Setzen des Passworts wirst du automatisch eingeloggt.\n\nViele Grüße\nDein Igelpflege-Team`;
+        window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      };
+
+      const changeRole = (userId, currentRole, userName) => {
+        setRoleModal({ userId, currentRole, selectedRole: currentRole, userName });
+      };
+
+      const saveRole = async () => {
+        if (!roleModal) return;
+        try {
+          await db.collection('users').doc(roleModal.userId).update({ role: roleModal.selectedRole });
+        } catch (err) {
+          alert('Fehler: ' + err.message);
+        }
+        setRoleModal(null);
+      };
+
+      const deleteUser = async (userId, userName) => {
+        if (!window.confirm(`Benutzer "${userName}" wirklich löschen?\n\nDer Benutzer kann sich danach nicht mehr einloggen.`)) {
+          return;
+        }
+
+        try {
+          // Get user email before deleting doc
+          const userDoc = await db.collection('users').doc(userId).get();
+          const userEmail = userDoc.exists ? userDoc.data().email : null;
+
+          // 1. Delete Firestore user doc
+          await db.collection('users').doc(userId).delete();
+
+          // 2. Mark ALL open invites for this email as used → blocks auto-create
+          if (userEmail) {
+            const openInvites = await db.collection('invites')
+              .where('email', '==', userEmail)
+              .where('used', '==', false)
+              .get();
+
+            const batch = db.batch();
+            openInvites.docs.forEach(doc => {
+              batch.update(doc.ref, {
+                used: true,
+                usedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                closedByAdmin: true
+              });
+            });
+            await batch.commit();
+          }
+
+          alert(`Benutzer "${userName}" wurde gelöscht.`);
+        } catch (err) {
+          alert('Fehler beim Löschen: ' + err.message);
+        }
+      };
+
+      const suspendUser = async (userId, userName, currentActive) => {
+        const action = currentActive ? 'sperren' : 'entsperren';
+        if (!window.confirm(`Benutzer "${userName}" wirklich ${action}?`)) {
+          return;
+        }
+
+        try {
+          const notification = currentActive ? {
+            type: 'account_suspended',
+            message: 'Dein Account wurde vom Administrator gesperrt. Bitte kontaktiere den Administrator.',
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          } : {
+            type: 'account_activated',
+            message: 'Dein Account wurde wieder aktiviert.',
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          };
+
+          await db.collection('users').doc(userId).update({ 
+            active: !currentActive,
+            notification
+          });
+        } catch (err) {
+          alert('Fehler: ' + err.message);
+        }
+      };
+
+      return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 fade-in">
+          <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-xl">
+
+            {/* Header – same style as Mein Profil */}
+            <div className="flex items-center justify-between p-5 border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-700">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <h2 className="text-base font-semibold text-gray-900">Benutzerverwaltung</h2>
+              </div>
+              <button onClick={onClose} className="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-all">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+
+            <div className="p-5 space-y-5">
+
+              {/* Einladen Section */}
+              <div>
+                <button
+                  onClick={() => { setShowInvite(!showInvite); setLink(''); }}
+                  className="w-full bg-gray-900 text-white py-3 rounded-xl text-sm font-medium hover:bg-gray-700 transition-all"
+                >
+                  {showInvite ? 'Abbrechen' : 'Benutzer einladen'}
+                </button>
+
+                {showInvite && (
+                  <div className="mt-4 space-y-3">
+                    <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Neue Einladung</p>
+                      <input
+                        type="text"
+                        placeholder="Name"
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
+                        className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-gray-400"
+                      />
+                      <input
+                        type="email"
+                        placeholder="E-Mail-Adresse"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-gray-400"
+                      />
+                      <select
+                        value={role}
+                        onChange={(e) => setRole(e.target.value)}
+                        className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-gray-400 bg-white"
+                      >
+                        <option value="mitarbeiter">Mitarbeiter</option>
+                        <option value="gast">Gast (nur lesen)</option>
+                        <option value="admin">Administrator</option>
+                      </select>
+                      <button
+                        onClick={generateInvite}
+                        disabled={loading}
+                        className="w-full bg-gray-900 text-white py-3 rounded-xl text-sm font-medium hover:bg-gray-700 disabled:bg-gray-300 transition-all"
+                      >
+                        {loading ? 'Erstelle...' : 'Einladungslink generieren'}
+                      </button>
+                    </div>
+
+                    {link && (
+                      <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Link teilen</p>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={link}
+                            readOnly
+                            className="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-600"
+                          />
+                          <button
+                            onClick={() => navigator.clipboard.writeText(link)}
+                            className="px-3 py-2 border border-gray-200 rounded-lg text-xs font-medium hover:bg-gray-100 transition-all whitespace-nowrap"
+                          >
+                            Kopieren
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            onClick={shareViaWhatsApp}
+                            className="py-2 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition-all"
+                          >
+                            WhatsApp
+                          </button>
+                          <button
+                            onClick={shareViaEmail}
+                            className="py-2 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition-all"
+                          >
+                            E-Mail
+                          </button>
+                        </div>
+                        <p className="text-xs text-gray-400">
+                          Der User öffnet den Link, klickt "Passwort vergessen oder Einladung erhalten" und gibt seine E-Mail ein.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Divider */}
+              <div className="border-t border-gray-100"></div>
+
+              {/* User List */}
+              <div className="space-y-3">
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Benutzer ({users.filter(u => !u.deleted).length})
+                </p>
+                {users.filter(u => !u.deleted).map(u => (
+                  <div key={u.id} className="border border-gray-100 rounded-xl p-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <p className="font-semibold text-gray-900 text-sm">{u.name}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{u.email}</p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          {u.role === 'admin' ? 'Administrator' : u.role === 'mitarbeiter' ? 'Mitarbeiter' : 'Gast'}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => suspendUser(u.id, u.name, u.active)}
+                        className={`text-xs px-2 py-1 rounded-full font-medium ${
+                          u.active
+                            ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            : 'bg-red-50 text-red-600 hover:bg-red-100'
+                        } transition-all`}
+                      >
+                        {u.active ? 'Aktiv' : 'Gesperrt'}
+                      </button>
+                    </div>
+                    <div className="flex gap-2 pt-2 border-t border-gray-50">
+                      <button
+                        onClick={() => changeRole(u.id, u.role, u.name)}
+                        className="text-xs text-gray-600 hover:text-gray-900 font-medium transition-all"
+                      >
+                        Rolle ändern
+                      </button>
+                      <span className="text-gray-200">|</span>
+                      <button
+                        onClick={() => deleteUser(u.id, u.name)}
+                        className="text-xs text-red-500 hover:text-red-700 font-medium transition-all"
+                      >
+                        Löschen
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          </div>
+
+          {/* Role Selection Modal */}
+          {roleModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-60 flex items-center justify-center p-4">
+              <div className="bg-white rounded-2xl w-full max-w-sm shadow-xl">
+                <div className="flex items-center justify-between p-5 border-b border-gray-100">
+                  <h2 className="text-base font-semibold text-gray-900">Rolle ändern</h2>
+                  <button onClick={() => setRoleModal(null)} className="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-all">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </div>
+                <div className="p-5 space-y-4">
+                  <p className="text-sm text-gray-500">{roleModal.userName}</p>
+                  <div className="space-y-2">
+                    {[
+                      { value: 'admin', label: 'Administrator', desc: 'Volle Rechte, Benutzerverwaltung' },
+                      { value: 'mitarbeiter', label: 'Mitarbeiter', desc: 'Igel erfassen und bearbeiten' },
+                      { value: 'gast', label: 'Gast', desc: 'Nur lesen' }
+                    ].map(r => (
+                      <button
+                        key={r.value}
+                        onClick={() => setRoleModal({ ...roleModal, selectedRole: r.value })}
+                        className={`w-full text-left px-4 py-3 rounded-xl border transition-all ${
+                          roleModal.selectedRole === r.value
+                            ? 'border-gray-900 bg-gray-50'
+                            : 'border-gray-200 hover:bg-gray-50'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">{r.label}</p>
+                            <p className="text-xs text-gray-400 mt-0.5">{r.desc}</p>
+                          </div>
+                          {roleModal.selectedRole === r.value && (
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-gray-900 flex-shrink-0">
+                              <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 pt-1">
+                    <button
+                      onClick={() => setRoleModal(null)}
+                      className="py-3 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all"
+                    >
+                      Abbrechen
+                    </button>
+                    <button
+                      onClick={saveRole}
+                      className="py-3 bg-gray-900 text-white rounded-xl text-sm font-medium hover:bg-gray-700 transition-all"
+                    >
+                      Speichern
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
+      );
+    };
+
+    // Add Hedgehog Form
+    const AddHedgehogForm = ({ userData, users, onClose }) => {
+      const [form, setForm] = useState({
+        name: '',
+        aufnahmedatum: new Date().toISOString().split('T')[0],
+        status: 'aufnahme',
+        fundort: '',
+        finderName: '',
+        finderKontakt: '',
+        finderAdresse: '',
+        geschlecht: '',
+        alterSchaetzung: '',
+        gewichtAktuell: '',
+        betreuer: userData.name,
+        notizen: '',
+        ueberwinterungAktiv: false,
+        ueberwinterungStart: '',
+        ueberwinterungGewicht: ''
+      });
+      const [errors, setErrors] = useState({});
+      const [saving, setSaving] = useState(false);
+
+      const validate = () => {
+        const newErrors = {};
+        
+        if (!form.name.trim()) newErrors.name = 'Name erforderlich';
+        if (!form.aufnahmedatum) newErrors.aufnahmedatum = 'Aufnahmedatum erforderlich';
+        if (!form.fundort.trim()) newErrors.fundort = 'Fundort erforderlich';
+        if (!form.finderName.trim()) newErrors.finderName = 'Finder Name erforderlich';
+        if (!form.finderKontakt.trim()) newErrors.finderKontakt = 'Finder Kontakt erforderlich';
+        // finderAdresse is optional
+        if (!form.geschlecht) newErrors.geschlecht = 'Geschlecht erforderlich';
+        if (!form.alterSchaetzung) newErrors.alterSchaetzung = 'Alter erforderlich';
+        if (!form.gewichtAktuell) newErrors.gewichtAktuell = 'Gewicht erforderlich';
+        if (!form.betreuer) newErrors.betreuer = 'Betreuer erforderlich';
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+      };
+
+      const handleSubmit = async () => {
+        if (!validate()) {
+          alert('Bitte alle Pflichtfelder ausfüllen!');
+          return;
+        }
+
+        setSaving(true);
+        
+        try {
+          const igelId = `IGL-${Date.now()}`;
+          
+          // Only save relevant fields (exclude form-only fields)
+          const hedgehogData = {
+            igelId,
+            name: form.name,
+            aufnahmedatum: form.aufnahmedatum,
+            status: form.status,
+            fundort: form.fundort,
+            finderName: form.finderName,
+            finderKontakt: form.finderKontakt,
+            finderAdresse: form.finderAdresse || '',
+            geschlecht: form.geschlecht,
+            alterSchaetzung: form.alterSchaetzung,
+            gewichtAktuell: form.gewichtAktuell ? parseFloat(form.gewichtAktuell) : 0,
+            betreuer: form.betreuer,
+            notizen: form.notizen,
+            gewichtsverlauf: form.gewichtAktuell ? [{
+              datum: form.aufnahmedatum,
+              gewicht: parseFloat(form.gewichtAktuell),
+              notiz: 'Aufnahme',
+              erfasstVon: userData.name,
+              erfasstAm: new Date().toISOString()
+            }] : [],
+            diagnosen: [],
+            behandlungen: [],
+            statusHistory: [{
+              status: form.status,
+              datum: new Date().toISOString(),
+              geaendertVon: userData.name
+            }],
+            erstelltVon: userData.name,
+            erstelltVonId: auth.currentUser.uid,
+            erstelltAm: firebase.firestore.FieldValue.serverTimestamp(),
+            zuletztBearbeitetVon: userData.name,
+            zuletztBearbeitetAm: firebase.firestore.FieldValue.serverTimestamp()
+          };
+          
+          // Add ueberwinterung only if active
+          if (form.ueberwinterungAktiv && form.status === 'ueberwinterung') {
+            hedgehogData.ueberwinterung = {
+              aktiv: true,
+              startdatum: form.ueberwinterungStart || form.aufnahmedatum,
+              gewichtStart: form.ueberwinterungGewicht || form.gewichtAktuell,
+              notizen: ''
+            };
+          }
+          
+          await db.collection('hedgehogs').add(hedgehogData);
+          onClose();
+        } catch (err) {
+          alert('Fehler beim Speichern: ' + err.message);
+          setSaving(false);
+        }
+      };
+
+      const activeUsers = users.filter(u => u.active && !u.deleted);
+
+      return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end slide-in">
+          <div className="bg-white rounded-t-2xl w-full max-h-[92vh] overflow-y-auto shadow-xl">
+
+            {/* Header – same as UserManagement */}
+            <div className="sticky top-0 bg-white flex items-center justify-between p-5 border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-700">
+                  <circle cx="12" cy="8" r="4"/>
+                  <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+                </svg>
+                <h2 className="text-base font-semibold text-gray-900">Neuer Igel</h2>
+              </div>
+              <button onClick={onClose} className="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-all">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+
+              {/* Basis */}
+              <input type="text" placeholder="Name" value={form.name}
+                onChange={(e) => setForm({...form, name: e.target.value})}
+                className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400 ${errors.name ? 'border-red-400' : 'border-gray-200'}`} />
+
+              <div className="grid grid-cols-2 gap-3">
+                <select value={form.geschlecht} onChange={(e) => setForm({...form, geschlecht: e.target.value})}
+                  className={`border rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:border-gray-400 ${errors.geschlecht ? 'border-red-400' : 'border-gray-200'}`}>
+                  <option value="">Geschlecht</option>
+                  <option value="männlich">Männlich</option>
+                  <option value="weiblich">Weiblich</option>
+                </select>
+                <input type="number" placeholder="Alter (Wochen)" value={form.alterSchaetzung}
+                  onChange={(e) => setForm({...form, alterSchaetzung: e.target.value})}
+                  className={`border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400 ${errors.alterSchaetzung ? 'border-red-400' : 'border-gray-200'}`} />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <input type="date" value={form.aufnahmedatum}
+                  onChange={(e) => setForm({...form, aufnahmedatum: e.target.value})}
+                  className={`border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400 ${errors.aufnahmedatum ? 'border-red-400' : 'border-gray-200'}`} />
+                <input type="number" placeholder="Gewicht (g)" value={form.gewichtAktuell}
+                  onChange={(e) => setForm({...form, gewichtAktuell: e.target.value})}
+                  className={`border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400 ${errors.gewichtAktuell ? 'border-red-400' : 'border-gray-200'}`} />
+              </div>
+
+              <div className="border-t border-gray-100"></div>
+
+              {/* Status & Betreuer */}
+              <div>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Status & Betreuung</p>
+                <div className="space-y-3">
+                  <select value={form.status} onChange={(e) => setForm({...form, status: e.target.value})}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:border-gray-400">
+                    <option value="aufnahme">Aufnahme</option>
+                    <option value="pflege">In Pflege</option>
+                    <option value="ueberwinterung">Überwinterung</option>
+                    <option value="auswilderung_bereit">Auswilderungsbereit</option>
+                    <option value="ausgewildert">Ausgewildert</option>
+                    <option value="verstorben">Verstorben</option>
+                  </select>
+                  <select value={form.betreuer} onChange={(e) => setForm({...form, betreuer: e.target.value})}
+                    className={`w-full border rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:border-gray-400 ${errors.betreuer ? 'border-red-400' : 'border-gray-200'}`}>
+                    {activeUsers.map(u => <option key={u.id} value={u.name}>{u.name}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div className="border-t border-gray-100"></div>
+
+              {/* Fundort */}
+              <input type="text" placeholder="Fundort" value={form.fundort}
+                onChange={(e) => setForm({...form, fundort: e.target.value})}
+                className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400 ${errors.fundort ? 'border-red-400' : 'border-gray-200'}`} />
+
+              {/* Finder */}
+              <div>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Finder</p>
+                <div className="space-y-3">
+                  <input type="text" placeholder="Name" value={form.finderName}
+                    onChange={(e) => setForm({...form, finderName: e.target.value})}
+                    className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400 ${errors.finderName ? 'border-red-400' : 'border-gray-200'}`} />
+                  <input type="text" placeholder="Kontakt (Tel / E-Mail)" value={form.finderKontakt}
+                    onChange={(e) => setForm({...form, finderKontakt: e.target.value})}
+                    className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400 ${errors.finderKontakt ? 'border-red-400' : 'border-gray-200'}`} />
+                  <input type="text" placeholder="Adresse (optional)" value={form.finderAdresse}
+                    onChange={(e) => setForm({...form, finderAdresse: e.target.value})}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400" />
+                </div>
+              </div>
+
+              <div className="border-t border-gray-100"></div>
+
+              {/* Notizen */}
+              <textarea placeholder="Notizen" value={form.notizen}
+                onChange={(e) => setForm({...form, notizen: e.target.value})}
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400 min-h-24 resize-none" />
+
+              {/* Submit */}
+              <button onClick={handleSubmit} disabled={saving}
+                className="w-full bg-gray-900 hover:bg-gray-700 text-white py-3 rounded-xl text-sm font-medium transition-all disabled:bg-gray-300 disabled:cursor-not-allowed">
+                {saving ? 'Speichert...' : 'Igel aufnehmen'}
+              </button>
+
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Hedgehog Detail View
+    const HedgehogDetail = ({ hedgehog, userData, users, onBack, onUpdate }) => {
+      const [edit, setEdit] = useState(false);
+      const [data, setData] = useState(hedgehog);
+      const [showMenu, setShowMenu] = useState(false);
+
+      const saveChanges = async () => {
+        await db.collection('hedgehogs').doc(hedgehog.id).update({
+          ...data,
+          zuletztBearbeitetVon: userData.name,
+          zuletztBearbeitetAm: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        setEdit(false);
+        onUpdate(data);
+      };
+
+      const addWeight = async () => {
+        const weight = prompt('Gewicht in Gramm:');
+        if (!weight) return;
+        
+        const newEntry = {
+          datum: new Date().toISOString().split('T')[0],
+          gewicht: parseFloat(weight),
+          notiz: '',
+          erfasstVon: userData.name,
+          erfasstAm: new Date().toISOString()
+        };
+
+        const updated = {
+          ...data,
+          gewichtsverlauf: [...(data.gewichtsverlauf || []), newEntry],
+          gewichtAktuell: weight
+        };
+
+        await db.collection('hedgehogs').doc(hedgehog.id).update({
+          gewichtsverlauf: updated.gewichtsverlauf,
+          gewichtAktuell: weight,
+          zuletztBearbeitetVon: userData.name,
+          zuletztBearbeitetAm: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        setData(updated);
+      };
+
+      const addDiagnosis = async () => {
+        const diag = prompt('Diagnose:');
+        if (!diag) return;
+
+        const newDiag = {
+          datum: new Date().toISOString().split('T')[0],
+          diagnose: diag,
+          erfasstVon: userData.name,
+          erfasstAm: new Date().toISOString()
+        };
+
+        const updated = {
+          ...data,
+          diagnosen: [...(data.diagnosen || []), newDiag]
+        };
+
+        await db.collection('hedgehogs').doc(hedgehog.id).update({
+          diagnosen: updated.diagnosen,
+          zuletztBearbeitetVon: userData.name,
+          zuletztBearbeitetAm: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        setData(updated);
+      };
+
+      const deleteHedgehog = async () => {
+        if (!window.confirm(`Möchten Sie ${data.name} wirklich LÖSCHEN?\n\nDies kann nicht rückgängig gemacht werden!`)) {
+          return;
+        }
+
+        try {
+          await db.collection('hedgehogs').doc(hedgehog.id).delete();
+          alert(`${data.name} wurde gelöscht.`);
+          onBack();
+        } catch (err) {
+          alert('Fehler beim Löschen: ' + err.message);
+        }
+      };
+
+      const addTreatment = async () => {
+        const treat = prompt('Behandlung:');
+        if (!treat) return;
+
+        const newTreat = {
+          datum: new Date().toISOString().split('T')[0],
+          behandlung: treat,
+          durchgefuehrtVon: userData.name,
+          durchgefuehrtAm: new Date().toISOString()
+        };
+
+        const updated = {
+          ...data,
+          behandlungen: [...(data.behandlungen || []), newTreat]
+        };
+
+        await db.collection('hedgehogs').doc(hedgehog.id).update({
+          behandlungen: updated.behandlungen,
+          zuletztBearbeitetVon: userData.name,
+          zuletztBearbeitetAm: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        setData(updated);
+      };
+
+      const changeStatus = async (newStatus) => {
+        const statusEntry = {
+          status: newStatus,
+          datum: new Date().toISOString(),
+          geaendertVon: userData.name
+        };
+
+        await db.collection('hedgehogs').doc(hedgehog.id).update({
+          status: newStatus,
+          statusHistory: firebase.firestore.FieldValue.arrayUnion(statusEntry),
+          zuletztBearbeitetVon: userData.name,
+          zuletztBearbeitetAm: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        setData({ ...data, status: newStatus });
+      };
+
+      const activeUsers = users.filter(u => u.active);
+
+      const fieldClass = "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400 bg-white";
+      const statusLabel = { aufnahme: 'Aufnahme', pflege: 'In Pflege', ueberwinterung: 'Überwinterung', auswilderung_bereit: 'Auswilderungsbereit', ausgewildert: 'Ausgewildert', verstorben: 'Verstorben' };
+
+      return (
+        <div className="min-h-screen bg-gray-50">
+
+          {/* Header – minimalistisch, weiß */}
+          <div className="bg-white border-b border-gray-100 p-4 sticky top-0 z-40">
+            <div className="flex justify-between items-center">
+              <button onClick={onBack} className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-all">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
+                Zurück
+              </button>
+              <span className="text-sm font-semibold text-gray-900">{data.name || 'Igel'}</span>
+              <button onClick={() => setShowMenu(!showMenu)} className="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-all">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Dropdown Menu */}
+          {showMenu && (
+            <div className="fixed right-4 top-16 bg-white rounded-xl shadow-xl z-50 overflow-hidden border border-gray-100 w-44">
+              {edit ? (
+                <>
+                  <button onClick={saveChanges} className="w-full px-4 py-3 text-left hover:bg-gray-50 text-gray-900 text-sm font-medium flex items-center gap-2 transition-all">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    Speichern
+                  </button>
+                  <button onClick={() => setEdit(false)} className="w-full px-4 py-3 text-left hover:bg-gray-50 text-gray-500 text-sm flex items-center gap-2 border-t border-gray-100 transition-all">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    Abbrechen
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button onClick={() => { setEdit(true); setShowMenu(false); }} className="w-full px-4 py-3 text-left hover:bg-gray-50 text-gray-900 text-sm font-medium flex items-center gap-2 transition-all">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Bearbeiten
+                  </button>
+                  <button onClick={deleteHedgehog} className="w-full px-4 py-3 text-left hover:bg-gray-50 text-red-500 text-sm flex items-center gap-2 border-t border-gray-100 transition-all">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    Löschen
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+
+          <div className="p-4 space-y-3 pb-20">
+
+            {/* Meta-Info */}
+            <div className="bg-gray-50 rounded-xl p-4">
+              <div className="space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-xs text-gray-400">ID</span>
+                  <span className="text-xs font-mono text-gray-600">{data.igelId}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-xs text-gray-400">Aufnahme</span>
+                  <span className="text-xs text-gray-600">{data.aufnahmedatum}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-xs text-gray-400">Erfasst von</span>
+                  <span className="text-xs text-gray-600">{data.erstelltVon}</span>
+                </div>
+                {data.zuletztBearbeitetVon && (
+                  <div className="flex justify-between">
+                    <span className="text-xs text-gray-400">Zuletzt bearbeitet</span>
+                    <span className="text-xs text-gray-600">{data.zuletztBearbeitetVon}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Basisdaten */}
+            <div className="bg-white rounded-xl border border-gray-100 p-4">
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Basisdaten</p>
+              <div className="space-y-3">
+                {edit ? (
+                  <>
+                    <input type="text" value={data.name} placeholder="Name"
+                      onChange={(e) => setData({...data, name: e.target.value})} className={fieldClass} />
+                    <select value={data.geschlecht} onChange={(e) => setData({...data, geschlecht: e.target.value})} className={fieldClass}>
+                      <option value="">Geschlecht</option>
+                      <option value="männlich">Männlich</option>
+                      <option value="weiblich">Weiblich</option>
+                    </select>
+                    <input type="text" value={data.alterSchaetzung} placeholder="Alter (Wochen)"
+                      onChange={(e) => setData({...data, alterSchaetzung: e.target.value})} className={fieldClass} />
+                    <select value={data.betreuer} onChange={(e) => setData({...data, betreuer: e.target.value})} className={fieldClass}>
+                      {activeUsers.map(u => <option key={u.id} value={u.name}>{u.name}</option>)}
+                    </select>
+                    <select value={data.status} onChange={(e) => changeStatus(e.target.value)} className={fieldClass}>
+                      <option value="aufnahme">Aufnahme</option>
+                      <option value="pflege">In Pflege</option>
+                      <option value="ueberwinterung">Überwinterung</option>
+                      <option value="auswilderung_bereit">Auswilderungsbereit</option>
+                      <option value="ausgewildert">Ausgewildert</option>
+                      <option value="verstorben">Verstorben</option>
+                    </select>
+                  </>
+                ) : (
+                  <div className="space-y-2">
+                    {[
+                      ['Name', data.name],
+                      ['Geschlecht', data.geschlecht],
+                      ['Alter', data.alterSchaetzung ? `${data.alterSchaetzung} Wochen` : null],
+                      ['Betreuer', data.betreuer],
+                      ['Status', statusLabel[data.status] || data.status],
+                    ].map(([label, value]) => (
+                      <div key={label} className="flex justify-between items-baseline">
+                        <span className="text-sm text-gray-400">{label}</span>
+                        <span className="text-sm font-medium text-gray-900">{value || '–'}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Fundort & Finder */}
+            <div className="bg-white rounded-xl border border-gray-100 p-4">
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Fundort & Finder</p>
+              <div className="space-y-2">
+                {[
+                  ['Ort', data.fundort],
+                  ['Finder', data.finderName],
+                  ['Kontakt', data.finderKontakt],
+                ].map(([label, value]) => (
+                  <div key={label} className="flex justify-between items-baseline">
+                    <span className="text-sm text-gray-400">{label}</span>
+                    <span className="text-sm font-medium text-gray-900">{value || '–'}</span>
+                  </div>
+                ))}
+                {data.finderAdresse && (
+                  <div className="flex justify-between items-baseline">
+                    <span className="text-sm text-gray-400">Adresse</span>
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.finderAdresse)}`}
+                      target="_blank" rel="noopener noreferrer"
+                      className="text-sm font-medium text-gray-900 underline underline-offset-2"
+                    >
+                      {data.finderAdresse}
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Gewicht */}
+            <div className="bg-white rounded-xl border border-gray-100 p-4">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Gewicht</p>
+                {edit && (
+                  <button onClick={addWeight} className="text-xs font-medium text-gray-900 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-all">
+                    + Messung
+                  </button>
+                )}
+              </div>
+              <div className="space-y-2">
+                {(data.gewichtsverlauf || []).slice().reverse().map((w, i) => (
+                  <div key={i} className="flex justify-between items-center py-2 border-b border-gray-50 last:border-0">
+                    <span className="text-sm font-semibold text-gray-900">{w.gewicht} g</span>
+                    <div className="text-right">
+                      <div className="text-xs text-gray-400">{w.datum}</div>
+                      <div className="text-xs text-gray-400">{w.erfasstVon}</div>
+                    </div>
+                  </div>
+                ))}
+                {(!data.gewichtsverlauf || data.gewichtsverlauf.length === 0) && (
+                  <p className="text-sm text-gray-400 py-2">Noch keine Messungen</p>
+                )}
+              </div>
+            </div>
+
+            {/* Gesundheit */}
+            <div className="bg-white rounded-xl border border-gray-100 p-4">
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Gesundheit</p>
+
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">Diagnosen</span>
+                  {edit && (
+                    <button onClick={addDiagnosis} className="text-xs font-medium text-gray-900 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-all">
+                      + Diagnose
+                    </button>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  {(data.diagnosen || []).map((d, i) => (
+                    <div key={i} className="border border-gray-100 rounded-xl p-3">
+                      <p className="text-sm text-gray-900">{d.diagnose}</p>
+                      <p className="text-xs text-gray-400 mt-1">{d.datum} · {d.erfasstVon}</p>
+                    </div>
+                  ))}
+                  {(!data.diagnosen || data.diagnosen.length === 0) && (
+                    <p className="text-sm text-gray-400">Keine Diagnosen</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="border-t border-gray-100 pt-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">Behandlungen</span>
+                  {edit && (
+                    <button onClick={addTreatment} className="text-xs font-medium text-gray-900 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-all">
+                      + Behandlung
+                    </button>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  {(data.behandlungen || []).map((t, i) => (
+                    <div key={i} className="border border-gray-100 rounded-xl p-3">
+                      <p className="text-sm text-gray-900">{t.behandlung}</p>
+                      <p className="text-xs text-gray-400 mt-1">{t.datum} · {t.durchgefuehrtVon}</p>
+                    </div>
+                  ))}
+                  {(!data.behandlungen || data.behandlungen.length === 0) && (
+                    <p className="text-sm text-gray-400">Keine Behandlungen</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Status-Historie */}
+            {data.statusHistory && data.statusHistory.length > 0 && (
+              <div className="bg-white rounded-xl border border-gray-100 p-4">
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Status-Verlauf</p>
+                <div className="space-y-2">
+                  {data.statusHistory.map((s, i) => (
+                    <div key={i} className="flex justify-between items-baseline py-1 border-b border-gray-50 last:border-0">
+                      <span className="text-sm font-medium text-gray-900">{statusLabel[s.status] || s.status}</span>
+                      <span className="text-xs text-gray-400">{s.geaendertVon}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Notizen */}
+            <div className="bg-white rounded-xl border border-gray-100 p-4">
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Notizen</p>
+              {edit ? (
+                <textarea value={data.notizen} onChange={(e) => setData({...data, notizen: e.target.value})}
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400 min-h-24 resize-none" />
+              ) : (
+                <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{data.notizen || <span className="text-gray-400">Keine Notizen</span>}</p>
+              )}
+            </div>
+
+          </div>
+        </div>
+      );
+    };
+
+    // Render
+    // Render App
+    ReactDOM.render(<App />, document.getElementById('root'));
+
+    // Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
