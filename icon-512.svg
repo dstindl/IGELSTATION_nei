@@ -1,0 +1,30 @@
+<svg viewBox="0 0 256 256" width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <rect width="256" height="256" rx="52" fill="white"/>
+  <!-- Stacheln als Dreiecke -->
+  <polygon points="128,28 116,88 140,88" fill="#111111"/>
+  <polygon points="92,42 85,100 110,92" fill="#111111"/>
+  <polygon points="164,42 171,100 146,92" fill="#111111"/>
+  <polygon points="62,70 62,126 88,112" fill="#111111"/>
+  <polygon points="194,70 194,126 168,112" fill="#111111"/>
+  <polygon points="42,104 50,158 76,140" fill="#111111"/>
+  <polygon points="214,104 206,158 180,140" fill="#111111"/>
+  <!-- Körper -->
+  <ellipse cx="128" cy="162" rx="88" ry="68" fill="#111111"/>
+  <!-- Bauch -->
+  <ellipse cx="128" cy="172" rx="54" ry="42" fill="white"/>
+  <!-- Augen -->
+  <ellipse cx="96"  cy="148" rx="14" ry="14" fill="white"/>
+  <ellipse cx="160" cy="148" rx="14" ry="14" fill="white"/>
+  <ellipse cx="96"  cy="150" rx="7"  ry="8"  fill="#111111"/>
+  <ellipse cx="160" cy="150" rx="7"  ry="8"  fill="#111111"/>
+  <!-- Glanzpunkt -->
+  <ellipse cx="93"  cy="147" rx="3"  ry="3"  fill="white"/>
+  <ellipse cx="157" cy="147" rx="3"  ry="3"  fill="white"/>
+  <!-- Nase -->
+  <ellipse cx="128" cy="167" rx="11" ry="8"  fill="#444444"/>
+  <!-- Lächeln -->
+  <path d="M116,180 Q128,192 140,180" stroke="white" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <!-- Füße -->
+  <ellipse cx="96"  cy="218" rx="22" ry="11" fill="#111111"/>
+  <ellipse cx="160" cy="218" rx="22" ry="11" fill="#111111"/>
+</svg>
