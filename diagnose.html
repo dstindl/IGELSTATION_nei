@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Diagnose</title></head>
+<body style="font-family:monospace;padding:20px;background:#111;color:#0f0">
+<h2 style="color:#0f0">✓ Diagnose-Seite lädt korrekt</h2>
+<p>Wenn du diese Seite siehst, funktioniert GitHub Pages.</p>
+<p id="sw">Service Worker: prüfe...</p>
+<p id="ts">Zeit: " + new Date().toISOString() + "</p>
+<script>
+document.getElementById('ts').textContent = 'Zeit: ' + new Date().toISOString();
+
+// Check service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    if (regs.length > 0) {
+      document.getElementById('sw').innerHTML = 
+        '⚠️ SERVICE WORKER AKTIV: ' + regs.length + ' Registration(s)<br>' +
+        regs.map(r => '  Scope: ' + r.scope).join('<br>') +
+        '<br><button onclick="unregAll()" style="background:red;color:white;border:none;padding:8px;cursor:pointer;margin-top:8px">Service Worker LÖSCHEN</button>';
+    } else {
+      document.getElementById('sw').textContent = '✓ Kein Service Worker aktiv';
+    }
+  });
+}
+
+function unregAll() {
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    Promise.all(regs.map(r => r.unregister())).then(() => {
+      document.getElementById('sw').textContent = '✓ Alle Service Worker gelöscht. Seite neu laden!';
+    });
+  });
+}
+
+// Check caches
+if (window.caches) {
+  caches.keys().then(keys => {
+    var p = document.createElement('p');
+    p.innerHTML = 'Cache-Einträge: ' + keys.join(', ');
+    document.body.appendChild(p);
+    if (keys.length > 0) {
+      var btn = document.createElement('button');
+      btn.textContent = 'Alle Caches löschen';
+      btn.style = 'background:orange;border:none;padding:8px;cursor:pointer;color:black;margin-top:8px';
+      btn.onclick = () => Promise.all(keys.map(k => caches.delete(k))).then(() => location.reload());
+      document.body.appendChild(btn);
+    }
+  });
+}
+</script>
+</body>
+</html>
