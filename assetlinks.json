@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.dstindl.igelstation_nei",
+    "sha256_cert_fingerprints": ["AE:F8:6B:BF:59:15:B8:C8:7E:75:8E:8D:FA:18:FE:D0:33:FD:D9:EE:E5:84:0B:9B:C9:52:27:4A:43:1A:B5:97"]
+  }
+}]
