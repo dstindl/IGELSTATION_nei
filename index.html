@@ -465,75 +465,86 @@
       const [needsSetup, setNeedsSetup] = useState(null);
 
       useEffect(() => {
-        // Admin-Check mit 3s Timeout parallel zur Auth
-        const adminCheckPromise = Promise.race([
-          db.collection('users').where('role', '==', 'admin').get()
-            .then(snap => snap.empty)
-            .catch(() => false),
-          new Promise(resolve => setTimeout(() => resolve(false), 3000))
-        ]);
-
-        let authResolved = false;
-        let adminResolved = false;
-        let adminResult = false;
-
-        const tryFinish = () => {
-          if (authResolved && adminResolved) {
-            setNeedsSetup(adminResult);
-          }
-        };
-
-        adminCheckPromise.then(result => {
-          adminResult = result;
-          adminResolved = true;
-          tryFinish();
-        });
-
-        const unsubscribeAuth = auth.onAuthStateChanged(async (authUser) => {
+        const init = async () => {
+          // First check if admin exists
           try {
+            const snapshot = await db.collection('users').where('role', '==', 'admin').get();
+            setNeedsSetup(snapshot.empty);
+          } catch (err) {
+            console.error('Admin check error:', err);
+            setNeedsSetup(false);
+          }
+
+          // Then check auth state
+          auth.onAuthStateChanged(async (authUser) => {
+            try {
             if (authUser) {
               const doc = await db.collection('users').doc(authUser.uid).get();
               const data = doc.exists ? doc.data() : null;
-
+              
               if (doc.exists && data && !data.deleted) {
+                // Normal login - user doc exists and is not deleted
+                
+                // Check if user is suspended
                 if (!data.active) {
                   await auth.signOut();
                   alert('Dein Account wurde gesperrt. Bitte kontaktiere den Administrator.');
                   window.location.reload();
                   return;
                 }
+                
                 setUser(authUser);
                 setUserData(data);
+                
+                // Check for notifications
                 if (data.notification) {
+                  // Show notification
                   setTimeout(() => {
                     alert(data.notification.message);
+                    // Clear notification after showing
                     db.collection('users').doc(authUser.uid).update({
                       notification: firebase.firestore.FieldValue.delete()
                     });
                   }, 500);
                 }
               } else {
+                // User has Auth account but NO Firestore doc.
+                // This means either:
+                //   A) A newly invited user logging in for the first time
+                //   B) A deleted user trying to sneak back in
+                //
+                // RULE: Auto-create ONLY if a valid unused invite exists for this email.
+                // Deleted users have no new invite → they are blocked.
+
                 let validInvite = null;
                 try {
                   const inviteSnap = await db.collection('invites')
                     .where('email', '==', authUser.email)
                     .where('used', '==', false)
                     .get();
+
                   if (!inviteSnap.empty) {
+                    // Sort by newest invite
                     const sorted = inviteSnap.docs
                       .map(d => ({ id: d.id, ...d.data() }))
-                      .sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+                      .sort((a, b) =>
+                        (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0)
+                      );
                     validInvite = sorted[0];
                   }
                 } catch (err) {
                   console.error('Invite check failed:', err);
                 }
+
                 if (!validInvite) {
+                  // No valid invite → either deleted user or unknown → block
                   await auth.signOut();
                   alert('Kein Zugang. Bitte wende dich an den Administrator.');
                   setLoading(false);
                   return;
                 }
+
+                // Valid invite found → create user doc with name & role from invite
                 const newUserData = {
                   name: validInvite.userName || authUser.email.split('@')[0],
                   email: authUser.email,
@@ -541,17 +552,23 @@
                   active: true,
                   createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
+
                 try {
+                  // Force token refresh to ensure Firestore security rules accept the write
                   await authUser.getIdToken(true);
                   await db.collection('users').doc(authUser.uid).set(newUserData);
+
+                  // Mark invite as used
                   await db.collection('invites').doc(validInvite.id).update({
                     used: true,
                     usedAt: firebase.firestore.FieldValue.serverTimestamp(),
                     usedBy: authUser.uid
                   });
+
                   setUser(authUser);
                   setUserData(newUserData);
                 } catch (err) {
+                  // Retry once after short delay (token propagation race condition)
                   try {
                     await new Promise(r => setTimeout(r, 800));
                     await authUser.getIdToken(true);
@@ -574,18 +591,18 @@
               setUser(null);
               setUserData(null);
             }
-          } catch (err) {
-            console.error('Auth state error:', err);
-          }
-          authResolved = true;
-          setLoading(false);
-          tryFinish();
-        });
-
-        return () => unsubscribeAuth();
+            setLoading(false);
+            } catch (err) {
+              console.error('Auth state error:', err);
+              setLoading(false);
+            }
+          });
+        };
+        
+        init();
       }, []);
 
-      if (loading) {
+      if (loading || needsSetup === null) {
         return <LoadingScreen />;
       }
 
@@ -4226,7 +4243,7 @@
               <div className="bg-gray-50 rounded-xl p-4">
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">App</p>
                 <p className="text-sm font-semibold text-gray-900">Igelpflegestation Pro</p>
-                <p className="text-xs text-gray-400 mt-0.5">Version 1.8.46 · Cloud-basierte Tierpflege-Software</p>
+                <p className="text-xs text-gray-400 mt-0.5">Version 1.8.43 · Cloud-basierte Tierpflege-Software</p>
               </div>
 
               <div className="border-t border-gray-100"></div>
@@ -4237,16 +4254,16 @@
                 <div className="space-y-4">
 
                   {[
-                    { version: '1.8.46', label: 'Comic-Sueß-Icon + Ladezeit-Optimierung', items: [
-                      'Neues Igel-Icon "Comic Sueß" auf Login-Screen (SVG, 80px, zentriert)',
-                      'icon-192.png + icon-512.png als echte PNG-Dateien generiert',
-                      'manifest.json auf PNG-Icons umgestellt (zuverlaessiger auf Android/iOS)',
-                      'apple-touch-icon + Favicon im Head verlinkt',
-                      'Ladezeit: Admin-Check und Auth jetzt parallel (Promise.race, 3s Timeout)',
-                      'Changelog-Absturz behoben (items optional)',
-                      'Versionsnummer im Changelog-Header korrigiert',
+                    { version: '1.8.46', label: 'Comic-Sueß-Icon: Login-Screen + PWA App-Icon', items: [
+                      'Neues Igel-Icon "Comic Sueß" auf Login-Screen (SVG, 80px)',
+                      'App-Icon in manifest.json ersetzt (Comic Sueß SVG)',
+                      'apple-touch-icon und Favicon als inline SVG Data URI',
+                      'Login-Screen Logo zentriert und vergroessert',
                     ]},
-                    { version: '1.8.45', label: 'Vollstaendige UX-Verbesserungen', items: [
+                    { version: '1.8.45', label: 'Wizard: Top-Gruppen, Med-Verknuepfung, Backbutton, Permissions-Fix' },
+        { version: '1.8.44', label: 'MedikamentDB, DiagnoseDB, TreatmentWizard, 20 Seed-Daten' },
+        { version: '1.8.43', label: 'CDN-Fix (cdnjs), Auth try-catch Whitescreen-Fix' },
+        { version: '1.8.45', label: 'Vollstaendige UX-Verbesserungen', items: [
                       'Permissions-Fehler beim Wizard-Speichern behoben (medikationen-Collection optional)',
                       'Zurueck-Button (Hardware Android + Browser) funktioniert korrekt',
                       'Assistent-Button in Igelkarte: schwarz mit weisser Schrift',
@@ -4257,7 +4274,7 @@
                       'Edit-Felder komplett beschriftet (Labels)',
                       'Neuanlage: Zentriertes Modal mit schwarzem Rahmen',
                       'Bearbeiten: Inline direkt unter dem Eintrag, blauer Akzent',
-                    ]},
+                    ] },
                     { version: '1.8.44', label: 'AltDB System vollstaendig', items: [
                       'MedikamentDB: 20 Seed-Medikamente, CRUD, Suche',
                       'DiagnoseDB: 20 Seed-Diagnosen, CRUD, Schweregrad-Badges',
@@ -4395,14 +4412,14 @@
                     { version: '1.8.13', label: 'Sicherheit', items: ['Deleted-User Bug behoben', 'Invite-Closure-System', 'Gelöschte User können sich nicht neu anmelden'] },
                     { version: '1.4.x', label: 'Design-System', items: ['Minimalistisches schwarz/weiß Design', 'Sidebar-Navigation', 'SVG Icons', 'Audit-Log'] },
                     { version: '1.0', label: 'Initial', items: ['Firebase Cloud-Synchronisation', 'User-Authentifizierung & Rollensystem', 'Igel-Verwaltung CRUD', 'CSV Import/Export'] },
-                  ].map((entry, idx) => (
-                    <div key={idx} className="border border-gray-100 rounded-xl p-4">
+                  ].map(entry => (
+                    <div key={entry.version} className="border border-gray-100 rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-2">
                         <span className="text-xs font-mono text-gray-400">v{entry.version}</span>
                         <span className="text-xs font-medium text-gray-900">{entry.label}</span>
                       </div>
                       <div className="space-y-1">
-                        {(entry.items || []).map((item, i) => (
+                        {entry.items.map((item, i) => (
                           <p key={i} className="text-xs text-gray-500 flex items-start gap-1.5">
                             <span className="text-gray-300 mt-0.5">–</span>
                             {item}
