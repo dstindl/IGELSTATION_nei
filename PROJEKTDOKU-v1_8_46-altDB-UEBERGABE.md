@@ -1,6 +1,6 @@
 # IGELPFLEGESTATION PRO — Vollständige Projektdokumentation
 ## Übergabedokument für nahtlose Weiterentwicklung
-**Version:** v1.8.46-altDB  
+**Version:** v1.8.47-altDB  
 **Stand:** März 2026  
 **Entwickler:** Denis-Alexander Stindl  
 **Datei:** `index.html` (Single-File PWA, ~372 KB, ~6.660 Zeilen)
@@ -16,7 +16,7 @@
 4. **Tabelle ausgeben** welche Dateien im GitHub-Repo ausgetauscht werden müssen
 5. **Keine Einzeldateien** mehr separat bereitstellen — nur noch das ZIP
 
-### ZIP-Inhalt (immer alle 7 Dateien):
+### ZIP-Inhalt (immer aktuelle Dateien, kein Ballast):
 | Datei | Zweck |
 |---|---|
 | `index.html` | Deployment → GitHub Pages Root |
@@ -26,6 +26,11 @@
 | `service-worker.js` | Offline-Cache (Cache-Name = Versionsnummer) |
 | `icon-192.png` | App-Icon Android/PWA |
 | `icon-512.png` | App-Icon hochauflösend |
+| `deploy.sh` | Git-Deploy-Script |
+| `update.sh` | Haupt-Update-Script (pull → kopieren → deploy) |
+| `TERMUX-SETUP-ANLEITUNG.md` | Einrichtungsanleitung Termux |
+
+**Wichtig:** ZIP enthält immer NUR den aktuellen Stand — keine alten Versionen ansammeln.
 
 ### Pflicht-Antwortformat nach jeder Änderung:
 Nach dem ZIP immer eine Tabelle zeigen:
