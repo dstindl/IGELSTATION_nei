@@ -170,29 +170,28 @@
     #bnav {
       position: fixed;
       bottom: 0; left: 0; right: 0;
-      height: 58px;
-      background: #fff;
-      border-top: 1px solid #ebebeb;
-      display: none; /* shown via JS when logged in */
+      height: 62px;
+      background: #ffffff;
+      border-top: 1px solid #f0f0f0;
+      display: none;
       align-items: center;
       justify-content: space-around;
       z-index: 9000;
-      box-shadow: 0 -1px 0 #e5e7eb, 0 -4px 16px rgba(0,0,0,0.06);
-      transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.07);
       padding-bottom: env(safe-area-inset-bottom, 0px);
     }
     .bnav-btn {
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 3px; padding: 6px 18px;
-      color: #6b7280; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      width: 52px; height: 48px;
+      color: #c0c0c0; cursor: pointer;
       background: none; border: none;
-      font-size: 10px; font-weight: 500;
-      font-family: inherit; min-width: 56px;
+      border-radius: 14px;
       -webkit-tap-highlight-color: transparent;
-      transition: color 0.15s;
+      transition: color 0.15s, background 0.12s;
+      flex-shrink: 0;
     }
-    .bnav-btn:active { color: #111827; }
+    .bnav-btn:active { background: #f5f5f5; color: #111; }
+    .bnav-btn.active { color: #111827; }
     #menu-overlay {
       position: fixed; inset: 0;
       background: rgba(0,0,0,0.45);
@@ -371,68 +370,54 @@
 
 <!-- Bottom Navigation Bar -->
 <div id="bnav">
-  <button class="bnav-btn" onclick="igelMenuToggle()">
-    <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-    Menü
+  <button id="bnav-menu" class="bnav-btn" onclick="igelMenuToggle()" title="Menü">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
   </button>
-  <button class="bnav-btn" onclick="window.__igelHome&&window.__igelHome()">
-    <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    Home
+  <button id="bnav-home" class="bnav-btn" onclick="window.__igelAction&&window.__igelAction('home')" title="Home">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
   </button>
-  <button class="bnav-btn" id="bnav-neu" onclick="window.__igelAddHedgehog&&window.__igelAddHedgehog()">
-    <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-    Neu
+  <button id="bnav-neu" class="bnav-btn" onclick="window.__igelAction&&window.__igelAction('neu')" title="Igel aufnehmen">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
   </button>
-  <button class="bnav-btn" onclick="window.__igelQR&&window.__igelQR()">
-    <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-    QR-Scan
+  <button id="bnav-qr" class="bnav-btn" onclick="window.__igelAction&&window.__igelAction('qr')" title="QR scannen">
+    <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
   </button>
-  <button class="bnav-btn" onclick="window.__igelProfile&&window.__igelProfile()">
-    <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    Profil
+  <button id="bnav-profil" class="bnav-btn" onclick="window.__igelAction&&window.__igelAction('profil')" title="Profil">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
   </button>
 </div>
 
 <script>
-  // Menu open/close/toggle
+  // ── Active button highlight ───────────────────────────
+  function bnavSetActive(id) {
+    ['bnav-menu','bnav-home','bnav-neu','bnav-qr','bnav-profil'].forEach(function(b) {
+      var el = document.getElementById(b);
+      if (el) el.classList.toggle('active', b === id);
+    });
+  }
+
+  // ── Menu overlay ──────────────────────────────────────
   function igelMenuOpen() {
     document.getElementById('menu-overlay').classList.add('open');
     document.getElementById('menu-sheet').classList.add('open');
+    bnavSetActive('bnav-menu');
   }
   function igelMenuClose() {
     document.getElementById('menu-overlay').classList.remove('open');
     document.getElementById('menu-sheet').classList.remove('open');
+    bnavSetActive(null);
   }
   function igelMenuToggle() {
-    var sheet = document.getElementById('menu-sheet');
-    if (sheet.classList.contains('open')) igelMenuClose();
-    else igelMenuOpen();
+    if (document.getElementById('menu-sheet').classList.contains('open')) {
+      igelMenuClose();
+    } else {
+      // Close any React dialog first, then open menu
+      window.__igelCloseAll && window.__igelCloseAll();
+      igelMenuOpen();
+    }
   }
-
-  // Scroll-hide bottom bar
-  (function() {
-    var bar = document.getElementById('bnav');
-    var lastY = 0, ticking = false, hideTimer;
-    window.addEventListener('scroll', function() {
-      if (!ticking) {
-        requestAnimationFrame(function() {
-          var y = window.scrollY;
-          var diff = y - lastY;
-          if (diff > 8) {
-            bar.style.transform = 'translateY(100%)';
-          } else if (diff < -8) {
-            bar.style.transform = '';
-          }
-          lastY = y;
-          ticking = false;
-          clearTimeout(hideTimer);
-          hideTimer = setTimeout(function(){ bar.style.transform = ''; }, 1000);
-        });
-        ticking = true;
-      }
-    }, {passive: true});
-  })();
 </script>
+
 
   <script type="text/babel">
     const { useState, useEffect, useRef, useCallback } = React;
@@ -3448,23 +3433,38 @@
         if (avatar) avatar.textContent = userData?.name?.[0] || '?';
         if (nameEl) nameEl.textContent = userData?.name || 'Benutzer';
         if (roleEl) roleEl.textContent = userData?.role === 'admin' ? 'Administrator' : userData?.role === 'mitarbeiter' ? 'Mitarbeiter' : 'Gast';
-        window.__igelProfile = () => setShowProfile(true);
-        window.__igelAddHedgehog = () => setShowAddForm(true);
-        window.__igelQR = () => setShowQRScanner(true);
-        window.__igelHome = () => {
+        window.__igelCloseAll = () => {
           setShowProfile(false); setShowAddForm(false); setShowUserMgmt(false);
           setShowSettings(false); setShowChangelog(false); setShowDesignSpec(false);
           setShowTodoList(false); setShowDatenbankHub(false); setShowMedDatenbank(false);
           setShowMedikamentDB(false); setShowDiagnoseDB(false); setSelected(null);
           igelMenuClose();
-          window.scrollTo({top:0,behavior:'smooth'});
         };
-        window.__igelDatenbank = () => setShowDatenbankHub(true);
-        window.__igelUsers = () => setShowUserMgmt(true);
-        window.__igelSettings = () => setShowSettings(true);
-        window.__igelTodo = () => setShowTodoList(true);
-        window.__igelSpec = () => setShowDesignSpec(true);
-        window.__igelChangelog = () => setShowChangelog(true);
+        window.__igelAction = (action) => {
+          // Always close everything first, then open the requested thing
+          setShowProfile(false); setShowAddForm(false); setShowUserMgmt(false);
+          setShowSettings(false); setShowChangelog(false); setShowDesignSpec(false);
+          setShowTodoList(false); setShowDatenbankHub(false); setShowMedDatenbank(false);
+          setShowMedikamentDB(false); setShowDiagnoseDB(false);
+          igelMenuClose();
+          if (action === 'home') {
+            setSelected(null);
+            window.scrollTo({top:0,behavior:'smooth'});
+            bnavSetActive('bnav-home');
+          } else if (action === 'neu') {
+            if (!isGuest) { setShowAddForm(true); bnavSetActive('bnav-neu'); }
+          } else if (action === 'qr') {
+            setShowQRScanner(true); bnavSetActive('bnav-qr');
+          } else if (action === 'profil') {
+            setShowProfile(true); bnavSetActive('bnav-profil');
+          }
+        };
+        window.__igelDatenbank = () => { window.__igelCloseAll&&window.__igelCloseAll(); setShowDatenbankHub(true); };
+        window.__igelUsers = () => { window.__igelCloseAll&&window.__igelCloseAll(); setShowUserMgmt(true); };
+        window.__igelSettings = () => { window.__igelCloseAll&&window.__igelCloseAll(); setShowSettings(true); };
+        window.__igelTodo = () => { window.__igelCloseAll&&window.__igelCloseAll(); setShowTodoList(true); };
+        window.__igelSpec = () => { window.__igelCloseAll&&window.__igelCloseAll(); setShowDesignSpec(true); };
+        window.__igelChangelog = () => { window.__igelCloseAll&&window.__igelCloseAll(); setShowChangelog(true); };
         window.__igelLogout = () => auth.signOut();
         return () => {
           if (bar) bar.style.display = 'none';
