@@ -3349,11 +3349,11 @@
         let timeout = null;
         const onScroll = () => {
           const y = window.scrollY;
-          if (y > lastY + 4) setBottomBarVisible(false);
-          else if (y < lastY - 4) setBottomBarVisible(true);
+          if (y > lastY + 10) setBottomBarVisible(false);
+          else if (y < lastY - 10) setBottomBarVisible(true);
           lastY = y;
           clearTimeout(timeout);
-          timeout = setTimeout(() => setBottomBarVisible(true), 600);
+          timeout = setTimeout(() => setBottomBarVisible(true), 800);
         };
         window.addEventListener('scroll', onScroll, { passive: true });
         return () => { window.removeEventListener('scroll', onScroll); clearTimeout(timeout); };
@@ -6950,7 +6950,7 @@ shadow-2xl
               borderTop:'2px solid #e5e7eb',
               display:'flex', alignItems:'center', justifyContent:'space-around',
               zIndex:99999,
-              transform: bottomBarVisible ? 'translateY(0)' : 'translateY(110%)',
+              transform: bottomBarVisible ? 'none' : 'translateY(110%)',
               transition:'transform 0.3s ease',
               boxShadow:'0 -4px 20px rgba(0,0,0,0.12)',
             }}>
