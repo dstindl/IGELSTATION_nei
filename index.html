@@ -3606,6 +3606,10 @@
         />;
       }
 
+      if (showChangelog) {
+        return <Changelog onClose={() => setShowChangelog(false)} />;
+      }
+
       if (showProfile) {
         return <UserProfile
           userData={userData}
@@ -3812,10 +3816,6 @@
           {/* Changelog Modal */}
           {showTodoList && (
             <TodoList onClose={() => setShowTodoList(false)} userData={userData} />
-          )}
-
-          {showChangelog && (
-            <Changelog onClose={() => setShowChangelog(false)} />
           )}
 
           {showDesignSpec && (
