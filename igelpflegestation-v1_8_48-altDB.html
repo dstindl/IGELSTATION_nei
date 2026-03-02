@@ -214,8 +214,9 @@
       box-shadow: 0 -4px 32px rgba(0,0,0,0.13);
       max-height: 80vh;
       overflow-y: auto;
+      display: none;
     }
-    #menu-sheet.open { transform: translateY(0); }
+    #menu-sheet.open { transform: translateY(0); display: block; }
     .msheet-handle {
       width: 36px; height: 4px;
       background: #e5e7eb; border-radius: 2px;
@@ -325,10 +326,10 @@
   <div id="root"></div>
 
 <!-- Menu Overlay -->
-<div id="menu-overlay" onclick="igelMenuClose()"></div>
+<div id="menu-overlay" style="display:none" onclick="igelMenuClose()"></div>
 
 <!-- Menu Sheet -->
-<div id="menu-sheet">
+<div id="menu-sheet" style="display:none">
   <div class="msheet-handle"></div>
   <div class="msheet-profile" onclick="igelMenuClose();window.__igelProfile&&window.__igelProfile()">
     <div class="msheet-avatar" id="ms-avatar">?</div>
@@ -402,20 +403,29 @@
 
   // ── Menu overlay ──────────────────────────────────────
   function igelMenuOpen() {
-    document.getElementById('menu-overlay').classList.add('open');
-    document.getElementById('menu-sheet').classList.add('open');
-    bnavSetActive('bnav-menu');
+    var sheet = document.getElementById('menu-sheet');
+    var overlay = document.getElementById('menu-overlay');
+    sheet.style.display = 'block';
+    overlay.style.display = 'block';
+    requestAnimationFrame(function() {
+      sheet.classList.add('open');
+      overlay.classList.add('open');
+      bnavSetActive('bnav-menu');
+    });
   }
   function igelMenuClose() {
-    document.getElementById('menu-overlay').classList.remove('open');
-    document.getElementById('menu-sheet').classList.remove('open');
+    var sheet = document.getElementById('menu-sheet');
+    var overlay = document.getElementById('menu-overlay');
+    if (sheet) sheet.classList.remove('open');
+    if (overlay) overlay.classList.remove('open');
     bnavSetActive(null);
+    // Hide completely after transition
+    if (sheet) setTimeout(function(){ sheet.style.display = 'none'; }, 340);
   }
   function igelMenuToggle() {
     if (document.getElementById('menu-sheet').classList.contains('open')) {
       igelMenuClose();
     } else {
-      // Close any React dialog first, then open menu
       window.__igelCloseAll && window.__igelCloseAll();
       igelMenuOpen();
     }
@@ -716,19 +726,27 @@
         return () => unsubscribeAuth();
       }, []);
 
+      // Helper: show/hide all chrome elements
+      const setChrome = (visible) => {
+        ['bnav','menu-sheet','menu-overlay'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.style.display = visible ? (id === 'bnav' ? 'flex' : '') : 'none';
+        });
+        if (!visible) igelMenuClose();
+      };
+
       if (loading) {
+        setChrome(false);
         return <LoadingScreen />;
       }
 
-      // Invite flow: Users go directly to login page, no special invite page
-      // They use "Passwort vergessen oder Einladung erhalten" to set password
-
-      // Show admin setup if no admin exists
       if (needsSetup && !user) {
+        setChrome(false);
         return <AdminSetup />;
       }
 
       if (!user) {
+        setChrome(false);
         return <LoginScreen />;
       }
 
