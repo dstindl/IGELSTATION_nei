@@ -3801,7 +3801,6 @@
             </div>
           )}
 
-          {/* User Management Modal */}
           {/* User Profile Modal */}
           {showProfile && (
             <UserProfile userData={userData} onClose={() => setShowProfile(false)} />
@@ -4304,13 +4303,16 @@
                 <div className="space-y-4">
 
                   {[
-                    { version: '1.8.49', label: 'Vollseiten für Igel erfassen + Benutzerverwaltung', items: [
-                      '"Igel erfassen" als vollständige Seite (kein Modal mehr)',
-                      '"Benutzerverwaltung" als vollständige Seite (kein Modal mehr)',
-                      'Beide Seiten mit einheitlichem ← Zurück Header',
+                    { version: '1.8.49', label: 'Vollseiten-Navigation + BottomBar', items: [
+                      '"Igel erfassen" als vollständige Seite — kein Modal mehr',
+                      '"Benutzerverwaltung" als vollständige Seite — kein Modal mehr',
+                      'Einheitlicher ← Zurück Header auf allen Vollseiten',
+                      '"Igel erfassen" ist keine Modal mehr — vollständige Seite wie Hauptansicht',
+                      'Zurück-Button navigiert zur Hauptseite',
                       'BottomBar Scroll-Hide reaktiviert (10px Schwelle, 1.2s Timeout)',
-                      'QR-Scanner Fenster nicht mehr scrollbar',
-                      'Menü-Toggle Bug behoben',
+                      'QR-Scanner Fenster nicht mehr scrollbar (overflow:hidden)',
+                      'Menü-Toggle Bug behoben: klappt nicht mehr sofort zu',
+                      'Login-Seite: Menu-Sheet und Overlay komplett versteckt',
                       'Eingabefelder Schriftgröße reduziert (14px / Placeholder 13px)',
                     ]},
                     { version: '1.8.48', label: 'BottomBar Navigation + Edge-to-Edge Design', items: [
@@ -5010,7 +5012,7 @@
               <span className="text-sm font-medium">Zurück</span>
             </button>
             <h2 className="text-sm font-semibold text-gray-900">Benutzerverwaltung</h2>
-            <div className="w-16"/>
+            <div style={{width:'64px'}}/>
           </div>
 
             <div className="p-5 space-y-5">
@@ -5168,8 +5170,6 @@
                 </div>
               </div>
             </div>
-          )}
-
           )}
 
           {/* Self role change confirm */}
