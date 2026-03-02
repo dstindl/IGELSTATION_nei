@@ -4606,12 +4606,12 @@
             <div style={{width:'64px'}}/>
           </div>
 
-            <div className="p-5 space-y-5">
+            <div className="p-4 space-y-3">
 
               {/* Account Info */}
-              <div className="bg-gray-50 rounded-xl p-4">
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Account</p>
-                <div className="space-y-2">
+              <div className="bg-gray-50 rounded-xl p-3">
+                <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Account</p>
+                <div className="space-y-1.5">
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-500">E-Mail</span>
                     <span className="text-sm font-medium text-gray-900">{userData.email}</span>
@@ -4626,59 +4626,55 @@
                 </div>
               </div>
 
-              <div className="border-t border-gray-100"></div>
-
               {/* Name */}
               <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Name ändern</p>
-                <div className="space-y-3">
+                <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Name ändern</p>
+                <div className="space-y-2">
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400"
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-gray-400"
                   />
                   <button
                     onClick={handleSaveName}
                     disabled={saving || name === userData.name}
-                    className="w-full bg-gray-900 text-white py-3 rounded-xl text-sm font-medium hover:bg-gray-700 disabled:bg-gray-200 disabled:text-gray-400 transition-all"
+                    className="w-full bg-gray-900 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 disabled:bg-gray-200 disabled:text-gray-400 transition-all"
                   >
                     {saving ? 'Speichert...' : 'Name speichern'}
                   </button>
                 </div>
               </div>
 
-              <div className="border-t border-gray-100"></div>
-
               {/* Password */}
               <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Passwort ändern</p>
-                <div className="space-y-3">
+                <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Passwort ändern</p>
+                <div className="space-y-2">
                   <input
                     type="password"
                     placeholder="Aktuelles Passwort"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400"
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-gray-400"
                   />
                   <input
                     type="password"
                     placeholder="Neues Passwort (mind. 6 Zeichen)"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400"
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-gray-400"
                   />
                   <input
                     type="password"
                     placeholder="Neues Passwort bestätigen"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400"
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-gray-400"
                   />
                   <button
                     onClick={handleChangePassword}
                     disabled={saving}
-                    className="w-full bg-gray-900 text-white py-3 rounded-xl text-sm font-medium hover:bg-gray-700 disabled:bg-gray-200 disabled:text-gray-400 transition-all"
+                    className="w-full bg-gray-900 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 disabled:bg-gray-200 disabled:text-gray-400 transition-all"
                   >
                     {saving ? 'Ändert...' : 'Passwort ändern'}
                   </button>
