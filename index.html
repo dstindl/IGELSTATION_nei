@@ -183,6 +183,7 @@
       z-index: 9000;
       box-shadow: 0 -4px 20px rgba(0,0,0,0.07);
       padding-bottom: env(safe-area-inset-bottom, 0px);
+      transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
     }
     .bnav-btn {
       display: flex; align-items: center; justify-content: center;
@@ -441,6 +442,30 @@
       igelMenuOpen();
     }
   }
+
+  // ── Scroll-hide bottom bar ────────────────────────────
+  (function() {
+    var bar = document.getElementById('bnav');
+    var lastY = 0, ticking = false, showTimer;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        requestAnimationFrame(function() {
+          var y = window.scrollY;
+          var diff = y - lastY;
+          if (diff > 10) {
+            bar.style.transform = 'translateY(100%)';
+          } else if (diff < -10) {
+            bar.style.transform = '';
+          }
+          lastY = y;
+          ticking = false;
+          clearTimeout(showTimer);
+          showTimer = setTimeout(function(){ bar.style.transform = ''; }, 1200);
+        });
+        ticking = true;
+      }
+    }, {passive: true});
+  })();
 </script>
 
 
@@ -4738,7 +4763,7 @@
       };
 
       return (
-        <div className="fixed inset-0 bg-black z-50 flex flex-col">
+        <div className="fixed inset-0 bg-black z-50 flex flex-col" style={{overflow:'hidden',touchAction:'none'}}>
           <div className="flex items-center justify-between p-4 bg-black/80">
             <h2 className="text-sm font-semibold text-white">QR-Code scannen</h2>
             <button onClick={onClose} className="text-white/70 hover:text-white w-8 h-8 flex items-center justify-center">
