@@ -79,8 +79,12 @@
     }
     
     input, textarea, select { 
-      font-size: 16px !important;
+      font-size: 14px !important;
       transition: all 0.2s ease;
+    }
+    
+    input::placeholder, textarea::placeholder {
+      font-size: 13px;
     }
     
     input:focus, textarea:focus, select:focus {
@@ -402,7 +406,10 @@
   }
 
   // ── Menu overlay ──────────────────────────────────────
+  var _menuCloseTimer = null;
+
   function igelMenuOpen() {
+    clearTimeout(_menuCloseTimer); // cancel any pending hide
     var sheet = document.getElementById('menu-sheet');
     var overlay = document.getElementById('menu-overlay');
     sheet.style.display = 'block';
@@ -419,14 +426,18 @@
     if (sheet) sheet.classList.remove('open');
     if (overlay) overlay.classList.remove('open');
     bnavSetActive(null);
-    // Hide completely after transition
-    if (sheet) setTimeout(function(){ sheet.style.display = 'none'; }, 340);
+    clearTimeout(_menuCloseTimer);
+    _menuCloseTimer = setTimeout(function(){
+      if (sheet && !sheet.classList.contains('open')) sheet.style.display = 'none';
+      if (overlay && !overlay.classList.contains('open')) overlay.style.display = 'none';
+    }, 340);
   }
   function igelMenuToggle() {
     if (document.getElementById('menu-sheet').classList.contains('open')) {
       igelMenuClose();
     } else {
-      window.__igelCloseAll && window.__igelCloseAll();
+      // Close React dialogs WITHOUT closing menu (avoid conflict)
+      window.__igelCloseAllExceptMenu && window.__igelCloseAllExceptMenu();
       igelMenuOpen();
     }
   }
@@ -3462,6 +3473,14 @@
           setShowMedikamentDB(false); setShowDiagnoseDB(false); setShowQRScanner(false);
           setSelected(null);
           igelMenuClose();
+        };
+        window.__igelCloseAllExceptMenu = () => {
+          setShowProfile(false); setShowAddForm(false); setShowUserMgmt(false);
+          setShowSettings(false); setShowChangelog(false); setShowDesignSpec(false);
+          setShowTodoList(false); setShowDatenbankHub(false); setShowMedDatenbank(false);
+          setShowMedikamentDB(false); setShowDiagnoseDB(false); setShowQRScanner(false);
+          setSelected(null);
+          // intentionally NOT calling igelMenuClose()
         };
         window.__igelAction = (action) => {
           // Always close everything first, then open the requested thing
