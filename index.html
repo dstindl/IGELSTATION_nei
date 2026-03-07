@@ -1,32 +1,3 @@
-<{ version: '1.8.93', label: 'Auge in Passwortfeldern', items: ['Login: Passwort anzeigen/verstecken', 'Userverwaltung: Auge in allen 3 Passwortfeldern'] },
-                    !-- ============================================================
-  IGELPFLEGESTATION PRO — v1.8.93-altDB
-  Stand: März 2026 | Entwickler: Denis (Deutschland)
-  Deployment: https://dstindl.github.io/IGELSTATION_nei/ (GitHub Pages)
-  Datei: index.html (Single-File React + Firebase PWA)
-  ─────────────────────────────────────────────────────────────
-  TECH-STACK:
-    React 18 (Babel/JSX via CDN) · Tailwind CSS (CDN)
-    Firebase 10.7.1 (Auth + Firestore) · QRCode.js · jsQR
-    Lucide Icons · Nominatim API (Adress-Autocomplete)
-  ─────────────────────────────────────────────────────────────
-  DESIGN-SYSTEM (KRITISCH):
-    Schwarz/Weiß minimalistisch · Kein Farb-Noise außer Navbar
-    Felder:  border-gray-200 rounded-xl px-4 py-3 text-sm
-    Buttons: bg-gray-900 text-white rounded-xl py-3 text-sm
-    Labels:  text-xs uppercase tracking-wide text-gray-500
-    Dialog:  p-5 border-b rounded-2xl
-    NIEMALS: bg-gradient · prompt()/confirm() · Emojis als Icons
-  ─────────────────────────────────────────────────────────────
-  FIREBASE COLLECTIONS:
-    users · hedgehogs · invites · auditLog
-  ─────────────────────────────────────────────────────────────
-  STATUS-WERTE:
-    aufnahme · pflege · ueberwinterung
-    auswilderung_bereit · ausgewildert · verstorben
-  ─────────────────────────────────────────────────────────────
-  LETZTES UPDATE: v1.8.93-altDB — Info & Changelog als Vollseite (kein Modal mehr)
-  ============================================================ -->
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -4397,7 +4368,8 @@
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Änderungsprotokoll</p>
                 <div className="space-y-4">
 
-                  {[{ version: '1.8.92', label: 'Login bei jedem App-Start: auth.signOut() beim Mount', items: ['auth.signOut() wird sofort beim App-Start aufgerufen', 'Firebase-Session wird nie weitergeführt', 'Login immer erforderlich — auch nach hartem Neustart'] },
+                  {[{ version: '1.8.93', label: 'Auge in Passwortfeldern', items: ['Login: Passwort anzeigen/verstecken', 'Userverwaltung: Auge in allen 3 Passwortfeldern'] },
+                    { version: '1.8.92', label: 'Login bei jedem App-Start: auth.signOut() beim Mount', items: ['auth.signOut() wird sofort beim App-Start aufgerufen', 'Firebase-Session wird nie weitergeführt', 'Login immer erforderlich — auch nach hartem Neustart'] },
                     { version: '1.8.91', label: 'Login bei jedem App-Start', items: ['visibilitychange ruft auth.signOut() auf', 'App zeigt immer Login wenn sie in den Vordergrund kommt'] },
                     
                     { version: '1.8.90', label: 'Bugfix: [object Object] in Medikamenten-Liste', items: ['Changelog-Einträge wurden fälschlich in Medikamenten-Karten-Array injiziert', 'activeSubstance und brand werden wieder korrekt angezeigt'] },
