@@ -4385,6 +4385,31 @@
                 <div className="space-y-4">
 
                   {[
+                    { version: '1.8.82', label: 'Login & App-Beenden Fix', items: [
+                      'Login-Eingabefelder weiter nach unten gerückt',
+                      '„Beenden"-Button schließt App zuverlässiger (history.go + window.close)',
+                    ]},
+                    { version: '1.8.81', label: 'Ladescreen ins HTML + Login-Feinschliff', items: [
+                      'Ladescreen (Igel-Bild + Spinner + Text) direkt im HTML — sichtbar vor React-Start',
+                      'React LoadingScreen nur noch minimaler Spinner für interne Ladezustände',
+                      'Login-Eingabefelder nach unten gerückt (marginTop 24px)',
+                      '„Passwort vergessen"-Text auf 12px angeglichen',
+                    ]},
+                    { version: '1.8.80', label: 'Loading Screen: Großes Igel-Bild + Float-Animation', items: [
+                      'Igel-Icon auf 180px vergrößert, weißer Kreis entfernt',
+                      'Sanfte Float-Animation (auf/ab) auf dem Ladescreen',
+                    ]},
+                    { version: '1.8.79', label: 'Login-Layout: Eingabefelder näher ans Icon', items: [
+                      'marginBottom:auto entfernt — Felder kleben direkt unter dem Header-Block',
+                    ]},
+                    { version: '1.8.78', label: 'Login-Abstände reduziert', items: [
+                      'Abstand oben zum Icon: 15vh → 7vh',
+                      'Abstand Icon-Block zu Eingabefeldern: 1vh → 0',
+                    ]},
+                    { version: '1.8.74', label: 'App-Icons aktualisiert', items: [
+                      'Neues Igel-PNG (Igel mit Hand + Kreuz) als icon-192 und icon-512',
+                      'Service Worker Cache-Name aktualisiert',
+                    ]},
                     { version: '1.8.73', label: 'Service Worker: Network-first Fix', items: [
                       'HTML/JS wird jetzt immer frisch vom Server geladen (kein alter Cache mehr)',
                       'Nur Icons werden gecacht — App-Updates erscheinen sofort',
