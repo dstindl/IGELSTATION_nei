@@ -942,8 +942,6 @@
 
     // Password Setup Component
     const PasswordSetup = ({ onBack }) => {
-      const [showSetupPw, setShowSetupPw] = useState(false);
-      const [showSetupPw2, setShowSetupPw2] = useState(false);
       const [showRegPw, setShowRegPw] = useState(false);
       const [showRegPw2, setShowRegPw2] = useState(false);
       const [email, setEmail] = useState('');
@@ -1343,6 +1341,8 @@
     // Invite Registration
     const InviteRegistration = ({ inviteCode }) => {
       const [inviteData, setInviteData] = useState(null);
+      const [showSetupPw, setShowSetupPw] = useState(false);
+      const [showSetupPw2, setShowSetupPw2] = useState(false);
       const [name, setName] = useState('');
       const [password, setPassword] = useState('');
       const [confirm, setConfirm] = useState('');
