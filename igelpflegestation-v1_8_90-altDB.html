@@ -1960,12 +1960,7 @@
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate">{m.name}</p>
                         <p className="text-xs text-gray-400 mt-0.5">
-                          {[
-                    { version: '1.8.90', label: 'Back-Navigation: onClose nur history.back()', items: ['onClose-Handler rufen nur history.back() — handleBack übernimmt alles', 'Kein doppeltes setShow(false) mehr — kein Race Condition Bug'] },
-                    { version: '1.8.89', label: 'App-Beenden: history.go(-(length-1))', items: ['Springt immer zur Ursprungsseite, egal wie viele Menüs geöffnet wurden', 'Funktioniert korrekt auch wenn Popup bereits offen ist'] },
-                    { version: '1.8.88', label: 'Login: Eingabefelder noch weiter runter', items: ['marginTop auf 88px erhöht'] },
-                    { version: '1.8.87', label: 'Login: Eingabefelder noch tiefer', items: ['marginTop auf 64px erhöht', 'Versionsanzeige in Menü und Changelog-Header korrigiert'] },
-                    { version: '1.8.86', label: 'Login: Eingabefelder tiefer', items: ['marginTop der Eingabefelder auf 48px erhöht'] },m.category, m.defaultDosage ? m.defaultDosage+' '+(m.dosageUnit||'') : null, (m.applicationRoutes||[]).join('/')].filter(Boolean).join(' · ')}
+                          {[m.activeSubstance, m.brand, m.category, m.defaultDosage ? m.defaultDosage+' '+(m.dosageUnit||'') : null, (m.applicationRoutes||[]).join('/')].filter(Boolean).join(' · ')}
                         </p>
                         {(m.linkedDiagnoses||[]).length > 0 && (
                           <p className="text-[10px] text-gray-300 mt-0.5">Verknuepft: {(m.linkedDiagnoses||[]).length} Diagnose(n)</p>
@@ -3662,24 +3657,24 @@
         return <UserManagement
           users={users}
           userData={userData}
-          onClose={() => { history.back(); }}
+          onClose={() => { setShowUserMgmt(false); window.igelMenuOpen&&window.igelMenuOpen(false); history.back(); }}
         />;
       }
 
       if (showChangelog) {
-        return <Changelog onClose={() => { history.back(); }} />;
+        return <Changelog onClose={() => { setShowChangelog(false); window.igelMenuOpen&&window.igelMenuOpen(false); history.back(); }} />;
       }
 
       if (showDesignSpec) {
-        return <DesignSpec onClose={() => { history.back(); }} />;
+        return <DesignSpec onClose={() => { setShowDesignSpec(false); window.igelMenuOpen&&window.igelMenuOpen(false); history.back(); }} />;
       }
 
       if (showTodoList) {
-        return <TodoList onClose={() => { history.back(); }} userData={userData} />;
+        return <TodoList onClose={() => { setShowTodoList(false); window.igelMenuOpen&&window.igelMenuOpen(false); history.back(); }} userData={userData} />;
       }
 
       if (showSettings) {
-        return <SettingsDialog settings={settings} onUpdate={updateSetting} onClose={() => { history.back(); }} />;
+        return <SettingsDialog settings={settings} onUpdate={updateSetting} onClose={() => { setShowSettings(false); window.igelMenuOpen&&window.igelMenuOpen(false); history.back(); }} />;
       }
 
       if (showDatabaseDialog) {
@@ -4188,7 +4183,7 @@
                     className="border border-gray-200 text-gray-600 py-3 rounded-xl text-sm font-medium hover:bg-gray-50 transition-all">
                     Abbrechen
                   </button>
-                  <button onClick={() => { window.__igelExiting = true; setShowExitConfirm(false); history.go(-(history.length - 1)); }}
+                  <button onClick={() => { setShowExitConfirm(false); window.igelMenuClose&&window.igelMenuClose(); window.__igelLogout&&window.__igelLogout(); }}
                     className="bg-gray-900 text-white py-3 rounded-xl text-sm font-medium hover:bg-gray-700 transition-all">
                     Beenden
                   </button>
@@ -4390,6 +4385,17 @@
                 <div className="space-y-4">
 
                   {[
+                    { version: '1.8.90', label: 'Bugfix: [object Object] in Medikamenten-Liste', items: ['Changelog-Einträge wurden fälschlich in Medikamenten-Karten-Array injiziert', 'activeSubstance und brand werden wieder korrekt angezeigt'] },
+                    { version: '1.8.89', label: 'Beenden = Abmelden', items: ['Beenden-Button ruft igelMenuClose + __igelLogout auf', 'Kein History-Gefummel — saubere Rückkehr zum Login'] },
+                    { version: '1.8.88', label: 'Login: Eingabefelder weiter runter', items: ['marginTop auf 88px erhöht'] },
+                    { version: '1.8.87', label: 'Login: Eingabefelder tiefer + Versionsfix', items: ['marginTop auf 64px', 'Versionsanzeige in Menü und Changelog-Header korrigiert'] },
+                    { version: '1.8.86', label: 'Login: Eingabefelder tiefer', items: ['marginTop der Eingabefelder auf 48px erhöht'] },
+                    { version: '1.8.85', label: 'App-Beenden: Guard-Eintrag-System', items: ['Ein Guard pushState beim Mount', 'Jede Back-Aktion stellt Guard wieder her', 'Guard verbraucht = Main = Popup'] },
+                    { version: '1.8.84', label: 'App-Beenden: History-Depth-System', items: ['Depth-Ref trackt alle pushState-Aufrufe', 'Beenden: history.go(-depth-1)'] },
+                    { version: '1.8.83', label: 'App-Beenden: Endlos-Dialog-Bug behoben', items: ['window.__igelExiting Flag verhindert erneutes Öffnen des Dialogs'] },
+                    { version: '1.8.82', label: 'Login & App-Beenden Fix', items: ['Login-Abstände optimiert', 'App-Beenden Dialog überarbeitet'] },
+                    { version: '1.8.81', label: 'Loading Screen: Igel-Animation', items: ['Großes Igel-Bild mit Float-Animation', 'Statischer Pre-React Ladescreen'] },
+                    { version: '1.8.74', label: 'Neues App-Icon', items: ['Igel mit Hand + Kreuz als PWA-Icon'] },
                     { version: '1.8.73', label: 'Service Worker: Network-first Fix', items: [
                       'HTML/JS wird jetzt immer frisch vom Server geladen (kein alter Cache mehr)',
                       'Nur Icons werden gecacht — App-Updates erscheinen sofort',
