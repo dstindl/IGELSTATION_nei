@@ -1,4 +1,5 @@
-<!-- ============================================================
+<{ version: '1.8.93', label: 'Auge in Passwortfeldern', items: ['Login: Passwort anzeigen/verstecken', 'Userverwaltung: Auge in allen 3 Passwortfeldern'] },
+                    !-- ============================================================
   IGELPFLEGESTATION PRO — v1.8.93-altDB
   Stand: März 2026 | Entwickler: Denis (Deutschland)
   Deployment: https://dstindl.github.io/IGELSTATION_nei/ (GitHub Pages)
@@ -836,31 +837,17 @@
       const [password, setPassword] = useState('');
       const [error, setError] = useState('');
       const [loading, setLoading] = useState(false);
-      const [showPw, setShowPw] = useState(false);
       const [showPasswordSetup, setShowPasswordSetup] = useState(false);
       const [showPasswordReset, setShowPasswordReset] = useState(false);
-      const [biometricAvailable, setBiometricAvailable] = useState(false);
-      const [biometricLoading, setBiometricLoading] = useState(false);
+      const [showLoginPw, setShowLoginPw] = useState(false);
 
-      React.useEffect(() => {
-        if (window.PasswordCredential && navigator.credentials) {
-          navigator.credentials.get({ password: true, mediation: 'silent' })
-            .then(cred => { if (cred) setBiometricAvailable(true); })
-            .catch(() => {});
-        }
-      }, []);
-
-      const doLogin = async (emailVal, passwordVal) => {
+      const handleLogin = async (e) => {
+        e.preventDefault();
         setError('');
         setLoading(true);
+
         try {
-          await auth.signInWithEmailAndPassword(emailVal, passwordVal);
-          if (window.PasswordCredential && navigator.credentials) {
-            try {
-              const cred = new PasswordCredential({ id: emailVal, password: passwordVal });
-              await navigator.credentials.store(cred);
-            } catch(e) {}
-          }
+          await auth.signInWithEmailAndPassword(email, password);
         } catch (err) {
           if (err.code === 'auth/user-not-found') {
             setError('Kein Account gefunden. Bitte "Passwort einrichten" nutzen.');
@@ -871,20 +858,6 @@
           }
         }
         setLoading(false);
-      };
-
-      const handleLogin = async () => { await doLogin(email, password); };
-
-      const handleBiometric = async () => {
-        setBiometricLoading(true);
-        setError('');
-        try {
-          const cred = await navigator.credentials.get({ password: true, mediation: 'required' });
-          if (cred) await doLogin(cred.id, cred.password);
-        } catch(err) {
-          setError('Biometrischer Login abgebrochen.');
-        }
-        setBiometricLoading(false);
       };
 
       if (showPasswordSetup) {
@@ -938,7 +911,7 @@
               />
               <div style={{position:'relative'}}>
                 <input
-                  type={showPw ? 'text' : 'password'}
+                  type={showLoginPw ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Passwort"
@@ -946,41 +919,21 @@
                   onFocus={e => { e.target.style.borderColor='#1a1f2e'; e.target.style.background='#fff'; e.target.style.boxShadow='0 0 0 3px rgba(26,31,46,0.06)'; }}
                   onBlur={e => { e.target.style.borderColor='#e2e6ea'; e.target.style.background='#fafbfc'; e.target.style.boxShadow='none'; }}
                 />
-                <button type="button" onClick={() => setShowPw(v => !v)}
-                  style={{position:'absolute',right:'14px',top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',padding:'4px',color:'#8a93a2',display:'flex',alignItems:'center'}}>
-                  {showPw ? (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-                      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-                      <line x1="1" y1="1" x2="23" y2="23"/>
-                    </svg>
-                  ) : (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                      <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                  )}
+                <button type="button" onClick={() => setShowLoginPw(v => !v)} style={{position:'absolute',right:'14px',top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',padding:'4px',color:'#8a93a2',display:'flex',alignItems:'center'}}>
+                  {showLoginPw ? (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>) : (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>)}
                 </button>
               </div>
               {error && <div style={{color:'#c0392b',fontSize:'12px',paddingLeft:'2px',fontFamily:"'DM Sans',sans-serif"}}>{error}</div>}
-              <button type="button" onClick={handleLogin} disabled={loading}
-                style={{fontFamily:"'DM Sans',sans-serif",fontSize:'15px',fontWeight:600,background:loading?'#ccc':'#1a1f2e',color:'#fff',border:'none',borderRadius:'12px',padding:'15px',width:'100%',cursor:loading?'not-allowed':'pointer',transition:'background 0.2s',marginTop:'8px'}}
+              <button
+                type="button"
+                onClick={handleLogin}
+                disabled={loading}
+                style={{fontFamily:"'DM Sans',sans-serif",fontSize:'15px',fontWeight:600,background:loading?'#ccc':'#1a1f2e',color:'#fff',border:'none',borderRadius:'12px',padding:'15px',width:'100%',cursor:loading?'not-allowed':'pointer',transition:'background 0.2s,transform 0.2s,box-shadow 0.2s',marginTop:'8px'}}
+                onMouseEnter={e => { if(!loading){ e.target.style.background='#2c3347'; e.target.style.transform='translateY(-1px)'; e.target.style.boxShadow='0 6px 20px rgba(26,31,46,0.25)'; } }}
+                onMouseLeave={e => { e.target.style.background=loading?'#ccc':'#1a1f2e'; e.target.style.transform=''; e.target.style.boxShadow=''; }}
               >
                 {loading ? 'Anmelden...' : 'Anmelden'}
               </button>
-              {biometricAvailable && (
-                <button type="button" onClick={handleBiometric} disabled={biometricLoading}
-                  style={{fontFamily:"'DM Sans',sans-serif",fontSize:'14px',fontWeight:500,background:'#f5f6f8',color:'#1a1f2e',border:'1.5px solid #e2e6ea',borderRadius:'12px',padding:'14px',width:'100%',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'8px'}}
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                    <line x1="12" y1="19" x2="12" y2="23"/>
-                    <line x1="8" y1="23" x2="16" y2="23"/>
-                  </svg>
-                  {biometricLoading ? 'Warte...' : 'Mit Fingerabdruck anmelden'}
-                </button>
-              )}
             </div>
 
             <div style={{textAlign:'center',marginTop:'20px'}}>
@@ -4444,8 +4397,7 @@
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Änderungsprotokoll</p>
                 <div className="space-y-4">
 
-                  {[{ version: '1.8.93', label: 'Login: Auge + Biometrischer Login', items: ['Auge-Button zum Anzeigen/Verstecken des Passworts', 'Biometrischer Login via PasswordCredential API (Android Credential Manager)', 'Nach erfolgreichem Login werden Credentials biometrisch gespeichert', 'Fingerabdruck-Button erscheint automatisch wenn Credentials vorhanden'] },
-                    { version: '1.8.92', label: 'Login bei jedem App-Start: auth.signOut() beim Mount', items: ['auth.signOut() wird sofort beim App-Start aufgerufen', 'Firebase-Session wird nie weitergeführt', 'Login immer erforderlich — auch nach hartem Neustart'] },
+                  {[{ version: '1.8.92', label: 'Login bei jedem App-Start: auth.signOut() beim Mount', items: ['auth.signOut() wird sofort beim App-Start aufgerufen', 'Firebase-Session wird nie weitergeführt', 'Login immer erforderlich — auch nach hartem Neustart'] },
                     { version: '1.8.91', label: 'Login bei jedem App-Start', items: ['visibilitychange ruft auth.signOut() auf', 'App zeigt immer Login wenn sie in den Vordergrund kommt'] },
                     
                     { version: '1.8.90', label: 'Bugfix: [object Object] in Medikamenten-Liste', items: ['Changelog-Einträge wurden fälschlich in Medikamenten-Karten-Array injiziert', 'activeSubstance und brand werden wieder korrekt angezeigt'] },
@@ -4801,6 +4753,9 @@
       const [currentPassword, setCurrentPassword] = useState('');
       const [newPassword, setNewPassword] = useState('');
       const [confirmPassword, setConfirmPassword] = useState('');
+      const [showCurPw, setShowCurPw] = useState(false);
+      const [showNewPw, setShowNewPw] = useState(false);
+      const [showConPw, setShowConPw] = useState(false);
       const [error, setError] = useState('');
       const [success, setSuccess] = useState('');
       const [saving, setSaving] = useState(false);
@@ -4927,27 +4882,24 @@
               <div>
                 <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Passwort ändern</p>
                 <div className="space-y-2">
-                  <input
-                    type="password"
-                    placeholder="Aktuelles Passwort"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-gray-400"
-                  />
-                  <input
-                    type="password"
-                    placeholder="Neues Passwort (mind. 6 Zeichen)"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-gray-400"
-                  />
-                  <input
-                    type="password"
-                    placeholder="Neues Passwort bestätigen"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-gray-400"
-                  />
+                  <div className="relative">
+                    <input type={showCurPw ? 'text' : 'password'} placeholder="Aktuelles Passwort" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 pr-10 text-sm focus:outline-none focus:border-gray-400" />
+                    <button type="button" onClick={() => setShowCurPw(v=>!v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                      {showCurPw ? (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>) : (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>)}
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <input type={showNewPw ? 'text' : 'password'} placeholder="Neues Passwort (mind. 6 Zeichen)" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 pr-10 text-sm focus:outline-none focus:border-gray-400" />
+                    <button type="button" onClick={() => setShowNewPw(v=>!v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                      {showNewPw ? (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>) : (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>)}
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <input type={showConPw ? 'text' : 'password'} placeholder="Neues Passwort bestätigen" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 pr-10 text-sm focus:outline-none focus:border-gray-400" />
+                    <button type="button" onClick={() => setShowConPw(v=>!v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                      {showConPw ? (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>) : (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>)}
+                    </button>
+                  </div>
                   <button
                     onClick={handleChangePassword}
                     disabled={saving}
