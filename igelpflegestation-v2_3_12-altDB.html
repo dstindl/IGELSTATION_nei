@@ -7339,7 +7339,6 @@
                     if (treatments.length === 0) return (
                       <p className="text-sm text-gray-400 py-1">Keine Behandlungen aktiv</p>
                     );
-                    const treatments = data.treatments || [];
                     const aktive = treatments.filter(t => t.status === 'aktiv');
                     const abg    = treatments.filter(t => t.status !== 'aktiv');
                     const todayStr = new Date().toISOString().split('T')[0];
