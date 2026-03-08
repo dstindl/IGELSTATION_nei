@@ -3891,15 +3891,6 @@
           }
         };
         window.__igelDatenbank = () => { window.__igelCloseAll&&window.__igelCloseAll(); setShowDatenbankHub(true); history.pushState({page:'datenbankHub'},''); };
-        // ── DB entry counts for Hub ──────────────────────────────────
-        useEffect(() => {
-          const unsubs = [
-            db.collection('medicationDatabase').onSnapshot(s => setDbCounts(p => ({...p, meds: s.size}))),
-            db.collection('diagnosisDatabase').onSnapshot(s => setDbCounts(p => ({...p, diags: s.size}))),
-            db.collection('treatmentDatabase').onSnapshot(s => setDbCounts(p => ({...p, treatments: s.size}))),
-          ];
-          return () => unsubs.forEach(u => u());
-        }, []);
 
         window.__igelUsers = () => { window.__igelCloseAll&&window.__igelCloseAll(); setShowUserMgmt(true); history.pushState({page:'userMgmt'},''); };
         window.__igelSettings = () => { window.__igelCloseAll&&window.__igelCloseAll(); setShowSettings(true); history.pushState({page:'settings'},''); };
@@ -3912,6 +3903,16 @@
           if (bar) bar.style.display = 'none';
         };
       }, [isAdmin, isGuest, userData]);
+
+      // ── DB entry counts for Hub ──────────────────────────────────────────
+      useEffect(() => {
+        const unsubs = [
+          db.collection('medicationDatabase').onSnapshot(s => setDbCounts(p => ({...p, meds: s.size}))),
+          db.collection('diagnosisDatabase').onSnapshot(s => setDbCounts(p => ({...p, diags: s.size}))),
+          db.collection('treatmentDatabase').onSnapshot(s => setDbCounts(p => ({...p, treatments: s.size}))),
+        ];
+        return () => unsubs.forEach(u => u());
+      }, []);
 
       // ── Android Systemtaste Zurück ──────────────────────────────────────────
       // Refs für stale-closure-freien Zugriff im popstate-Handler
