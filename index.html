@@ -6622,6 +6622,18 @@
       };
 
       const fieldClass = "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400 bg-white";
+      // ── Info-Strip Berechnungen ──────────────────────────────────────
+      const pflegetage = data.aufnahmedatum ? Math.floor((new Date() - new Date(data.aufnahmedatum)) / 86400000) : 0;
+      const gvArr = data.gewichtsverlauf || [];
+      const weightTrend = (() => {
+        if (gvArr.length < 2) return null;
+        const sorted = [...gvArr].sort((a,b) => (a.datum||'').localeCompare(b.datum||''));
+        const diff = sorted[sorted.length-1].gewicht - sorted[sorted.length-2].gewicht;
+        if (diff > 0) return { label: '+'+diff+'g', up: true };
+        if (diff < 0) return { label: diff+'g', up: false };
+        return { label: '+-0g', up: null };
+      })();
+      const aktiveMeds = (data.medikationen || []).filter(m => m.aktiv !== false).length;
       const statusLabel = { aufnahme: 'Aufnahme', pflege: 'In Pflege', ueberwinterung: 'Überwinterung', auswilderung_bereit: 'Auswilderungsbereit', ausgewildert: 'Ausgewildert', verstorben: 'Verstorben' };
 
       // Generate QR Code when modal opens
