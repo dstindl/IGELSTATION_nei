@@ -6288,6 +6288,7 @@
       const [showDiagnosisModal, setShowDiagnosisModal] = useState(false);
       const [showTreatmentModal, setShowTreatmentModal] = useState(false);
       const [showMedModal, setShowMedModal] = useState(false);
+      const [activeKachel, setActiveKachel] = useState('behandlung');
       const [medDB, setMedDB] = useState([]);
       const [diagDB, setDiagDB] = useState([]);
       const [wizardStep, setWizardStep] = useState(0);
@@ -6782,7 +6783,6 @@
               <div className="space-y-3 fade-in">
                 <div className="bg-white rounded-xl border border-gray-100 p-4">
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Medikation</p>
-                                <div className="border-t border-gray-100 pt-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-medium text-gray-700">Medikation</span>
@@ -6898,7 +6898,6 @@
                     </div>
                   );
                 })()}
-              </div>
                 </div>
               </div>
             )}
