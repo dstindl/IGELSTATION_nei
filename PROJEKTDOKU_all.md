@@ -370,6 +370,7 @@ c = c.replace("{ version: '2.3.YY',", ...)  # NIEMALS!
 
 | Version | Feature | Kernänderung |
 |---------|---------|-------------|
+| 2.3.45 | Pflegeplan Warm + Kreise + Toggle | Stone-Design, Fälligkeitsfarben, reversibles Toggle, Quick-View Footer-Fix |
 | 2.3.44 | QR Quick-View: Grüne Kreise + Wizard-Start | Voller grüner Kreis+Haken, initialAction öffnet Vorlage-Modal direkt |
 | 2.3.43 | QR Quick-View: Fälligkeits-Kreise | Kreise statt Checkboxen, Grün/Amber/Rot/Grau, Fortschrittsbalken |
 | 2.3.42 | Fix: Igelkarte nach Quick-View | onOpenCard liest frische Daten aus live hedgehogs[] |
@@ -411,4 +412,4 @@ c = c.replace("{ version: '2.3.YY',", ...)  # NIEMALS!
 
 ---
 
-*Zuletzt aktualisiert: März 2026 · v2.3.44*
+*Zuletzt aktualisiert: März 2026 · v2.3.45*
