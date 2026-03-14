@@ -413,4 +413,4 @@ c = c.replace("{ version: '2.3.YY',", ...)  # NIEMALS!
 
 ---
 
-*Zuletzt aktualisiert: März 2026 · v2.3.51*
+*Zuletzt aktualisiert: März 2026 · v2.3.52*
