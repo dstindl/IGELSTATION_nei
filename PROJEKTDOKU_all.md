@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.3.44 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.3.58 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -33,7 +33,7 @@ DM Sans / DM Mono                    Google Fonts
 ### Dateien im Projekt
 ```
 index.html                           Haupt-App (alle Komponenten)
-igelpflegestation-vX_X_XX-altDB.html Benannte Backup-Version
+igelpflegestation-vX_X_XX-altDB.html Benannte Backup-Version (nur aktuelle)
 service-worker.js                    Offline-Cache
 icon-192.png / icon-512.png          PWA-Icons
 deploy.sh                            GitHub Pages Ersteinrichtung
@@ -64,6 +64,8 @@ med_haeufigkeiten      Häufigkeitsdefinitionen
 - **NIEMALS** doppelte `const`-Deklaration im selben Scope
 - **NIEMALS** doppelte `className` auf demselben Element
 - **NIEMALS** JSX als Wert in JS-Objekt-Literal
+- **NIEMALS** Template-Literale mit einfachen Anführungszeichen in `${}` → `padStart(2,'0')` bricht Babel! String-Verkettung verwenden: `+(n<10?'0':'')+n`
+- **NIEMALS** schließendes `</div>` ohne öffnendes `<div>` im JSX
 - **Braces-Balance** im gesamten Babel-Script muss 0 sein
 
 ### Firestore-Regeln
@@ -75,7 +77,6 @@ med_haeufigkeiten      Häufigkeitsdefinitionen
 ### Navigation
 - Menü-Seiten `onClose`: **NIEMALS** `history.back()` → popstate-Konflikt
 - Korrekt: `history.replaceState({igelApp:true,level:1},'')` + `igelMenuOpen(false)`
-- QR Quick-View: `history.pushState({showQuickView:true},'')` beim Öffnen
 
 ### Neue Komponenten
 - Immer **vor `UserProfile`** einfügen
@@ -86,8 +87,8 @@ med_haeufigkeiten      Häufigkeitsdefinitionen
 ## 4. Versions-Pflicht (alle 5 Stellen bei JEDER Änderung)
 
 1. **Changelog-Array** im JSX (am Anfang einfügen)
-2. **LoadingScreen**: `>vX.X.XX</div>` im HTML-Splash (Zeile ~326)
-3. **Menü-Footer**: `>Version X.X.XX</div>` (class="msheet-version", Zeile ~376)
+2. **LoadingScreen**: `>vX.X.XX</div>` im HTML-Splash
+3. **Menü-Footer**: `>Version X.X.XX</div>` (class="msheet-version")
 4. **Changelog-Header**: `Version X.X.XX · Cloud-basierte...` im JSX
 5. **Service Worker**: `igelpflegestation-vX.X.XX` in service-worker.js
 
@@ -96,8 +97,7 @@ med_haeufigkeiten      Häufigkeitsdefinitionen
 import re
 with open('index.html','r') as f: c=f.read()
 s=re.search(r'<script type="text/babel">(.*?)</script>',c,re.DOTALL).group(1)
-print(f"Braces: {s.count('{')-s.count('}')}, Parens: {s.count('(')-s.count(')')}")
-# Beide müssen 0 sein!
+print("Braces: %d, Parens: %d" % (s.count('{')-s.count('}'), s.count('(')-s.count(')')))
 ```
 
 ### ZIP-Befehl
@@ -120,84 +120,100 @@ zip /home/claude/Igelstation.zip index.html igelpflegestation-vX_X_XX-altDB.html
 #44403c   Text sekundär
 #a8a29e   Text gedimmt
 #e7e5e4   Trennlinien (gestrichelt)
-#d97706   Amber — fällige Gaben
-#16a34a   Grün — erledigte Gaben
-#dc2626   Rot — überfällige Gaben
-#fef3c7   Amber-Badge Hintergrund
+```
+
+### Timeline Design F — Farbpalette (Toleranz-Logik)
+```
+#f0fdf4   Mintgrün  — done-open / done-locked (erledigt)
+#fefce8   Cremgelb  — due (fällig, im Toleranzfenster)
+#fff1f2   Altrosa   — overdue-locked (verpasst, gesperrt)
+#fafaf8   Warm Grau — pending (noch nicht fällig)
+```
+
+### Toleranz-Logik — 6 Zustände
+```
+done-open     Erledigt, im Toleranzfenster     → rückgängig möglich (✓)
+done-locked   Erledigt, Fenster abgelaufen     → eingefroren grün (✓🔒)
+due           Fällig, im Toleranzfenster       → quittierbar (◎, pulsiert gelb)
+overdue-locked Verpasst, Fenster abgelaufen    → gesperrt rot (●🔒, Schraffur)
+pending       Noch nicht fällig                → grau, nicht klickbar (○)
+```
+
+### Timeline — CSS-Keyframes
+```css
+@keyframes qv-pulse-red   { 0%,100%{opacity:1} 50%{opacity:.5} }
+@keyframes qv-pulse-amber { 0%,100%{opacity:1} 50%{opacity:.55} }
 ```
 
 ### Typografie
 ```
 DM Sans (800)   Display, Headings, Buttons
 Arial           Body-Text
-DM Mono (500)   IDs, Gewicht, Code-Werte
+DM Mono (500)   IDs, Gewicht, Code-Werte, Timeline-Zeitlabels
 ```
-
-### Fälligkeits-Kreise (konsistent in Quick-View, Pflegeplan, Igelkarte)
-```
-Grün solid #16a34a + weißer Haken   Gabe erledigt
-Amber pulsierend #d97706            Gabe fällig (jetzt)
-Rot pulsierend #dc2626              Überfällig (gestern nicht gegeben)
-Grau transparent #e7e5e4            Noch nicht fällig (Abendgabe)
-```
-
-### CSS-Keyframes
-```css
-@keyframes qv-pulse-red   { 0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.35)} 50%{box-shadow:0 0 0 5px rgba(220,38,38,0)} }
-@keyframes qv-pulse-amber { 0%,100%{box-shadow:0 0 0 0 rgba(217,119,6,.3)}  50%{box-shadow:0 0 0 4px rgba(217,119,6,0)} }
-```
-
-### Prinzipien
-- Keine Emojis in JSX
-- SVG-Attribute in camelCase (`strokeWidth`, `strokeLinecap`)
-- `fixed inset-0` NIEMALS in `fade-in`-Div
-- BottomBar: `height: 62px`, `z-index: 9000`
-- Formulare mit Fixed-Nav: `padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 74px)`
 
 ---
 
-## 6. Komponenten-Architektur
+## 6. Pflegeplan — Timeline (v2.3.52+)
 
-### Haupt-Komponenten
-```
-MainApp              Root, Routing, globaler State, QR-Trigger
-HedgehogDetail       Igelkarte (4 Kacheln: Behandlung/Gewicht/Diagnose/Info)
-Pflegeplan           Tagesplan aller Igel, Gaben quittieren
-QRScannerModal       Kamera-QR-Scan (jsQR), Taschenlampe
-QRQuickView          Bottom Sheet nach QR-Scan
-AddHedgehogForm      2-Schritt-Wizard neue Igelaufnahme
-TreatmentWizard      4-Schritt: Diagnose→Medikament→Dosis→Start
-MedikamentDB         Medikamentenstammdaten CRUD
-DiagnoseDB           Diagnosestammdaten CRUD
-TreatmentDB          Behandlungsvorlagen CRUD
-TodoList             Aufgaben (app_todos/main.items[])
-UserProfile          Profil (Name, Passwort)
-UserManagement       Admin: Benutzerverwaltung
-SettingsDialog       App-Einstellungen
-DashboardDonut       Donut-Chart Bestandsübersicht
-ChangelogPage        Versionshistorie
+### States (Pflegeplan-Komponente)
+```javascript
+const [dayStartH, setDayStartH] = React.useState(6);     // Tagesbeginn
+const [dayEndH,   setDayEndH]   = React.useState(22);     // Tagesende
+const [toleranceMins, setToleranceMins] = React.useState(120); // ±2h
+const [showDaySettings, setShowDaySettings] = React.useState(false);
+const [simTime, setSimTime] = React.useState(-1);         // -1=live
+const activeSec = simTime >= 0 ? simTime : nowSec;
 ```
 
-### BottomBar
-```
-bnav-menu       Hamburger-Menü
-bnav-home       Startseite
-bnav-neu        Neuer Igel
-bnav-qr         QR-Scanner → Quick-View
-bnav-pflegeplan Pflegeplan
+### Test-Panel (gelb gestrichelt, später Admin-Einstellungen)
+- Tagesbeginn-Regler (0–12 Uhr)
+- Tagesende-Regler (12–24 Uhr)
+- Toleranz-Regler (±15min – ±12h, Schritt 15min)
+- Uhrzeit-Sim-Regler + live-Button
+- Uhr-Icon-Button im Header zeigt aktive Zeit
+
+### tlSlotState Logik
+```javascript
+const tlSlotState = (task, di, cur, dayStart, dayLen) => {
+  const t = tlDoseTime(di, task.freqPerDay, dayStart, dayLen);
+  const tolSec = toleranceMins * 60;
+  const inWindow = cur >= (t-tolSec) && cur <= (t+tolSec);
+  const pastWindow = cur > (t+tolSec);
+  
+  // Check if given: apps within this slot's window
+  const slotGiven = task.applications.some(a => {
+    const appSec = new Date(a.doneAt).getHours()*3600+...;
+    return appSec >= (t-tolSec) && appSec <= (t+tolSec);
+  }) || tapped.has(circleKey);
+
+  if (slotGiven) return inWindow ? 'done-open' : 'done-locked';
+  if (cur < t-tolSec) return 'pending';
+  if (inWindow) return 'due';
+  return 'overdue-locked';
+};
 ```
 
-### Menü-Seiten Pattern
-- Full-Page Early-Return (kein Modal)
-- `onClose`: `history.replaceState({igelApp:true,level:1},'')` + `igelMenuOpen(false)`
-- Back-State: `_backState.current` enthält alle relevanten States
+### WICHTIG: task.applications muss im tasks.push() enthalten sein
+```javascript
+tasks.push({
+  ...,
+  applications: m.applications || [],  // ← PFLICHT für tlSlotState
+});
+```
+
+### Design F Segmente
+- Balken geteilt in N+1 Segmente (N = Anzahl Gaben)
+- Segment 0 (links) = Farbe des ERSTEN Kreises (farbiger Anfangsbereich)
+- Segment i = Farbe von Kreis i-1
+- Weiße halbtransparente Kreise über Segmenten
+- Icons: ✓ erledigt, ◎ fällig, ● verpasst, ○ ausstehend
+- Schraffur auf gesperrten Segmenten
+- Weißer Zeitmarker mit Pfeil
 
 ---
 
 ## 7. QR Quick-View (v2.3.37+)
-
-### Flow
-QR-Icon → Scanner → QR erkannt → Bottom Sheet über Scanner
 
 ### State in MainApp
 ```javascript
@@ -208,89 +224,48 @@ const [quickViewInitialAction, setQuickViewInitialAction] = useState(null);
 
 ### Funktionen
 - Gewicht eintragen → `gewichtsverlauf[]` + `gewichtAktuell`
-- Medikamente: N Kreise (1 pro Gabe), live Firestore-Write, reversibel
-- Fälligkeitsfarben analog Pflegeplan
-- Fortschrittsbalken bei >1 Gabe/Tag
+- Medikamente quittieren (Kreise, live Firestore), reversibel
 - Notizen → `h.notizen[]`
-- Behandlung anlegen → öffnet Igelkarte + `showVorlageModal=true` direkt
+- Behandlung anlegen → `onOpenCard('startVorlage')` → Vorlage-Modal direkt
+- Footer-Button: `paddingBottom: calc(env(safe-area-inset-bottom, 0px) + 74px)`
 - `onOpenCard` liest frische Daten: `hedgehogs.find(x => x.id === h.id)`
 
-### initialAction
-```javascript
-// HedgehogDetail: showVorlageModal startet direkt
-const [showVorlageModal, setShowVorlageModal] = useState(
-  () => initialAction === 'startVorlage' && !isGuest
-);
+### Farben (Quick-View Kreise)
 ```
-
-### Dot-State Logik
-```javascript
-const getDotState = (item, dotIdx) => {
-  if (dotIdx < item.todayCount) return 'done';
-  if (dotIdx === item.todayCount) return item.wasGivenBefore ? 'overdue' : 'due';
-  return 'pending';
-};
+#dcfce7   Mintgrün  — erledigt (voller Kreis + grüner Haken)
+#fef9c3   Cremgelb  — fällig (pulsierend)
+#ffe4e6   Altrosa   — überfällig (pulsierend)
+#fafaf8   Grau      — pending
 ```
-
-### Medikament-Feldnamen (in treatments[].medications[])
-```javascript
-m.medicationName    // Name des Medikaments
-m.dose              // Dosierung (Zahl)
-m.unit              // Einheit (mg, ml...)
-m.applicationRoute  // oral, subkutan, topisch...
-m.frequency         // "1x täglich", "2x täglich"...
-m.plannedApplications
-m.completedApplications
-m.applications[]    // [{ doneAt, doneBy, weightAtTime }]
-```
-
-### Test-Buttons im Scanner
-Gelber Dev-Bereich mit:
-- "Stachi scannen" → sucht Igel mit "stachi" im Namen
-- "Ohne Behandlung" → Igel ohne treatments[]
+Keine Umrandung, keine inneren Punkte.
 
 ---
 
-## 8. Pflegeplan
-
-### Task-Berechnung
-```javascript
-const selApps = (m.applications||[]).filter(a => a.doneAt.startsWith(selectedDate));
-const freqPerDay = freq.includes('4x')?4 : freq.includes('3x')?3 : freq.includes('2x')?2 : 1;
-const doneToday = selApps.length >= freqPerDay;
-const overdue = !doneToday && isToday && lastApp && lastApp.doneAt.split('T')[0] < todayStr;
-```
-
-### Quittieren (recordFromPlan)
-```javascript
-const app = { doneAt: new Date().toISOString(), doneBy: userData.name, weightAtTime: h.gewichtAktuell };
-const completed = (parseInt(m.completedApplications)||0) + 1;
-// → update treatments[] auf hedgehog-Dokument
-window.__pflegeplanRefresh && window.__pflegeplanRefresh();
-```
-
----
-
-## 9. Igelkarte (HedgehogDetail)
+## 8. Igelkarte (HedgehogDetail)
 
 ### Props
 ```javascript
 HedgehogDetail({ hedgehog, userData, users, onBack, onUpdate, initialEditMode, initialAction })
 ```
 
-### Kacheln
+### initialAction
+```javascript
+// showVorlageModal startet direkt wenn initialAction='startVorlage'
+const [showVorlageModal, setShowVorlageModal] = useState(
+  () => initialAction === 'startVorlage' && !isGuest
+);
 ```
-behandlung   Aktive Behandlungen, Vorlage starten, Ring-Fortschritt
-gewicht      Verlaufsgraph, neue Messung
-diagnose     Aus Behandlungsvorlagen extrahiert
-info         Stammdaten, Finder, Bearbeitung
-```
+
+### Behandlungs-Kreise (Igelkarte)
+Gleiche Warm-Farben wie Pflegeplan, reversibel:
+- `getDotSt(ci)` → bg/border/animation je nach wasGivenBefore + todayCount
+- Undo: entfernt letzten today-App aus applications[], setzt done=false
 
 ### Datenstruktur hedgehog
 ```javascript
 {
   id, name, fundtiernummer, igelId, aufnahmedatum, status,
-  geschlecht, alterSchaetzung, gewichtAktuell,
+  gewichtAktuell,
   gewichtsverlauf: [{ datum, gewicht, notiz, erfasstVon, erfasstAm }],
   treatments: [{
     templateName, status, startDate,
@@ -308,7 +283,7 @@ info         Stammdaten, Finder, Bearbeitung
 
 ---
 
-## 10. Rollen & Auth
+## 9. Rollen & Auth
 
 ```
 admin    Vollzugriff, Benutzerverwaltung, alle CRUD
@@ -317,8 +292,7 @@ gast     Nur lesen, keine Schreiboperationen
 ```
 
 ```javascript
-SESSION_MS  = 8 * 60 * 60 * 1000   // 8 Stunden
-WARNING_MS  = 30 * 60 * 1000        // Warnung 30 min vorher
+SESSION_MS  = 8 * 60 * 60 * 1000
 SESSION_KEY = 'igelSessionLoginAt'
 ```
 
@@ -331,7 +305,7 @@ projectId: "igelstation-3c3db"
 
 ---
 
-## 11. Bekannte Fallstricke
+## 10. Bekannte Fallstricke
 
 ### Spinner-Diagnose
 ```python
@@ -339,78 +313,85 @@ import re
 with open('index.html','r') as f: c=f.read()
 s=re.search(r'<script type="text/babel">(.*?)</script>',c,re.DOTALL).group(1)
 print("Braces: %d, Parens: %d" % (s.count('{')-s.count('}'), s.count('(')-s.count(')')))
-dups = len(re.findall(r'className="[^"]*"\s+className="', c))
-print("Dup className: %d" % dups)
 ```
 
-### Häufige Ursachen
-1. Braces ≠ 0 → Kaputten Changelog-Eintrag prüfen (fehlende `{`)
-2. Doppelte `const`-Deklaration
-3. Doppelte `className`
-4. Base64-Bild in JSX
-5. `history.back()` in Menü-onClose
+### Häufige Ursachen (Erfahrungswerte)
+1. Braces ≠ 0 → Kaputten Changelog-Eintrag prüfen
+2. Template-Literal mit `'0'` in `${}` → String-Verkettung stattdessen
+3. Schließendes `</div>` ohne öffnendes nach einem IIFE `})()}`
+4. `tlDotState` statt `tlSlotState` nach Migration
+5. `task.applications` fehlt in `tasks.push()` → tlSlotState crash
 
-### Daten-Frische (stale snapshot)
-- `quickViewIgel` ist Snapshot vom Scan-Zeitpunkt
-- Toggle und onOpenCard lesen IMMER frisch: `hedgehogs.find(x => x.id === h.id)`
-
-### Changelog Version-Bump (sicher)
-```python
-# RICHTIG: Anker auf stabilen älteren Eintrag
-c = c.replace("{ version: '2.3.XX',",
-  "{ version: '2.3.YY', label: '...', items: [...] },\n{ version: '2.3.XX',", 1)
-
-# FALSCH: Anker auf neue Version → zerstört Einträge → Braces -1
-c = c.replace("{ version: '2.3.YY',", ...)  # NIEMALS!
-```
+### Daten-Frische
+- `quickViewIgel` ist Snapshot → immer `hedgehogs.find(x => x.id === h.id)` nutzen
+- `tapped` Set ist optimistisch → nach Firestore-Write den Key entfernen (Doppelzählung!)
+- `effectiveDone = Math.min(freqPerDay, todayCount + tapped.count)`
 
 ---
 
-## 12. Versionshistorie
+## 11. Versionshistorie
 
 | Version | Feature | Kernänderung |
 |---------|---------|-------------|
-| 2.3.46 | QRQuickView zurück + Kreise überall | QRQuickView wiederhergestellt, Kreise ohne Punkte, Igelkarte warm + reversibel |
-| 2.3.45 | Pflegeplan Warm + Kreise + Toggle | Stone-Design, Fälligkeitsfarben, reversibles Toggle, Quick-View Footer-Fix |
-| 2.3.44 | QR Quick-View: Grüne Kreise + Wizard-Start | Voller grüner Kreis+Haken, initialAction öffnet Vorlage-Modal direkt |
-| 2.3.43 | QR Quick-View: Fälligkeits-Kreise | Kreise statt Checkboxen, Grün/Amber/Rot/Grau, Fortschrittsbalken |
-| 2.3.42 | Fix: Igelkarte nach Quick-View | onOpenCard liest frische Daten aus live hedgehogs[] |
-| 2.3.41 | QR Quick-View: Toggle-Fix | Toggle liest frische Daten, Igelkarte-Button im Header |
-| 2.3.40 | Fix: Medikamentennamen | Feldnamen: medicationName, dose, unit, applicationRoute, frequency |
-| 2.3.39 | QR Scanner: Test-Buttons | Stachi-Simulation + Igel-ohne-Plan im Dev-Bereich |
-| 2.3.38 | Fix: m.aktiv-Filter | Medikamente aus aktiven Behandlungen korrekt angezeigt |
-| 2.3.37 | QR Quick-View | Bottom Sheet, Gewicht/Meds/Notizen, Live Firestore-Write |
-| 2.3.36 | Redesign: Igelerfassung | Badges outline, Linksrand helles Blau, Buttons schwarz |
-| 2.3.35 | Fix: TreatmentDB | Whitescreen durch verwaistes JSX-Fragment behoben |
-| 2.3.30 | Bottom-Navigation | Scroll-hiding, safe-area-inset, 5 Icons |
-| 2.3.00 | QR Scanner Redesign | Helles UI, Scan-Linie, Taschenlampe |
-| 2.2.00 | TreatmentWizard | 4-Schritt, Dosisberechnung aus Gewicht |
-| 2.1.00 | Igelkarte Kacheln | 4 Kacheln, Info-Strip, Tab-Leiste sticky |
-| 2.0.00 | Datenbank-Hub | Stammdaten-Hierarchie, TreatmentDB, MedikamentDB |
+| 2.3.58 | Igelkarte: Timeline in Behandlungs-Tab | Design F Timeline mit Toleranz-Logik, Warndreieck, Test-Panel (Uhr-Button) |
+| 2.3.57 | Fix: Spinner — fehlendes div | Zeitachse hatte kein öffnendes div nach IIFE |
+| 2.3.56 | Fix: Spinner — Template-Literal | padStart(2,'0') in Template-Literal → String-Verkettung |
+| 2.3.55 | Fix: Spinner — applications | applications-Feld in tasks.push() ergänzt |
+| 2.3.54 | Toleranz-Logik + 6 Zustände | Zeitfenster-gebundene Quittierung, 15min–12h Toleranz |
+| 2.3.53 | Design F Timeline | Farbsegmente, Anfang = Farbe des 1. Kreises |
+| 2.3.52 | 24h Timeline + Sim-Regler | Zeitachse mit Uhrzeit-Sim im Test-Panel |
+| 2.3.51 | Live-Uhr + Test-Panel | Uhr-Button, Tagesbeginn/Ende Regler |
+| 2.3.50 | Fix: Doppel-Quittierung | tapped nach Firestore-Write entfernen |
+| 2.3.49 | Linker Farbbalken entfernt | Nur noch Kreise kommunizieren Status |
+| 2.3.48 | Fortschrittsbalken + Kreis-Fix | effectiveDone konsistent, Amber statt Rot |
+| 2.3.47 | Rote Badges entfernt | Kein Rot mehr außer Kreisen |
+| 2.3.46 | QRQuickView zurück + Kreise | QRQuickView wiederhergestellt (war gelöscht) |
+| 2.3.45 | Pflegeplan Warm + Toggle | Stone-Design, reversibles Toggle |
+| 2.3.44 | QR Quick-View Grüne Kreise | initialAction=startVorlage öffnet Vorlage-Modal |
+| 2.3.43 | QR Quick-View Fälligkeitsfarben | Kreise mit Grün/Amber/Rot/Grau |
+| 2.3.37 | QR Quick-View | Bottom Sheet nach QR-Scan |
+| 2.3.30 | Bottom-Navigation | Scroll-hiding, safe-area-inset |
+| 2.2.00 | TreatmentWizard | 4-Schritt, Dosisberechnung |
+| 2.0.00 | Datenbank-Hub | Stammdaten-Hierarchie |
 | 1.8.00 | RBAC + Donut-Chart | Rollenbasierte Zugriffskontrolle |
-| 1.7.00 | QR-Code Generierung | QR pro Igelkarte, Druckansicht |
-| 1.0.00 | Launch | Firebase, Igel CRUD, Auth, Firestore Echtzeit-Sync |
+| 1.0.00 | Launch | Firebase, Igel CRUD, Auth |
 
 ---
 
-## 13. Roadmap
+## 12. Roadmap
 
-### Nächste Prioritäten
-- [ ] Kreise-System im Pflegeplan (Fälligkeitsfarben + Puls)
-- [ ] Kreise-System in Igelkarte Behandlungs-Kachel
-- [ ] Warm-Hintergrund-Audit (bg-gray-* → Stone)
-
-### Mittelfristig
+### Offen / Nächste Prioritäten
+- [x] Timeline + Toleranz-Logik in Igelkarte Behandlungs-Tab übertragen ✅ v2.3.58
+- [ ] Toleranz-Einstellung in App-Einstellungen (nur Admin)
+- [ ] Tagesbeginn/Tagesende in App-Einstellungen (nur Admin)
+- [ ] Warndreieck dauerhaft in Igelkarte wenn Gabe verpasst (✅ bereits in v2.3.58 umgesetzt)
+- [ ] completedApplications++ korrekt aus Pflegeplan
 - [ ] Diagnosefield: Dropdown statt Freitext
-- [ ] completedApplications++ aus Quick-View
 - [ ] Auto-Navigation in neue Igelkarte nach Erfassung
 - [ ] Printable Datenblatt pro Igel
 
-### Langfristig
-- [ ] Foto-Upload pro Igel
+### Mittelfristig
 - [ ] Push-Notifications für fällige Gaben
+- [ ] Foto-Upload pro Igel
 - [ ] Statistiken: Erfolgsquoten, Behandlungsdauern
 
 ---
 
-*Zuletzt aktualisiert: März 2026 · v2.3.54*
+## 13. Code-Referenzen
+
+### BottomBar
+```
+height: 62px, position: fixed, bottom: 0, z-index: 9000
+Formulare: padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 74px)
+```
+
+### ZIP-Befehl
+```bash
+cd /home/claude/igelstation && rm -f /home/claude/Igelstation.zip
+zip /home/claude/Igelstation.zip index.html igelpflegestation-vX_X_XX-altDB.html \
+  service-worker.js icon-192.png icon-512.png deploy.sh update.sh PROJEKTDOKU_all.md
+```
+
+---
+
+*Zuletzt aktualisiert: März 2026 · v2.3.57*
