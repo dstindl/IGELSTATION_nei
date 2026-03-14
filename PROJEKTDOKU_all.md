@@ -370,6 +370,7 @@ c = c.replace("{ version: '2.3.YY',", ...)  # NIEMALS!
 
 | Version | Feature | Kernänderung |
 |---------|---------|-------------|
+| 2.3.46 | QRQuickView zurück + Kreise überall | QRQuickView wiederhergestellt, Kreise ohne Punkte, Igelkarte warm + reversibel |
 | 2.3.45 | Pflegeplan Warm + Kreise + Toggle | Stone-Design, Fälligkeitsfarben, reversibles Toggle, Quick-View Footer-Fix |
 | 2.3.44 | QR Quick-View: Grüne Kreise + Wizard-Start | Voller grüner Kreis+Haken, initialAction öffnet Vorlage-Modal direkt |
 | 2.3.43 | QR Quick-View: Fälligkeits-Kreise | Kreise statt Checkboxen, Grün/Amber/Rot/Grau, Fortschrittsbalken |
@@ -412,4 +413,4 @@ c = c.replace("{ version: '2.3.YY',", ...)  # NIEMALS!
 
 ---
 
-*Zuletzt aktualisiert: März 2026 · v2.3.45*
+*Zuletzt aktualisiert: März 2026 · v2.3.46*
