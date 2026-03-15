@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.3.67 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.3.68 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -411,6 +411,7 @@ print("Braces: %d, Parens: %d" % (s.count('{')-s.count('}'), s.count('(')-s.coun
 
 | Version | Feature | Kernänderung |
 |---------|---------|-------------|
+| 2.3.68 | Pflegeplan + Igelkarte: Banner-Design | Farbiger Banner pro Igel (8 Töne), Pfleger + Diagnosen im Banner; Stone-700-Banner für Behandlungskarten in Igelkarte |
 | 2.3.67 | Fix: QR-Scanner Header | Titel zentriert, 2px Border, einheitlicher Stil |
 | 2.3.66 | Design: Alle Seiten-Header vereinheitlicht | fontSize 15/fontWeight 800/DM Sans, borderBottom 2px #e7e5e4, Titel absolut zentriert auf allen Seiten |
 | 2.3.65 | Fix: BottomBar-Navigation aus Igelkarte | setSelected(null) fehlte in __igelAction für pflegeplan/neu/qr — Igelkarte blieb sichtbar |
@@ -500,4 +501,11 @@ Timeline-Parameter werden in `igel_settings` (localStorage) gespeichert:
 // Testpanels in beiden Komponenten bleiben aktiv und sind synchronisiert
 ```
 
-*Zuletzt aktualisiert: März 2026 · v2.3.67*
+*Zuletzt aktualisiert: März 2026 · v2.3.68*
+
+### Igel-Farbpalette (ab v2.3.68)
+```javascript
+const IGEL_COLORS = ['#5c5248','#6b4f38','#4a6352','#5c4a6b','#7a5c34','#4a5568','#5a4a3a','#3d5a4a'];
+// Zuweisung: colorIdx = Object.keys(map).length % IGEL_COLORS.length (beim groupByIgel)
+// Igelkarte Behandlungen: Stone 700 #44403c (einheitlich)
+```
