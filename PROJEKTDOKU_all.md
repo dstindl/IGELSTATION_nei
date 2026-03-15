@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.3.72 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.3.73 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -503,9 +503,9 @@ Timeline-Parameter werden in `igel_settings` (localStorage) gespeichert:
 // Testpanels in beiden Komponenten bleiben aktiv und sind synchronisiert
 ```
 
-*Zuletzt aktualisiert: März 2026 · v2.3.72*
+*Zuletzt aktualisiert: März 2026 · v2.3.73*
 
-### Igel-Farbpalette (ab v2.3.72)
+### Igel-Farbpalette (ab v2.3.73)
 ```javascript
 const IGEL_COLORS = ['#5c5248','#6b4f38','#4a6352','#5c4a6b','#7a5c34','#4a5568','#5a4a3a','#3d5a4a'];
 // Zuweisung: colorIdx = Object.keys(map).length % IGEL_COLORS.length (beim groupByIgel)
