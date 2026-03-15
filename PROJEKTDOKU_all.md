@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.3.58 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.3.59 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -333,7 +333,7 @@ print("Braces: %d, Parens: %d" % (s.count('{')-s.count('}'), s.count('(')-s.coun
 
 | Version | Feature | Kernänderung |
 |---------|---------|-------------|
-| 2.3.58 | Igelkarte: Timeline in Behandlungs-Tab | Design F Timeline mit Toleranz-Logik, Warndreieck, Test-Panel (Uhr-Button) |
+| 2.3.59 | Igelkarte: Timeline in Behandlungs-Tab | Design F Timeline mit Toleranz-Logik, Warndreieck, Test-Panel (Uhr-Button) |
 | 2.3.57 | Fix: Spinner — fehlendes div | Zeitachse hatte kein öffnendes div nach IIFE |
 | 2.3.56 | Fix: Spinner — Template-Literal | padStart(2,'0') in Template-Literal → String-Verkettung |
 | 2.3.55 | Fix: Spinner — applications | applications-Feld in tasks.push() ergänzt |
@@ -361,10 +361,10 @@ print("Braces: %d, Parens: %d" % (s.count('{')-s.count('}'), s.count('(')-s.coun
 ## 12. Roadmap
 
 ### Offen / Nächste Prioritäten
-- [x] Timeline + Toleranz-Logik in Igelkarte Behandlungs-Tab übertragen ✅ v2.3.58
+- [x] Timeline + Toleranz-Logik in Igelkarte Behandlungs-Tab übertragen ✅ v2.3.59
 - [ ] Toleranz-Einstellung in App-Einstellungen (nur Admin)
 - [ ] Tagesbeginn/Tagesende in App-Einstellungen (nur Admin)
-- [ ] Warndreieck dauerhaft in Igelkarte wenn Gabe verpasst (✅ bereits in v2.3.58 umgesetzt)
+- [ ] Warndreieck dauerhaft in Igelkarte wenn Gabe verpasst (✅ bereits in v2.3.59 umgesetzt)
 - [ ] completedApplications++ korrekt aus Pflegeplan
 - [ ] Diagnosefield: Dropdown statt Freitext
 - [ ] Auto-Navigation in neue Igelkarte nach Erfassung
