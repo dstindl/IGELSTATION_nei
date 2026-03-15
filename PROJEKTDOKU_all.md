@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.3.63 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.3.64 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -411,6 +411,7 @@ print("Braces: %d, Parens: %d" % (s.count('{')-s.count('}'), s.count('(')-s.coun
 
 | Version | Feature | Kernänderung |
 |---------|---------|-------------|
+| 2.3.64 | Einstellungen: Timeline-Parameter zentralisiert | Neue Unterseite Einstellungen → Behandlungen → Timeline; Shared State via localStorage; Pflegeplan + Igelkarte gespiegelt; Testpanels bleiben aktiv |
 | 2.3.63 | Igelkarte: Ring entfernt, kompaktere Karten | Fortschritts-Ring (Donut) aus Behandlungs-Header entfernt (redundant); Badge+Action in einer Zeile; Header-Padding 12→9px, Med-Zeilen 11→9px, Timeline 56→48px |
 | 2.3.62 | Fix: QV Badge ausstehend/fällig | Badge 'fällig' nur wenn Slot im Toleranzfenster liegt |
 | 2.3.61 | QR Quick-View: Pills + Toleranz-Logik | Pills-Design statt Kreise, nur ◎ fällig klickbar, Live-Uhr, applications[] in medState |
@@ -486,4 +487,14 @@ zip /home/claude/Igelstation.zip index.html igelpflegestation-vX_X_XX-altDB.html
 
 ---
 
-*Zuletzt aktualisiert: März 2026 · v2.3.63*
+### Timeline-Settings Shared State (ab v2.3.64)
+Timeline-Parameter werden in `igel_settings` (localStorage) gespeichert:
+```javascript
+// Keys: tlDayStartH, tlDayEndH, tlTolMins, tlSimTime
+// Pflegeplan + HedgehogDetail lesen via: settings.tlDayStartH ?? 6
+// Schreiben via: onUpdateSetting('tlDayStartH', value)
+// Einstellungen-Unterseite: Einstellungen → Behandlungen → Timeline-Einstellungen
+// Testpanels in beiden Komponenten bleiben aktiv und sind synchronisiert
+```
+
+*Zuletzt aktualisiert: März 2026 · v2.3.64*
