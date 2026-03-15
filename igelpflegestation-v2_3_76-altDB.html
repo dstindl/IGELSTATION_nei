@@ -4922,11 +4922,11 @@
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Änderungsprotokoll</p>
                 <div className="space-y-4">
 
-                  { version: '2.3.76', label: 'Fix: Spinner — fontSize:8.5 Decimal', items: ['Babel 7.23.5 bricht bei Dezimalzahlen in JSX style-Objekten (fontSize:8.5)', 'Fix: fontSize:8.5 → fontSize:9 an 2 Stellen (Pflegeplan Med-Sub + HedgehogDetail Med-Sub)'] },
-                  { version: '2.3.75', label: 'Fix: Spinner — QV_ consts in map', items: ['QV_BG/BD/COL/ICN/ANM wurden in .map() Callbacks redefiniert — Babel/React mag das nicht', 'Fix: QV_ consts in Pflegeplan + HedgehogDetail auf Komponenten-Scope gehoben', 'Pflegeplan: nach TL_CAN, HedgehogDetail: nach TL_CAN'] },
-                  { version: '2.3.74', label: 'Fix: Spinner — useState in map', items: ['useState in .map() Callbacks verletzt React Hook-Regeln → Spinner', 'Fix: tlOpenMap in Pflegeplan (Map-State, Key = igelId-treatmentIdx-medIdx)', 'Fix: tlOpenMiMap in HedgehogDetail TRow (Map-State, Key = mi)', 'Beide States korrekt in Komponenten-Scope gehoben'] },
-                  { version: '2.3.73', label: 'Pflegeplan + Igelkarte: QV-Style Pills + Timeline-Dropdown', items: ['Quittierung via QV-Pills — konsistent mit QR-QuickView', 'Erledigte Meds: kompakte Zeile (Name durchgestrichen + Uhrzeit-Bubble)', 'Timeline ins Dropdown (#fffdfb warm), Verlauf-Dropdown Stone (#f2efec)', 'Dünne Trennlinie zwischen aktiv und erledigt'] },
-                  {[{ version: '2.3.72', label: 'Fix: Texte mittendrin in Karten und Dialogen', items: ['Beim Header-Vereinheitlichen (v2.3.66) wurden versehentlich auch <p>-Titel in Karten-Items und Dialogen auf position:absolute gesetzt', 'Betroffen: DatenbankHub (Medikamente, Diagnosen, Datensätze), Behandlungsvorlagen-Liste, Diagnoseliste, Medikamentenliste, QR-Modal, Changelog-Versionen, App-Info, Gewichtsverlauf', 'Fix: position:absolute entfernt bei allen 15 betroffenen Elementen → wieder normaler Textfluss', 'Seiten-Header (h2/span in sticky-Headern) behalten korrekt position:absolute'] },
+                  {[{ version: '2.3.76', label: 'Pflegeplan: Filter als aufklappbares Dropdown', items: ['Filter-Toggle-Strip: zugeklappt zeigt kompakte Summary der aktiven Filter', 'Farbiges Icon (rot/gelb/grün/blau) signalisiert welcher Filter aktiv ist', 'Mini-Chips in der Toggle-Zeile: Pfleger, Status, Meds, Diagnosen auf einen Blick', '"Zurücksetzen"-Button in der Toggle-Zeile — immer erreichbar ohne Aufklappen', 'Chevron zeigt Auf/Zu-Zustand an (dreht sich)', 'filterOpen State — default zugeklappt'] },
+                  { version: '2.3.75', label: 'Fix: Filter-Chips reagieren auf Pfleger-Auswahl', items: ['dueCnt/overCnt/doneCnt werden jetzt aus pfleger-gefilterter Basis berechnet', 'availMeds + availDiags ebenfalls pfleger-gefiltert', 'Chip verschwindet wenn Anzahl nach Pfleger-Filter 0 ist', 'Kein Widerspruch mehr zwischen Chip-Count und tatsächlichem Ergebnis'] },
+                  { version: '2.3.74', label: 'Pflegeplan: Filter-Block + neues Spacing', items: ['Filter-Block sticky unter dem Header: Weiß + Shadow, klar abgesetzt', 'Status-Chips Fällig/Überfällig/Erledigt mit Anzahl in () — nur sichtbar wenn Count > 0', 'Chip-Klick zeigt exklusiv diesen Zustand; Mehrfachauswahl kombiniert Sektionen', 'Weitere Filter aufklappbar: Medikament + Diagnose (nur aktive Behandlungen)', 'Leer-Zustand mit Reset-Button wenn Filter kein Ergebnis liefert', 'Erledigt-Sektion neu als gruppierte Karten (wie Ausstehend)', 'Stats-Strip ohne Fortschrittsbalken: nur Label + Zähler', 'Content-Padding 14px oben, 12px zwischen Igelkarten (vorher 10px)'] },
+                  { version: '2.3.73', label: 'QV-Style Pills + Timeline-Dropdown (Pflegeplan + Igelkarte)', items: ['Pflegeplan + Igelkarte: Timeline nicht mehr immer sichtbar — jetzt ins aufklappbare Dropdown verschoben', 'QV-Pills (identisch mit QR-QuickView) direkt sichtbar: done-open grün, due gelb pulsierend, overdue-locked rot+Schloss, pending grau', 'Erledigte Meds kompakt: durchgestrichener Name + done-bubble mit Uhrzeit (Trennlinie #e0ddd9)', 'Farbschichten: aktiv #fff, erledigt #f7f6f5, Timeline-Dropdown #fffdfb, Verlauf #f2efec', 'Status-Badges fällig/überfällig je Medikament', 'tlOpenMap (Pflegeplan) + tlOpenMiMap (TRow) als Maps im Scope (kein useState in .map)', 'QV_BG/BD/COL/ICN/ANM Konstanten im Komponenten-Scope (kein Babel-Crash)'] },
+                  { version: '2.3.72', label: 'Fix: Texte mittendrin in Karten und Dialogen', items: ['Beim Header-Vereinheitlichen (v2.3.66) wurden versehentlich auch <p>-Titel in Karten-Items und Dialogen auf position:absolute gesetzt', 'Betroffen: DatenbankHub (Medikamente, Diagnosen, Datensätze), Behandlungsvorlagen-Liste, Diagnoseliste, Medikamentenliste, QR-Modal, Changelog-Versionen, App-Info, Gewichtsverlauf', 'Fix: position:absolute entfernt bei allen 15 betroffenen Elementen → wieder normaler Textfluss', 'Seiten-Header (h2/span in sticky-Headern) behalten korrekt position:absolute'] },
                   { version: '2.3.71', label: 'Pflegeplan: Name links, Pfleger rechts im Banner', items: ['Banner justifyContent: center → space-between'] },
                   { version: '2.3.70', label: 'Pflegeplan: Banner-Layout überarbeitet', items: ['Name + Pfleger-Pill jetzt horizontal zentriert im Banner (justifyContent center)', 'Diagnose-Chips unter den Behandlungs-Badge verschoben (card-body, nicht Banner)', 'Diagnose-Chips in neutralem Stone-Ton (#f0efee/#57534e) statt weiß-transparent', '"keine Diagnose" Hinweis entfernt — leerer Zustand ist sauber ohne Text'] },
                   { version: '2.3.69', label: 'Fix: Igelkarte Kartenbreite + Diagnosen im Pflegeplan', items: ['Igelkarte: äußerer bg-white p-4 Wrapper um Behandlungskarten entfernt — Karten jetzt gleich breit wie im Pflegeplan', 'Igelkarte: Behandlungskarten-Border vereinheitlicht (kein blauer Active-Border mehr)', 'Pflegeplan: Diagnosen werden jetzt aus hog.diagnosen[] UND hog.treatments[].diagnosisName gezogen — keine falsch-positiven "keine Diagnose" mehr'] },
@@ -5348,6 +5348,11 @@
       const [saving, setSaving] = React.useState(false);
       const [tapped, setTapped] = React.useState(new Set());
       const [tlOpenMap, setTlOpenMap] = React.useState({});
+      const [filterStatus, setFilterStatus] = React.useState(new Set());
+      const [filterMed, setFilterMed] = React.useState(new Set());
+      const [filterDiag, setFilterDiag] = React.useState(new Set());
+      const [showMoreFilters, setShowMoreFilters] = React.useState(false);
+      const [filterOpen, setFilterOpen] = React.useState(false);
 
       // ── Tages-Einstellungen (gespiegelt mit App-Einstellungen) ──
       const dayStartH    = settings.tlDayStartH ?? 6;
@@ -5467,13 +5472,55 @@
       const doneTasks     = allTasks.filter(t => t.doneToday);
       const overdueTasks  = pendingTasks.filter(t => t.overdue);
       const totalTasks    = allTasks.length;
-      const totalPct      = totalTasks > 0 ? Math.round(doneTasks.length / totalTasks * 100) : 0;
-
-      const applyFilter   = (list) => filterPfleger
-        ? list.filter(t => t.igelBetreuer === filterPfleger)
-        : list;
 
       const allPfleger = [...new Set((hedgehogs||[]).map(h=>h.betreuer).filter(Boolean))];
+
+      // ── Filter-Hilfsdaten ───────────────────────────────────────────────
+      const availMeds = {};
+      allTasks.filter(t => !filterPfleger || t.igelBetreuer === filterPfleger)
+        .forEach(t => { availMeds[t.medName] = (availMeds[t.medName]||0) + 1; });
+
+      const availDiags = {};
+      (hedgehogs||[]).filter(h => !filterPfleger || h.betreuer === filterPfleger).forEach(h => {
+        if (!(h.treatments||[]).some(t2=>t2.status==='aktiv')) return;
+        [...(h.diagnosen||[]).map(d=>d.diagnose), ...(h.treatments||[]).map(t2=>t2.diagnosisName)]
+          .filter(Boolean).forEach(d => { availDiags[d] = (availDiags[d]||0) + 1; });
+      });
+
+      const dueCnt  = pendingTasks.filter(t => (!filterPfleger || t.igelBetreuer === filterPfleger) && !t.overdue).length;
+      const overCnt = overdueTasks.filter(t => !filterPfleger || t.igelBetreuer === filterPfleger).length;
+      const doneCnt = doneTasks.filter(t => !filterPfleger || t.igelBetreuer === filterPfleger).length;
+
+      const toggleStatus = (key) => setFilterStatus(prev => { const n=new Set(prev); n.has(key)?n.delete(key):n.add(key); return n; });
+      const toggleMed    = (med)  => setFilterMed   (prev => { const n=new Set(prev); n.has(med) ?n.delete(med) :n.add(med);  return n; });
+      const toggleDiag   = (diag) => setFilterDiag  (prev => { const n=new Set(prev); n.has(diag)?n.delete(diag):n.add(diag); return n; });
+      const clearAllFilters = () => { setFilterStatus(new Set()); setFilterMed(new Set()); setFilterDiag(new Set()); };
+
+      const applyAllFilters = (tasks) => {
+        let r = filterPfleger ? tasks.filter(t => t.igelBetreuer === filterPfleger) : [...tasks];
+        if (filterMed.size > 0)  r = r.filter(t => filterMed.has(t.medName));
+        if (filterDiag.size > 0) r = r.filter(t => {
+          const h = (hedgehogs||[]).find(x=>x.id===t.igelId);
+          if (!h) return false;
+          const hd = [...(h.diagnosen||[]).map(d=>d.diagnose), ...(h.treatments||[]).map(t2=>t2.diagnosisName)].filter(Boolean);
+          return hd.some(d => filterDiag.has(d));
+        });
+        return r;
+      };
+
+      const hasStatusFilter = filterStatus.size > 0;
+      const showDueSec  = !hasStatusFilter || filterStatus.has('due');
+      const showOverSec = !hasStatusFilter || filterStatus.has('over');
+      const showDoneSec = !hasStatusFilter || filterStatus.has('done');
+
+      const basePending = applyAllFilters(pendingTasks);
+      const baseDone    = applyAllFilters(doneTasks);
+      const visiblePending = basePending.filter(t => (showOverSec && t.overdue) || (showDueSec && !t.overdue));
+      const visibleDone    = showDoneSec ? baseDone : [];
+
+      const anyFilter = filterStatus.size > 0 || filterMed.size > 0 || filterDiag.size > 0 || !!filterPfleger;
+
+      const applyFilter = (list) => filterPfleger ? list.filter(t => t.igelBetreuer === filterPfleger) : list;
 
       // Group by Igel
       const groupByIgel = (list) => {
@@ -5497,8 +5544,8 @@
         return Object.values(map);
       };
 
-      const pendingGroups = groupByIgel(applyFilter(pendingTasks));
-      const doneFiltered  = applyFilter(doneTasks);
+      const pendingGroups = groupByIgel(visiblePending);
+      const doneGroups    = groupByIgel(visibleDone);
 
       // ── Status-Kreis je Igel-Gruppe ──────────────────────────────────────
       const StatusCircle = ({ group }) => {
@@ -5601,7 +5648,6 @@
       const TL_ANIM = {'due':'qv-pulse-amber 2.2s ease-in-out infinite','overdue-open':'qv-pulse-red 1.8s ease-in-out infinite'};
       const TL_LOCKED = {'done-locked':true,'overdue-locked':true};
       const TL_CAN   = {'done-open':true,'due':true};
-      // QV-Style pill constants (shared with QRQuickView style)
       const QV_BG  = {'done-open':'#dcfce7','done-locked':'#dcfce7','due':'#fefce8','overdue-locked':'#fff1f2','pending':'#fafaf8'};
       const QV_BD  = {'done-open':'#86efac','done-locked':'#86efac','due':'#fde68a','overdue-locked':'#fecdd3','pending':'#e7e5e4'};
       const QV_COL = {'done-open':'#166634','done-locked':'#166634','due':'#ca8a04','overdue-locked':'#e11d48','pending':'#d6d3d1'};
@@ -5612,24 +5658,25 @@
         <div className="min-h-screen pb-20" style={{background:'#fafaf8'}}>
           <style>{`@keyframes qv-pulse-red{0%,100%{opacity:1}50%{opacity:.5}}@keyframes qv-pulse-amber{0%,100%{opacity:1}50%{opacity:.55}}`}</style>
 
-          {/* Sticky Header */}
-          <div style={{position:'sticky',top:0,background:'#fff',borderBottom:'2px solid #e7e5e4',zIndex:10}}>
-            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 16px'}}>
+          {/* Sticky Header + Filter-Block */}
+          <div style={{position:'sticky',top:0,zIndex:10}}>
+
+            {/* Header-Zeile */}
+            <div style={{background:'#fff',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 16px',position:'relative'}}>
               <button onClick={onClose} style={{width:36,height:36,borderRadius:'50%',background:'#f5f5f4',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1c1917" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
               </button>
               <span style={{position:'absolute',left:'50%',transform:'translateX(-50%)',fontSize:15,fontWeight:800,color:'#1c1917',fontFamily:"'DM Sans',system-ui,sans-serif",whiteSpace:'nowrap'}}>Pflegeplan</span>
-              {/* Live-Uhr + Settings-Toggle */}
               <button onClick={() => setShowDaySettings(s => !s)}
                 style={{display:'flex',alignItems:'center',gap:5,background:showDaySettings?'#1c1917':'#f5f5f4',border:'none',borderRadius:10,padding:'6px 10px',cursor:'pointer',transition:'all .15s'}}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={showDaySettings?'#fafaf8':'#78716c'} strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                <span style={{fontSize:11,fontWeight:800,fontFamily:'monospace',color:showDaySettings?'#fafal8':'#1c1917'}}>{activeDisplay}</span>
+                <span style={{fontSize:11,fontWeight:800,fontFamily:'monospace',color:showDaySettings?'#fafaf8':'#1c1917'}}>{activeDisplay}</span>
               </button>
             </div>
 
             {/* Test-Panel: Tageseinstellungen */}
             {showDaySettings && (
-              <div style={{margin:'0 12px 10px',background:'#fef9c3',border:'1.5px dashed #fde68a',borderRadius:10,padding:'10px 12px'}}>
+              <div style={{margin:'0 12px 0',background:'#fef9c3',border:'1.5px dashed #fde68a',borderRadius:10,padding:'10px 12px'}}>
                 <div style={{fontSize:9,fontWeight:800,color:'#92400e',textTransform:'uppercase',letterSpacing:'.1em',marginBottom:8}}>
                   Test: Einstellungen — später in App-Einstellungen
                 </div>
@@ -5676,43 +5723,223 @@
               </div>
             )}
 
-            <div style={{padding:'0 16px 12px',display:'flex',alignItems:'center',gap:8}}>
-              <input type="date" value={selectedDate} onChange={e => { setSelectedDate(e.target.value); setTapped(new Set()); }}
-                style={{flex:1,border:'1.5px solid #e7e5e4',borderRadius:10,padding:'8px 12px',fontSize:13,outline:'none',background:'#fafaf8',color:'#1c1917',fontFamily:'inherit'}} />
-              {allPfleger.length > 0 && (
-                <select value={filterPfleger} onChange={e => setFilterPfleger(e.target.value)}
-                  style={{border:'1.5px solid #e7e5e4',borderRadius:10,padding:'8px 12px',fontSize:13,outline:'none',background:'#fafaf8',color:'#1c1917',fontFamily:'inherit'}}>
-                  <option value="">Alle Pfleger</option>
-                  {allPfleger.map(p => <option key={p} value={p}>{p}</option>)}
-                </select>
-              )}
-            </div>
+            {/* Filter-Block — aufklappbar */}
+            {(() => {
+              const hasActiveFilter = filterStatus.size > 0 || filterMed.size > 0 || filterDiag.size > 0 || !!filterPfleger;
+              const iconBg = filterStatus.has('over') ? '#fee2e2' : filterStatus.has('due') ? '#fef3c7' : filterStatus.has('done') ? '#dcfce7' : (filterMed.size > 0 || filterDiag.size > 0 || filterPfleger) ? '#eff6ff' : '#f5f5f4';
+              const iconStroke = filterStatus.has('over') ? '#dc2626' : filterStatus.has('due') ? '#d97706' : filterStatus.has('done') ? '#166634' : (filterMed.size > 0 || filterDiag.size > 0 || filterPfleger) ? '#1d4ed8' : '#78716c';
+              return (
+                <div style={{background:'#fff',borderBottom:'2px solid #e7e5e4',boxShadow:'0 3px 14px rgba(28,25,23,.07)'}}>
+
+                  {/* Toggle-Zeile */}
+                  <div onClick={() => setFilterOpen(v=>!v)}
+                    style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'9px 12px',cursor:'pointer',userSelect:'none'}}>
+                    <div style={{display:'flex',alignItems:'center',gap:8,minWidth:0,flex:1}}>
+                      {/* Icon */}
+                      <div style={{width:28,height:28,borderRadius:8,background:iconBg,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,transition:'background .15s'}}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={iconStroke} strokeWidth="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+                      </div>
+                      {/* Summary oder Label */}
+                      {hasActiveFilter ? (
+                        <div style={{display:'flex',alignItems:'center',gap:5,flexWrap:'wrap',flex:1,minWidth:0}}>
+                          {filterPfleger && (
+                            <span style={{display:'inline-flex',alignItems:'center',gap:3,padding:'3px 8px',borderRadius:999,fontSize:9,fontWeight:700,background:'#f5f5f4',color:'#44403c',border:'1px solid #e7e5e4',whiteSpace:'nowrap'}}>
+                              <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                              {filterPfleger}
+                            </span>
+                          )}
+                          {filterStatus.has('due') && (
+                            <span style={{display:'inline-flex',alignItems:'center',gap:3,padding:'3px 8px',borderRadius:999,fontSize:9,fontWeight:700,background:'#fef3c7',color:'#92400e',border:'1px solid #fde68a',whiteSpace:'nowrap'}}>
+                              <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                              Fällig
+                            </span>
+                          )}
+                          {filterStatus.has('over') && (
+                            <span style={{display:'inline-flex',alignItems:'center',gap:3,padding:'3px 8px',borderRadius:999,fontSize:9,fontWeight:700,background:'#fee2e2',color:'#dc2626',border:'1px solid #fca5a5',whiteSpace:'nowrap'}}>
+                              <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+                              Überfällig
+                            </span>
+                          )}
+                          {filterStatus.has('done') && (
+                            <span style={{display:'inline-flex',alignItems:'center',gap:3,padding:'3px 8px',borderRadius:999,fontSize:9,fontWeight:700,background:'#dcfce7',color:'#166634',border:'1px solid #86efac',whiteSpace:'nowrap'}}>
+                              <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>
+                              Erledigt
+                            </span>
+                          )}
+                          {[...filterMed].map(m => (
+                            <span key={m} style={{display:'inline-flex',alignItems:'center',padding:'3px 8px',borderRadius:999,fontSize:9,fontWeight:700,background:'#eff6ff',color:'#1d4ed8',border:'1px solid #93c5fd',whiteSpace:'nowrap'}}>{m}</span>
+                          ))}
+                          {[...filterDiag].map(d => (
+                            <span key={d} style={{display:'inline-flex',alignItems:'center',gap:3,padding:'3px 8px',borderRadius:999,fontSize:9,fontWeight:700,background:'#f5f3ff',color:'#7c3aed',border:'1px solid #c4b5fd',whiteSpace:'nowrap'}}>
+                              <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/></svg>
+                              {d}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span style={{fontSize:12,fontWeight:700,color:'#a8a29e'}}>Filter</span>
+                      )}
+                    </div>
+                    <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0,marginLeft:6}}>
+                      {/* Reset-Button — immer sichtbar wenn Filter aktiv */}
+                      {hasActiveFilter && (
+                        <button onClick={e => { e.stopPropagation(); clearAllFilters(); }}
+                          style={{fontSize:9,fontWeight:700,color:'#e11d48',background:'none',border:'none',cursor:'pointer',fontFamily:'inherit',padding:'2px 4px',whiteSpace:'nowrap'}}>
+                          Zurücksetzen
+                        </button>
+                      )}
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" strokeWidth="2.5"
+                        style={{transition:'transform .22s',transform:filterOpen?'none':'rotate(180deg)'}}>
+                        <polyline points="6 9 12 15 18 9"/>
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Aufklappbares Panel */}
+                  {filterOpen && (
+                    <div style={{borderTop:'1px solid #f0eeec',padding:'0 12px 11px',display:'flex',flexDirection:'column',gap:8}}>
+
+                      {/* Datum + Pfleger */}
+                      <div style={{display:'flex',gap:7,paddingTop:10}}>
+                        <input type="date" value={selectedDate} onChange={e => { setSelectedDate(e.target.value); setTapped(new Set()); setFilterStatus(new Set()); }}
+                          style={{flex:1,border:'1.5px solid #e7e5e4',borderRadius:10,padding:'7px 10px',fontSize:12,outline:'none',background:'#fafaf8',color:'#1c1917',fontFamily:'inherit'}} />
+                        {allPfleger.length > 0 && (
+                          <select value={filterPfleger} onChange={e => setFilterPfleger(e.target.value)}
+                            style={{border:'1.5px solid #e7e5e4',borderRadius:10,padding:'7px 10px',fontSize:12,outline:'none',background:'#fafaf8',color:'#1c1917',fontFamily:'inherit'}}>
+                            <option value="">Alle Pfleger</option>
+                            {allPfleger.map(p => <option key={p} value={p}>{p}</option>)}
+                          </select>
+                        )}
+                      </div>
+
+                      <div style={{height:1,background:'#f0eeec'}}/>
+
+                      {/* Status-Chips */}
+                      {(dueCnt > 0 || overCnt > 0 || doneCnt > 0) && (
+                        <div>
+                          <div style={{fontSize:8,fontWeight:800,color:'#a8a29e',textTransform:'uppercase',letterSpacing:'.1em',marginBottom:4}}>Status heute</div>
+                          <div style={{display:'flex',gap:5,flexWrap:'wrap'}}>
+                            {dueCnt > 0 && (
+                              <div onClick={() => toggleStatus('due')}
+                                style={{display:'inline-flex',alignItems:'center',gap:4,padding:'5px 9px',borderRadius:999,fontSize:10,fontWeight:700,cursor:'pointer',border:'1.5px solid #fde68a',userSelect:'none',transition:'all .15s',
+                                  background:filterStatus.has('due')?'#fef3c7':'#fef9ec',opacity:filterStatus.has('due')?1:0.55}}>
+                                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <span style={{color:'#92400e'}}>Fällig</span>
+                                <span style={{fontSize:9,fontWeight:800,opacity:.7,fontFamily:'monospace',color:'#92400e'}}>({dueCnt})</span>
+                              </div>
+                            )}
+                            {overCnt > 0 && (
+                              <div onClick={() => toggleStatus('over')}
+                                style={{display:'inline-flex',alignItems:'center',gap:4,padding:'5px 9px',borderRadius:999,fontSize:10,fontWeight:700,cursor:'pointer',border:'1.5px solid #fca5a5',userSelect:'none',transition:'all .15s',
+                                  background:filterStatus.has('over')?'#fee2e2':'#fef2f2',
+                                  boxShadow:filterStatus.has('over')?'0 0 0 3px rgba(220,38,38,.1)':'none',
+                                  opacity:filterStatus.has('over')?1:0.55}}>
+                                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                <span style={{color:'#dc2626'}}>Überfällig</span>
+                                <span style={{fontSize:9,fontWeight:800,opacity:.7,fontFamily:'monospace',color:'#dc2626'}}>({overCnt})</span>
+                              </div>
+                            )}
+                            {doneCnt > 0 && (
+                              <div onClick={() => toggleStatus('done')}
+                                style={{display:'inline-flex',alignItems:'center',gap:4,padding:'5px 9px',borderRadius:999,fontSize:10,fontWeight:700,cursor:'pointer',border:'1.5px solid '+(filterStatus.has('done')?'#86efac':'#bbf7d0'),userSelect:'none',transition:'all .15s',
+                                  background:filterStatus.has('done')?'#dcfce7':'#f0fdf4',opacity:filterStatus.has('done')?1:0.55}}>
+                                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#166634" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span style={{color:'#166634'}}>Erledigt</span>
+                                <span style={{fontSize:9,fontWeight:800,opacity:.7,fontFamily:'monospace',color:'#166634'}}>({doneCnt})</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Medikament + Diagnose */}
+                      {(Object.keys(availMeds).length > 0 || Object.keys(availDiags).length > 0) && (
+                        <div>
+                          <div onClick={() => setShowMoreFilters(v=>!v)}
+                            style={{display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer',userSelect:'none'}}>
+                            <span style={{fontSize:8,fontWeight:800,color:'#a8a29e',textTransform:'uppercase',letterSpacing:'.1em'}}>Weitere Filter</span>
+                            <span style={{display:'flex',alignItems:'center',gap:3,fontSize:9,fontWeight:700,color:'#78716c'}}>
+                              {(filterMed.size + filterDiag.size) > 0 && (
+                                <span style={{background:'#1c1917',color:'#fff',borderRadius:999,padding:'1px 6px',fontSize:8,fontWeight:800}}>{filterMed.size + filterDiag.size}</span>
+                              )}
+                              Medikament · Diagnose
+                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                                style={{transition:'transform .2s',transform:showMoreFilters?'rotate(180deg)':'none'}}>
+                                <polyline points="6 9 12 15 18 9"/>
+                              </svg>
+                            </span>
+                          </div>
+                          {showMoreFilters && (
+                            <div style={{marginTop:8,display:'flex',flexDirection:'column',gap:7}}>
+                              {Object.keys(availMeds).length > 0 && (
+                                <div>
+                                  <div style={{fontSize:8,fontWeight:800,color:'#a8a29e',textTransform:'uppercase',letterSpacing:'.1em',marginBottom:4}}>Medikament</div>
+                                  <div style={{display:'flex',gap:5,flexWrap:'wrap'}}>
+                                    {Object.entries(availMeds).map(([med, cnt]) => (
+                                      <div key={med} onClick={() => toggleMed(med)}
+                                        style={{display:'inline-flex',alignItems:'center',gap:4,padding:'5px 9px',borderRadius:999,fontSize:10,fontWeight:700,cursor:'pointer',userSelect:'none',transition:'all .15s',
+                                          border:'1.5px solid '+(filterMed.has(med)?'#93c5fd':'#c7d7fe'),
+                                          background:filterMed.has(med)?'#eff6ff':'#f0f4ff',
+                                          opacity:filterMed.has(med)?1:0.55}}>
+                                        <span style={{color:filterMed.has(med)?'#1d4ed8':'#3730a3'}}>{med}</span>
+                                        <span style={{fontSize:9,fontWeight:800,opacity:.7,fontFamily:'monospace',color:filterMed.has(med)?'#1d4ed8':'#3730a3'}}>({cnt})</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              {Object.keys(availDiags).length > 0 && (
+                                <div>
+                                  <div style={{fontSize:8,fontWeight:800,color:'#a8a29e',textTransform:'uppercase',letterSpacing:'.1em',marginBottom:4}}>Diagnose</div>
+                                  <div style={{display:'flex',gap:5,flexWrap:'wrap'}}>
+                                    {Object.entries(availDiags).map(([diag, cnt]) => (
+                                      <div key={diag} onClick={() => toggleDiag(diag)}
+                                        style={{display:'inline-flex',alignItems:'center',gap:4,padding:'5px 9px',borderRadius:999,fontSize:10,fontWeight:700,cursor:'pointer',userSelect:'none',transition:'all .15s',
+                                          border:'1.5px solid '+(filterDiag.has(diag)?'#c4b5fd':'#e9d5ff'),
+                                          background:filterDiag.has(diag)?'#f5f3ff':'#faf5ff',
+                                          opacity:filterDiag.has(diag)?1:0.55}}>
+                                        <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke={filterDiag.has(diag)?'#7c3aed':'#6d28d9'} strokeWidth="2.5"><circle cx="12" cy="12" r="10"/></svg>
+                                        <span style={{color:filterDiag.has(diag)?'#7c3aed':'#6d28d9'}}>{diag}</span>
+                                        <span style={{fontSize:9,fontWeight:800,opacity:.7,fontFamily:'monospace',color:filterDiag.has(diag)?'#7c3aed':'#6d28d9'}}>({cnt})</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           </div>
 
-          <div style={{padding:'12px 14px',display:'flex',flexDirection:'column',gap:12}}>
+          <div style={{padding:'14px 12px',display:'flex',flexDirection:'column',gap:12}}>
 
-            {/* Tages-Statistik */}
-            {totalTasks > 0 && (
-              <div style={{background:'#fff',borderRadius:14,border:'1px solid #e7e5e4',padding:'12px 14px'}}>
-                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
-                  <span style={{fontSize:10,fontWeight:700,color:'#a8a29e',textTransform:'uppercase',letterSpacing:'.1em'}}>{isToday ? 'Heute' : selectedDate}</span>
-                  <span style={{fontSize:13,fontWeight:800,color:'#1c1917'}}>{doneTasks.length} / {totalTasks} erledigt</span>
-                </div>
-                <div style={{height:5,background:'#e7e5e4',borderRadius:3,overflow:'hidden'}}>
-                  <div style={{height:'100%',borderRadius:3,transition:'width .3s',
-                    width:totalPct+'%',
-                    background:totalPct===100?'#16a34a':'#d97706'}}/>
-                </div>
-                {overdueTasks.length > 0 && (
-                  <p style={{fontSize:11,color:'#a8a29e',fontWeight:600,marginTop:6,display:'flex',alignItems:'center',gap:4}}>
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                    {overdueTasks.length} überfällig
-                  </p>
-                )}
+            {/* Stats-Strip (kein Fortschrittsbalken) */}
+            {totalTasks > 0 && !anyFilter && (
+              <div style={{background:'#fff',borderRadius:12,border:'1px solid #e7e5e4',padding:'9px 13px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                <span style={{fontSize:9,fontWeight:700,color:'#a8a29e',textTransform:'uppercase',letterSpacing:'.1em'}}>{isToday ? 'Heute' : selectedDate}</span>
+                <span style={{fontSize:13,fontWeight:800,color:'#1c1917'}}>{doneTasks.length} / {totalTasks} erledigt</span>
               </div>
             )}
+            {anyFilter && (pendingGroups.length > 0 || doneGroups.length > 0) && (() => {
+              const label = [...filterStatus].map(k=>({due:'Fällig',over:'Überfällig',done:'Erledigt'}[k])).join(' + ') || (isToday ? 'Heute' : selectedDate);
+              const cnt = pendingGroups.length + doneGroups.length;
+              const col = filterStatus.has('over') ? '#dc2626' : filterStatus.has('due') ? '#d97706' : filterStatus.has('done') ? '#166634' : '#1c1917';
+              return (
+                <div style={{background:'#fff',borderRadius:12,border:'1px solid #e7e5e4',padding:'9px 13px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                  <span style={{fontSize:9,fontWeight:700,color:'#a8a29e',textTransform:'uppercase',letterSpacing:'.1em'}}>{label}</span>
+                  <span style={{fontSize:13,fontWeight:800,color:col}}>{cnt} {cnt===1?'Igel':'Igel'}</span>
+                </div>
+              );
+            })()}
 
-            {/* Leer */}
+            {/* Leer — keine Behandlungen */}
             {totalTasks === 0 && (
               <div style={{background:'#fff',borderRadius:14,border:'1px solid #e7e5e4',padding:'40px 20px',textAlign:'center'}}>
                 <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#d6d3d1" strokeWidth="1.5" style={{margin:'0 auto 12px',display:'block'}}><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="8 14 11 17 16 12"/></svg>
@@ -5720,17 +5947,29 @@
               </div>
             )}
 
+            {/* Leer — Filter kein Ergebnis */}
+            {totalTasks > 0 && anyFilter && pendingGroups.length === 0 && doneGroups.length === 0 && (
+              <div style={{background:'#fff',borderRadius:14,border:'1px solid #e7e5e4',padding:'36px 20px',textAlign:'center'}}>
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#d6d3d1" strokeWidth="1.5" style={{margin:'0 auto 10px',display:'block'}}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                <p style={{fontSize:12,color:'#a8a29e',fontWeight:600,marginBottom:4}}>Kein Ergebnis für diesen Filter</p>
+                <button onClick={clearAllFilters}
+                  style={{marginTop:10,padding:'7px 16px',borderRadius:99,border:'1.5px solid #e7e5e4',background:'#fff',fontSize:11,fontWeight:700,color:'#44403c',cursor:'pointer',fontFamily:'inherit'}}>
+                  Filter zurücksetzen
+                </button>
+              </div>
+            )}
+
             {/* Ausstehend */}
             {pendingGroups.length > 0 && (
               <div>
                 <p style={{fontSize:10,fontWeight:700,color:'#a8a29e',textTransform:'uppercase',letterSpacing:'.1em',marginBottom:8,paddingLeft:2}}>
-                  Ausstehend · {applyFilter(pendingTasks).length}
+                  {filterStatus.has('over') && !filterStatus.has('due') ? 'Überfällig' : filterStatus.has('due') && !filterStatus.has('over') ? 'Fällig' : 'Ausstehend'} · {visiblePending.length}
                 </p>
-                <div style={{display:'flex',flexDirection:'column',gap:10}}>
+                <div style={{display:'flex',flexDirection:'column',gap:12}}>
                   {pendingGroups.map((group, gi) => (
                     <div key={gi} style={{borderRadius:14,overflow:'hidden',border:'1px solid #e7e5e4',boxShadow:'0 2px 8px rgba(28,25,23,.07)'}}>
 
-                      {/* ── Banner: Name + Pfleger zentriert ── */}
+                      {/* ── Banner: Name + Pfleger ── */}
                       <div style={{padding:'9px 12px',background:group.igelColor,display:'flex',alignItems:'center',justifyContent:'space-between',gap:10,cursor:'pointer'}}
                         onClick={() => { const h=(hedgehogs||[]).find(x=>x.id===group.igelId); if(h&&onSelectHedgehog) onSelectHedgehog(h); }}>
                         <span style={{fontSize:13,fontWeight:800,color:'#fff',lineHeight:1}}>{group.igelName}</span>
@@ -5767,135 +6006,139 @@
                         )}
                       </div>
 
-                      {/* ── Med-Zeilen: QV-Style Pills + Timeline-Dropdown ── */}
+                      {/* Medikament-Zeilen — QV-Style */}
                       <div>
                         {group.tasks.map((t, ti) => {
                           const dayStart = dayStartH * 3600;
-                          const dayLen   = (dayEndH - dayStartH) * 3600;
-                          const allDoneToday = Array.from({length:t.freqPerDay}).every((_,i) => tlSlotState(t,i,activeSec,dayStart,dayLen).startsWith('done'));
-                          const hasDue  = Array.from({length:t.freqPerDay}).some((_,i) => tlSlotState(t,i,activeSec,dayStart,dayLen)==='due');
-                          const hasOver = Array.from({length:t.freqPerDay}).some((_,i) => tlSlotState(t,i,activeSec,dayStart,dayLen)==='overdue-locked');
-                          const statusLabel = allDoneToday ? 'erledigt' : hasOver ? 'überfällig' : hasDue ? 'fällig' : 'ausstehend';
-                          const statusStyle = allDoneToday
-                            ? {background:'#f0fdf4',color:'#166634',border:'1px solid #bbf7d0'}
-                            : hasOver ? {background:'#fee2e2',color:'#dc2626',border:'none'}
-                            : hasDue  ? {background:'#fef3c7',color:'#92400e',border:'none'}
-                            : {background:'#f5f5f4',color:'#a8a29e',border:'none'};
-                          const lastAppForMed = (t.applications||[]).filter(a=>a.doneAt&&a.doneAt.startsWith(todayStr)).slice(-1)[0];
-                          const lastAppTime   = lastAppForMed ? new Date(lastAppForMed.doneAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}) : null;
+                          const dayLen = (dayEndH - dayStartH) * 3600;
+                          const dots = Array.from({length:t.freqPerDay}).map((_,ci) => {
+                            const doseT = tlDoseTime(ci,t.freqPerDay,dayStart,dayLen);
+                            const pct   = Math.min(96,Math.max(4,(doseT-dayStart)/dayLen*100));
+                            const st    = tlSlotState(t,ci,activeSec,dayStart,dayLen);
+                            const key   = t.igelId+'-'+t.treatmentIdx+'-'+t.medIdx+'-'+ci;
+                            return {ci,doseT,pct,st,key};
+                          });
+                          const bounds = [0,...dots.map(d=>d.pct),100];
+                          const nowPct = Math.min(100,Math.max(0,(activeSec-dayStart)/dayLen*100));
+                          const allDoneToday = dots.every(d=>d.st.startsWith('done'));
                           const tlOpenKey = t.igelId+'-'+t.treatmentIdx+'-'+t.medIdx;
                           const tlOpen = !!tlOpenMap[tlOpenKey];
                           const setTlOpen = (v) => setTlOpenMap(prev => ({...prev, [tlOpenKey]: typeof v === 'function' ? v(prev[tlOpenKey]) : v}));
-
-                          // Dots for pills + timeline
-                          const dots = Array.from({length:t.freqPerDay}).map((_,ci) => {
-                            const doseT = tlDoseTime(ci,t.freqPerDay,dayStart,dayLen);
-                            const st    = tlSlotState(t,ci,activeSec,dayStart,dayLen);
-                            const pct   = Math.min(96,Math.max(4,(doseT-dayStart)/dayLen*100));
-                            const key   = t.igelId+'-'+t.treatmentIdx+'-'+t.medIdx+'-'+ci;
-                            return {ci,st,doseT,pct,key};
-                          });
-
+                          const hasDue = dots.some(d=>d.st==='due');
+                          const hasOverdue = dots.some(d=>d.st==='overdue-locked');
+                          const todayAppsT = (t.applications||[]).filter(a=>a.doneAt&&a.doneAt.startsWith(todayStr));
+                          const lastTodayAppT = todayAppsT.slice(-1)[0];
+                          const lastTodayTimeT = lastTodayAppT ? new Date(lastTodayAppT.doneAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}) : null;
+                          const prevAllDone = ti > 0 ? Array.from({length:group.tasks[ti-1].freqPerDay}).every((_,i) => tlSlotState(group.tasks[ti-1],i,activeSec,dayStart,dayLen).startsWith('done')) : false;
                           return (
-                            <div key={ti}>
-                              {/* ── Dünne Trennlinie vor erledigten Meds ── */}
-                              {ti > 0 && !allDoneToday && group.tasks[ti-1] && Array.from({length:group.tasks[ti-1].freqPerDay}).every((_,i) => tlSlotState(group.tasks[ti-1],i,activeSec,dayStart,dayLen).startsWith('done')) && (
+                            <React.Fragment key={ti}>
+                              {ti > 0 && allDoneToday && !prevAllDone && (
                                 <div style={{height:1,background:'#e0ddd9'}}/>
                               )}
-                              {ti === 0 && allDoneToday && group.tasks.length > 0 && (
-                                <div style={{height:1,background:'#e0ddd9'}}/>
-                              )}
-
                               {allDoneToday ? (
-                                /* ── ERLEDIGT: kompakte Zeile ── */
-                                <div style={{padding:'8px 12px',background:'#f7f6f5',display:'flex',alignItems:'center',justifyContent:'space-between',gap:8,opacity:.75,borderTop:ti===0?'none':'1px solid #f0eeec'}}>
-                                  <span style={{fontSize:11,fontWeight:700,color:'#a8a29e',textDecoration:'line-through'}}>{t.medName}</span>
-                                  <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#f0fdf4',color:'#166634',border:'1px solid #bbf7d0',fontSize:9,fontWeight:700,padding:'2px 7px',borderRadius:999,flexShrink:0}}>
-                                    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                                    {lastAppTime || '–'}
-                                  </span>
-                                </div>
-                              ) : (
-                                /* ── AKTIV: Pills + Fortschritt ── */
-                                <div style={{padding:'9px 12px',background:'#fff',borderTop:ti===0?'none':'1px solid #f5f5f4'}}>
-                                  <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:5}}>
-                                    <div>
-                                      <span style={{fontSize:11,fontWeight:700,color:'#1c1917'}}>{t.medName}</span>
-                                      <div style={{fontSize:9,color:'#a8a29e',marginTop:1}}>{t.dose}{t.dose&&t.route?' · ':''}{t.route} · {t.freqPerDay}x tägl.</div>
-                                    </div>
-                                    <span style={{fontSize:8,fontWeight:700,padding:'2px 7px',borderRadius:999,flexShrink:0,...statusStyle}}>{statusLabel}</span>
+                                <React.Fragment>
+                                  <div style={{padding:'8px 12px',borderTop:ti===0?'none':'1px solid #f5f5f4',background:'#f7f6f5',display:'flex',alignItems:'center',justifyContent:'space-between',gap:8,opacity:.75}}>
+                                    <span style={{fontSize:11,fontWeight:700,color:'#a8a29e',textDecoration:'line-through'}}>{t.medName}</span>
+                                    {lastTodayTimeT && (
+                                      <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#f0fdf4',color:'#166634',border:'1px solid #bbf7d0',fontSize:9,fontWeight:700,padding:'2px 7px',borderRadius:999,flexShrink:0,whiteSpace:'nowrap'}}>
+                                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                        {lastTodayTimeT}
+                                      </span>
+                                    )}
                                   </div>
-                                  {/* QV Pills */}
-                                  <div style={{display:'flex',gap:5,flexWrap:'wrap',marginBottom:5}}>
-                                    {dots.map(d => {
-                                      const canClick = TL_CAN[d.st] && !isGuest;
-                                      const locked   = TL_LOCKED[d.st];
-                                      return (
-                                        <div key={d.ci} style={{position:'relative'}}>
-                                          <div
-                                            onClick={() => canClick ? (d.st==='done-open' ? undoFromPlan(t,d.key) : recordFromPlan(t,d.key)) : null}
-                                            style={{display:'inline-flex',alignItems:'center',gap:5,padding:'6px 10px 6px 8px',borderRadius:999,background:QV_BG[d.st],border:'2px solid '+QV_BD[d.st],cursor:canClick?'pointer':'default',userSelect:'none',animation:QV_ANM[d.st]||'none',opacity:d.st==='pending'?0.5:1,transition:'transform .12s'}}
-                                            title={d.st==='done-open'?'Rückgängig':locked?'Gesperrt — außerhalb Toleranzfenster':d.st==='pending'?'Noch nicht fällig':'Jetzt quittieren'}>
-                                            <span style={{fontSize:13,color:QV_COL[d.st],lineHeight:1}}>{QV_ICN[d.st]}</span>
-                                            <span style={{fontSize:10,fontWeight:700,fontFamily:'monospace',color:QV_COL[d.st],lineHeight:1}}>{tlHHMM(d.doseT)}</span>
+                                  <div onClick={()=>setTlOpen(v=>!v)}
+                                    style={{display:'flex',alignItems:'center',justifyContent:'center',gap:5,padding:'6px 12px',borderTop:'1px solid #ede9e6',fontSize:10,fontWeight:700,color:'#a8a29e',cursor:'pointer',background:'#f7f6f5',userSelect:'none'}}>
+                                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    Timeline
+                                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{transition:'transform .25s',transform:tlOpen?'rotate(180deg)':'none'}}><polyline points="6 9 12 15 18 9"/></svg>
+                                  </div>
+                                </React.Fragment>
+                              ) : (
+                                <React.Fragment>
+                                  <div style={{padding:'9px 12px',borderTop:ti===0?'none':'1px solid #f5f5f4',background:'#fff'}}>
+                                    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:5}}>
+                                      <div>
+                                        <span style={{fontSize:11,fontWeight:700,color:'#1c1917'}}>{t.medName}</span>
+                                        <div style={{fontSize:9,color:'#a8a29e',marginTop:1}}>{t.dose}{t.dose&&t.route?' · ':''}{t.route} · {t.freqPerDay}x tägl.</div>
+                                      </div>
+                                      {hasOverdue ? (
+                                        <span style={{fontSize:8,fontWeight:700,padding:'2px 7px',borderRadius:999,background:'#fee2e2',color:'#dc2626',flexShrink:0}}>überfällig</span>
+                                      ) : hasDue ? (
+                                        <span style={{fontSize:8,fontWeight:700,padding:'2px 7px',borderRadius:999,background:'#fef3c7',color:'#92400e',flexShrink:0}}>fällig</span>
+                                      ) : null}
+                                    </div>
+                                    <div style={{display:'flex',gap:5,marginBottom:5,flexWrap:'wrap'}}>
+                                      {dots.map(d => {
+                                        const canClick = TL_CAN[d.st] && !isGuest;
+                                        const locked = TL_LOCKED[d.st];
+                                        return (
+                                          <div key={d.ci} style={{position:'relative'}}>
+                                            <div
+                                              onClick={()=>canClick?(d.st==='done-open'?undoFromPlan(t,d.key):recordFromPlan(t,d.key)):null}
+                                              style={{display:'inline-flex',alignItems:'center',gap:5,padding:'6px 10px 6px 8px',borderRadius:999,cursor:canClick?'pointer':'default',userSelect:'none',background:QV_BG[d.st],border:'2px solid '+QV_BD[d.st],animation:QV_ANM[d.st]||'none',opacity:d.st==='pending'?0.5:1}}>
+                                              <span style={{fontSize:13,lineHeight:1,color:QV_COL[d.st]}}>{QV_ICN[d.st]}</span>
+                                              <span style={{fontSize:10,fontWeight:700,fontFamily:"'DM Mono',monospace",lineHeight:1,color:QV_COL[d.st]}}>{tlHHMM(d.doseT)}</span>
+                                            </div>
+                                            {locked&&<div style={{position:'absolute',top:-4,right:-4,width:14,height:14,borderRadius:'50%',background:'#1c1917',display:'flex',alignItems:'center',justifyContent:'center',fontSize:7,border:'1.5px solid #fff'}}>🔒</div>}
                                           </div>
-                                          {locked && <div style={{position:'absolute',top:-4,right:-4,width:13,height:13,borderRadius:'50%',background:'#1c1917',display:'flex',alignItems:'center',justifyContent:'center',fontSize:7,border:'1.5px solid #fff'}}>🔒</div>}
+                                        );
+                                      })}
+                                    </div>
+                                    <div style={{height:3,background:'#f0f0f0',borderRadius:999,overflow:'hidden'}}>
+                                      <div style={{height:'100%',borderRadius:999,background:'#3b82f6',width:(t.todayCount/t.freqPerDay*100)+'%'}}/>
+                                    </div>
+                                    {t.lastApp && (
+                                      <div style={{fontSize:8,color:'#d6d3d1',fontFamily:"'DM Mono',monospace",marginTop:3}}>
+                                        Zuletzt: {new Date(t.lastApp.doneAt).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'})} {new Date(t.lastApp.doneAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})} · {t.lastApp.doneBy}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div onClick={()=>setTlOpen(v=>!v)}
+                                    style={{display:'flex',alignItems:'center',justifyContent:'center',gap:5,padding:'6px 12px',borderTop:'1px solid #ede9e6',fontSize:10,fontWeight:700,color:'#78716c',cursor:'pointer',background:'#fffdfb',userSelect:'none'}}>
+                                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    Timeline
+                                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{transition:'transform .25s',transform:tlOpen?'rotate(180deg)':'none'}}><polyline points="6 9 12 15 18 9"/></svg>
+                                  </div>
+                                </React.Fragment>
+                              )}
+                              {tlOpen && (
+                                <div style={{padding:'10px 12px',background:'#fffdfb',borderTop:'1px solid #ede9e6',opacity:allDoneToday?0.7:1}}>
+                                  <div style={{position:'relative',borderRadius:8,height:44,overflow:'hidden',marginBottom:2}}>
+                                    {bounds.slice(0,-1).map((b,i) => {
+                                      const segSt = i===0 ? dots[0].st : dots[i-1].st;
+                                      return <div key={i} style={{position:'absolute',top:0,height:'100%',left:b+'%',width:(bounds[i+1]-b)+'%',background:TL_SEG[segSt]}}/>;
+                                    })}
+                                    {dots.map((d,i) => TL_LOCKED[d.st] ? (
+                                      <div key={'h'+i} style={{position:'absolute',top:0,left:(i===0?0:dots[i-1].pct)+'%',width:(d.pct-(i===0?0:dots[i-1].pct))+'%',height:'100%',background:'repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(0,0,0,.05) 4px,rgba(0,0,0,.05) 8px)',zIndex:2,pointerEvents:'none'}}/>
+                                    ) : null)}
+                                    {nowPct>0&&nowPct<100&&(
+                                      <div style={{position:'absolute',top:3,bottom:3,left:nowPct+'%',width:2.5,background:'#fff',borderRadius:2,zIndex:8,opacity:.9}}>
+                                        <div style={{position:'absolute',top:-5,left:'50%',transform:'translateX(-50%)',width:0,height:0,borderLeft:'4px solid transparent',borderRight:'4px solid transparent',borderTop:'5px solid #fff'}}/>
+                                      </div>
+                                    )}
+                                    {dots.map(d => {
+                                      const locked = TL_LOCKED[d.st];
+                                      const canClick = TL_CAN[d.st] && !isGuest;
+                                      return (
+                                        <div key={d.ci} style={{position:'absolute',left:d.pct+'%',top:0,bottom:0,transform:'translateX(-50%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',zIndex:7}}>
+                                          <div style={{fontSize:7,fontWeight:700,fontFamily:'monospace',color:TL_ICOL[d.st],lineHeight:1,marginBottom:3,whiteSpace:'nowrap'}}>{tlHHMM(d.doseT)}</div>
+                                          <div onClick={()=>canClick?(d.st==='done-open'?undoFromPlan(t,d.key):recordFromPlan(t,d.key)):null}
+                                            style={{position:'relative',width:21,height:21,borderRadius:'50%',background:locked?'rgba(255,255,255,.6)':'rgba(255,255,255,.92)',boxShadow:locked?'none':'0 1px 4px rgba(0,0,0,.12)',display:'flex',alignItems:'center',justifyContent:'center',cursor:canClick?'pointer':'default',animation:TL_ANIM[d.st]||'none',opacity:d.st==='pending'?0.5:1}}>
+                                            <span style={{fontSize:d.st.startsWith('done')?9:11,color:TL_ICOL[d.st]}}>{TL_ICON[d.st]}</span>
+                                            {locked&&<div style={{position:'absolute',bottom:-2,right:-2,width:10,height:10,borderRadius:'50%',background:'#1c1917',display:'flex',alignItems:'center',justifyContent:'center',fontSize:7}}>🔒</div>}
+                                          </div>
                                         </div>
                                       );
                                     })}
                                   </div>
-                                  {t.lastApp && (
-                                    <div style={{fontSize:8,color:'#d6d3d1',fontFamily:'monospace',marginBottom:2}}>
-                                      Zuletzt: {new Date(t.lastApp.doneAt).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'})} {new Date(t.lastApp.doneAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})} · {t.lastApp.doneBy}
-                                    </div>
-                                  )}
+                                  <div style={{display:'flex',justifyContent:'space-between',padding:'0 2px'}}>
+                                    {[0,0.25,0.5,0.75,1].map(f => (
+                                      <span key={f} style={{fontSize:7,color:'#d6d3d1',fontFamily:'monospace'}}>{tlHHMM(dayStart+dayLen*f)}</span>
+                                    ))}
+                                  </div>
                                 </div>
                               )}
-
-                              {/* ── Timeline Dropdown ── */}
-                              <div onClick={()=>setTlOpen(v=>!v)}
-                                style={{display:'flex',alignItems:'center',justifyContent:'center',gap:5,padding:'6px 12px',borderTop:'1px solid #ede9e6',fontSize:10,fontWeight:700,color:allDoneToday?'#a8a29e':'#78716c',cursor:'pointer',background:'#fffdfb',userSelect:'none'}}>
-                                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                Timeline
-                                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{transition:'transform .25s',transform:tlOpen?'rotate(180deg)':'none'}}><polyline points="6 9 12 15 18 9"/></svg>
-                              </div>
-                              {tlOpen && (() => {
-                                const bounds = [0,...dots.map(d=>d.pct),100];
-                                const nowPct  = Math.min(100,Math.max(0,(activeSec-dayStart)/dayLen*100));
-                                return (
-                                  <div style={{padding:'10px 12px',background:'#fffdfb',borderTop:'1px solid #ede9e6'}}>
-                                    <div style={{position:'relative',borderRadius:8,height:44,overflow:'hidden',marginBottom:3}}>
-                                      {bounds.slice(0,-1).map((b,i) => {
-                                        const segSt = i===0 ? dots[0].st : dots[i-1].st;
-                                        return <div key={i} style={{position:'absolute',top:0,height:'100%',left:b+'%',width:(bounds[i+1]-b)+'%',background:TL_SEG[segSt]}}/>;
-                                      })}
-                                      {dots.map((d,i) => TL_LOCKED[d.st] ? (
-                                        <div key={'h'+i} style={{position:'absolute',top:0,left:(i===0?0:dots[i-1].pct)+'%',width:(d.pct-(i===0?0:dots[i-1].pct))+'%',height:'100%',background:'repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(0,0,0,.05) 4px,rgba(0,0,0,.05) 8px)',zIndex:2,pointerEvents:'none'}}/>
-                                      ) : null)}
-                                      {nowPct>0&&nowPct<100&&(
-                                        <div style={{position:'absolute',top:3,bottom:3,left:nowPct+'%',width:2.5,background:'#fff',borderRadius:2,zIndex:8,opacity:.9}}>
-                                          <div style={{position:'absolute',top:-5,left:'50%',transform:'translateX(-50%)',width:0,height:0,borderLeft:'4px solid transparent',borderRight:'4px solid transparent',borderTop:'5px solid #fff',opacity:.9}}/>
-                                        </div>
-                                      )}
-                                      {dots.map(d => (
-                                        <div key={d.ci} style={{position:'absolute',left:d.pct+'%',top:0,bottom:0,transform:'translateX(-50%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',zIndex:7}}>
-                                          <div style={{fontSize:7,fontWeight:700,fontFamily:'monospace',color:TL_ICOL[d.st],lineHeight:1,marginBottom:3,whiteSpace:'nowrap'}}>{tlHHMM(d.doseT)}</div>
-                                          <div style={{position:'relative',width:21,height:21,borderRadius:'50%',background:TL_LOCKED[d.st]?'rgba(255,255,255,.6)':'rgba(255,255,255,.92)',boxShadow:TL_LOCKED[d.st]?'none':'0 1px 4px rgba(0,0,0,.12)',display:'flex',alignItems:'center',justifyContent:'center',opacity:d.st==='pending'?0.5:1}}>
-                                            <span style={{fontSize:d.st.startsWith('done')?10:12,color:TL_ICOL[d.st]}}>{TL_ICON[d.st]}</span>
-                                            {TL_LOCKED[d.st]&&<div style={{position:'absolute',bottom:-2,right:-2,width:10,height:10,borderRadius:'50%',background:'#1c1917',display:'flex',alignItems:'center',justifyContent:'center',fontSize:6}}>🔒</div>}
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                    <div style={{display:'flex',justifyContent:'space-between'}}>
-                                      {[0,0.25,0.5,0.75,1].map(f=>(
-                                        <span key={f} style={{fontSize:7,color:'#d6d3d1',fontFamily:'monospace'}}>{tlHHMM(dayStart+dayLen*f)}</span>
-                                      ))}
-                                    </div>
-                                  </div>
-                                );
-                              })()}
-                            </div>
+                            </React.Fragment>
                           );
                         })}
                       </div>
@@ -5907,25 +6150,44 @@
             )}
 
             {/* Erledigt */}
-            {doneFiltered.length > 0 && (
+            {doneGroups.length > 0 && (
               <div>
-                <p style={{fontSize:10,fontWeight:700,color:'#a8a29e',textTransform:'uppercase',letterSpacing:'.1em',marginBottom:8,paddingLeft:2}}>Erledigt · {doneFiltered.length}</p>
-                <div style={{background:'#fff',borderRadius:14,border:'1px solid #e7e5e4',overflow:'hidden'}}>
-                  {doneFiltered.map((t, i) => (
-                    <div key={i} style={{padding:'10px 14px',display:'flex',alignItems:'center',gap:10,borderTop:i===0?'none':'1px solid #f5f5f4'}}>
-                      <div style={{width:22,height:22,borderRadius:'50%',background:'#16a34a',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5"><polyline points="20 6 9 17 4 12"/></svg>
-                      </div>
-                      <div style={{flex:1,minWidth:0,cursor:'pointer'}}
-                        onClick={() => { const h=(hedgehogs||[]).find(x=>x.id===t.igelId); if(h&&onSelectHedgehog) onSelectHedgehog(h); }}>
-                        <span style={{fontSize:13,fontWeight:700,color:'#44403c'}}>{t.igelName}</span>
-                        <span style={{fontSize:11,color:'#a8a29e',marginLeft:6}}>{t.medName}</span>
-                        {t.lastApp && (
-                          <p style={{fontSize:10,color:'#d6d3d1',marginTop:2}}>
-                            {new Date(t.lastApp.doneAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})} Uhr · {t.lastApp.doneBy}
-                          </p>
+                <p style={{fontSize:10,fontWeight:700,color:'#a8a29e',textTransform:'uppercase',letterSpacing:'.1em',marginBottom:8,paddingLeft:2}}>Erledigt · {visibleDone.length}</p>
+                <div style={{display:'flex',flexDirection:'column',gap:12}}>
+                  {doneGroups.map((group, gi) => (
+                    <div key={gi} style={{borderRadius:14,overflow:'hidden',border:'1px solid #e7e5e4',boxShadow:'0 2px 8px rgba(28,25,23,.07)'}}>
+                      <div style={{padding:'9px 12px',background:group.igelColor,display:'flex',alignItems:'center',justifyContent:'space-between',gap:10,cursor:'pointer'}}
+                        onClick={() => { const h=(hedgehogs||[]).find(x=>x.id===group.igelId); if(h&&onSelectHedgehog) onSelectHedgehog(h); }}>
+                        <span style={{fontSize:13,fontWeight:800,color:'#fff',lineHeight:1}}>{group.igelName}</span>
+                        {group.igelBetreuer && (
+                          <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'rgba(255,255,255,.18)',border:'1px solid rgba(255,255,255,.25)',padding:'2px 7px',borderRadius:999,fontSize:9,fontWeight:700,color:'rgba(255,255,255,.9)',whiteSpace:'nowrap',flexShrink:0}}>
+                            <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            {group.igelBetreuer}
+                          </span>
                         )}
                       </div>
+                      <div style={{padding:'6px 12px 7px',background:'#fafaf8',borderBottom:'1px solid #e7e5e4'}}>
+                        <span style={{background:'#f0efee',color:'#57534e',fontSize:9,fontWeight:700,padding:'2px 7px',borderRadius:999}}>
+                          {group.tasks.length} {group.tasks.length===1?'Behandlung':'Behandlungen'}
+                        </span>
+                      </div>
+                      {group.tasks.map((t, ti) => {
+                        const todayAppsT = (t.applications||[]).filter(a=>a.doneAt&&a.doneAt.startsWith(todayStr));
+                        const lastTodayAppT = todayAppsT.slice(-1)[0];
+                        const lastTodayTimeT = lastTodayAppT ? new Date(lastTodayAppT.doneAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}) : null;
+                        return (
+                          <div key={ti} style={{padding:'8px 12px',borderTop:ti===0?'none':'1px solid #f5f5f4',background:'#f7f6f5',display:'flex',alignItems:'center',justifyContent:'space-between',gap:8,opacity:.75,cursor:'pointer'}}
+                            onClick={() => { const h=(hedgehogs||[]).find(x=>x.id===t.igelId); if(h&&onSelectHedgehog) onSelectHedgehog(h); }}>
+                            <span style={{fontSize:11,fontWeight:700,color:'#a8a29e',textDecoration:'line-through'}}>{t.medName}</span>
+                            {lastTodayTimeT && (
+                              <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#f0fdf4',color:'#166634',border:'1px solid #bbf7d0',fontSize:9,fontWeight:700,padding:'2px 7px',borderRadius:999,flexShrink:0,whiteSpace:'nowrap'}}>
+                                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                {lastTodayTimeT}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   ))}
                 </div>
@@ -8054,11 +8316,10 @@
       const TL_ANIM  = {'due':'qv-pulse-amber 2.2s ease-in-out infinite','overdue-locked':'qv-pulse-red 1.8s ease-in-out infinite'};
       const TL_LOCKED= {'done-locked':true,'overdue-locked':true};
       const TL_CAN   = {'done-open':true,'due':true};
-      // QV-Style pill constants
       const QV_BG  = {'done-open':'#dcfce7','done-locked':'#dcfce7','due':'#fefce8','overdue-locked':'#fff1f2','pending':'#fafaf8'};
       const QV_BD  = {'done-open':'#86efac','done-locked':'#86efac','due':'#fde68a','overdue-locked':'#fecdd3','pending':'#e7e5e4'};
       const QV_COL = {'done-open':'#166634','done-locked':'#166634','due':'#ca8a04','overdue-locked':'#e11d48','pending':'#d6d3d1'};
-      const QV_ICN = {'done-open':'\u2713','done-locked':'\u2713','due':'\u25ce','overdue-locked':'\u25cf','pending':'\u25cb'};
+      const QV_ICN = {'done-open':'✓','done-locked':'✓','due':'◎','overdue-locked':'●','pending':'○'};
       const QV_ANM = {'due':'qv-pulse-amber 2.2s ease-in-out infinite','overdue-locked':'qv-pulse-red 1.8s ease-in-out infinite'};
       const tlMedHasOverdue = (m) => {
         if (m.done) return false;
@@ -8283,7 +8544,7 @@
                       );
                       const isAktiv = t.status === 'aktiv';
                       const toggleDay = (key) => toggleExpandDay(idx, key);
-                      const [tlOpenMiMap, setTlOpenMiMap] = useState({});
+                      const [tlOpenMiMap, setTlOpenMiMap] = React.useState({});
 
 
 
@@ -8341,28 +8602,17 @@
                             </div>
                           </div>
 
-                          {/* ── Medikament-Zeilen: QV-Style Pills + Timeline-Dropdown ── */}
+                          {/* ── Medikament-Zeilen — QV-Style ── */}
                           {(t.medications||[]).map((m, mi) => {
-                            const planned    = parseInt(m.plannedApplications) || 0;
-                            const completed  = parseInt(m.completedApplications) || 0;
-                            const progress   = planned > 0 ? Math.min(completed / planned, 1) : 0;
-                            const isDone     = m.done || (planned > 0 && completed >= planned);
-                            const lastApp    = (m.applications||[]).slice(-1)[0];
-                            const freqPerDay = tlGetFreq(m.frequency);
-                            const dayStart   = tlDayStartH*3600;
-                            const dayLen     = (tlDayEndH-tlDayStartH)*3600;
-                            const nowPct     = Math.min(100,Math.max(0,(tlActiveSec-dayStart)/dayLen*100));
-                            const tlOpenMi = !!tlOpenMiMap[mi];
-                            const setTlOpenMi = (v) => setTlOpenMiMap(prev => ({...prev, [mi]: typeof v === 'function' ? v(prev[mi]) : v}));
-
-                            const todayAppsForMed = (m.applications||[]).filter(a=>a.doneAt&&a.doneAt.startsWith(tlTodayStr));
-                            const allDoneToday = !isDone && (() => {
-                              if (freqPerDay === 0) return false;
-                              const dots2 = Array.from({length:freqPerDay}).map((_,ci) => tlSlotState(m,ci));
-                              return dots2.every(st=>st.startsWith('done'));
-                            })();
-                            const lastTodayApp = todayAppsForMed.slice(-1)[0];
-                            const lastTodayTime = lastTodayApp ? new Date(lastTodayApp.doneAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}) : null;
+                            const planned   = parseInt(m.plannedApplications) || 0;
+                            const completed = parseInt(m.completedApplications) || 0;
+                            const progress  = planned > 0 ? Math.min(completed / planned, 1) : 0;
+                            const isDone    = m.done || (planned > 0 && completed >= planned);
+                            const lastApp   = (m.applications||[]).slice(-1)[0];
+                            const freqPerDay= tlGetFreq(m.frequency);
+                            const dayStart  = tlDayStartH*3600;
+                            const dayLen    = (tlDayEndH-tlDayStartH)*3600;
+                            const nowPct    = Math.min(100,Math.max(0,(tlActiveSec-dayStart)/dayLen*100));
 
                             const dots = Array.from({length:freqPerDay}).map((_,ci) => {
                               const doseT = tlDoseTime(ci,freqPerDay,dayStart,dayLen);
@@ -8371,155 +8621,194 @@
                               return {ci,doseT,pct,st};
                             });
                             const bounds = [0,...dots.map(d=>d.pct),100];
-
-
-                            const hasDue  = isAktiv && dots.some(d=>d.st==='due');
-                            const hasOver = isAktiv && dots.some(d=>d.st==='overdue-locked');
-                            const statusLabel = isDone ? 'abgeschl.' : allDoneToday ? 'erledigt' : hasOver ? 'überfällig' : hasDue ? 'fällig' : 'ausstehend';
-                            const statusStyle = isDone ? {background:'#f5f5f4',color:'#a8a29e'} : allDoneToday ? {background:'#f0fdf4',color:'#166634',border:'1px solid #bbf7d0'} : hasOver ? {background:'#fee2e2',color:'#dc2626'} : hasDue ? {background:'#fef3c7',color:'#92400e'} : {background:'#f5f5f4',color:'#a8a29e'};
-
-                            const showDone = isDone || allDoneToday;
-                            // Thin separator before done meds
-                            const prevAllDone = mi > 0 && (() => {
+                            const allDoneToday = dots.every(d=>d.st.startsWith('done'));
+                            const tlOpenMi = !!tlOpenMiMap[mi];
+                            const setTlOpenMi = (v) => setTlOpenMiMap(prev => ({...prev, [mi]: typeof v === 'function' ? v(prev[mi]) : v}));
+                            const hasDue = isAktiv && dots.some(d=>d.st==='due');
+                            const hasOv  = isAktiv && (dots.some(d=>d.st==='overdue-locked') || tlMedHasOverdue(m));
+                            const todayAppsM = (m.applications||[]).filter(a=>a.doneAt&&a.doneAt.startsWith(tlTodayStr));
+                            const lastTodayAppM = todayAppsM.slice(-1)[0];
+                            const lastTodayTimeM = lastTodayAppM ? new Date(lastTodayAppM.doneAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}) : null;
+                            const showDone = isDone || (isAktiv && allDoneToday);
+                            const prevShowDone = mi > 0 ? (() => {
                               const pm = (t.medications||[])[mi-1];
                               if (!pm) return false;
-                              const pmDone = pm.done || (parseInt(pm.plannedApplications)>0 && parseInt(pm.completedApplications)>=parseInt(pm.plannedApplications));
-                              const pmFreq = tlGetFreq(pm.frequency);
-                              const pmAllToday = !pmDone && pmFreq>0 && Array.from({length:pmFreq}).map((_,ci)=>tlSlotState(pm,ci)).every(st=>st.startsWith('done'));
-                              return pmDone || pmAllToday;
-                            })();
+                              const pp = parseInt(pm.plannedApplications)||0;
+                              const pc = parseInt(pm.completedApplications)||0;
+                              const pD = pm.done||(pp>0&&pc>=pp);
+                              const pFreq = tlGetFreq(pm.frequency);
+                              const pDots = Array.from({length:pFreq}).map((_,ci)=>tlSlotState(pm,ci));
+                              return pD || (isAktiv && pDots.every(s=>s.startsWith('done')));
+                            })() : false;
 
                             return (
-                              <div key={mi}>
-                                {/* Thin divider before first done med */}
-                                {mi > 0 && showDone && !prevAllDone && (
+                              <React.Fragment key={mi}>
+                                {mi > 0 && showDone && !prevShowDone && (
                                   <div style={{height:1,background:'#e0ddd9'}}/>
                                 )}
-                                {mi === 0 && showDone && (
-                                  <div style={{height:1,background:'#e0ddd9'}}/>
-                                )}
-
                                 {showDone ? (
-                                  /* ── ERLEDIGT/DONE: kompakte Zeile ── */
-                                  <div style={{padding:'8px 13px',background:'#f7f6f5',display:'flex',alignItems:'center',justifyContent:'space-between',gap:8,opacity:.75,borderTop:mi===0?'none':'1px solid #f0eeec'}}>
-                                    <span style={{fontSize:11,fontWeight:700,color:'#a8a29e',textDecoration:'line-through'}}>{m.medicationName}</span>
-                                    <span style={{display:'inline-flex',alignItems:'center',gap:4,fontSize:9,fontWeight:700,padding:'2px 7px',borderRadius:999,flexShrink:0,...statusStyle}}>
-                                      {!isDone && <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>}
-                                      {isDone ? statusLabel : (lastTodayTime || '–')}
-                                    </span>
-                                  </div>
-                                ) : (
-                                  /* ── AKTIV: Pills + Fortschritt ── */
-                                  <div style={{padding:'9px 13px',background:'#fff',borderTop:mi===0?'none':'1px solid #f5f5f4'}}>
-                                    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:5}}>
-                                      <div style={{flex:1,minWidth:0}}>
-                                        <span style={{fontSize:11,fontWeight:700,color:'#1c1917'}}>{m.medicationName}</span>
-                                        <div style={{fontSize:9,color:'#a8a29e',marginTop:1}}>{m.actualDose||m.dose} {m.unit} · {m.applicationRoute} · {m.frequency}</div>
-                                      </div>
-                                      <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0,marginLeft:8}}>
-                                        {planned>0 && <span style={{fontSize:9,fontWeight:700,color:'#a8a29e',fontFamily:'monospace'}}>{completed}/{planned}</span>}
-                                        <span style={{fontSize:8,fontWeight:700,padding:'2px 7px',borderRadius:999,...statusStyle}}>{statusLabel}</span>
-                                      </div>
+                                  <React.Fragment>
+                                    <div style={{padding:'8px 13px',borderTop:mi===0?'none':'1px solid #f5f5f4',background:'#f7f6f5',display:'flex',alignItems:'center',justifyContent:'space-between',gap:8,opacity:.75}}>
+                                      <span style={{fontSize:11,fontWeight:700,color:'#a8a29e',textDecoration:'line-through'}}>{m.medicationName}</span>
+                                      {isDone && !allDoneToday ? (
+                                        <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#f5f5f4',border:'1px solid #d6d3d1',fontSize:9,fontWeight:700,padding:'2px 7px',borderRadius:999,flexShrink:0,color:'#78716c'}}>abg.</span>
+                                      ) : lastTodayTimeM ? (
+                                        <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#f0fdf4',color:'#166634',border:'1px solid #bbf7d0',fontSize:9,fontWeight:700,padding:'2px 7px',borderRadius:999,flexShrink:0,whiteSpace:'nowrap'}}>
+                                          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                          {lastTodayTimeM}
+                                        </span>
+                                      ) : null}
                                     </div>
                                     {isAktiv && (
-                                      <div style={{display:'flex',gap:5,flexWrap:'wrap',marginBottom:5}}>
-                                        {dots.map(d => {
-                                          const canClick = TL_CAN[d.st] && !isGuest;
-                                          const locked   = TL_LOCKED[d.st];
-                                          return (
-                                            <div key={d.ci} style={{position:'relative'}}>
-                                              <div
-                                                onClick={async () => {
-                                                  if (!canClick) return;
-                                                  if (d.st === 'done-open') {
-                                                    const treatments2 = JSON.parse(JSON.stringify(data.treatments||[]));
-                                                    const m2 = treatments2[idx].medications[mi];
-                                                    const apps2 = [...(m2.applications||[])];
-                                                    const li = apps2.map((a,ai)=>({a,ai})).reverse().find(({a})=>a.doneAt&&a.doneAt.startsWith(tlTodayStr))?.ai;
-                                                    if (li!==undefined) apps2.splice(li,1);
-                                                    m2.applications=apps2;
-                                                    m2.completedApplications=Math.max(0,(parseInt(m2.completedApplications)||1)-1);
-                                                    m2.done=false;
-                                                    await db.collection('hedgehogs').doc(hedgehog.id).update({treatments:treatments2,zuletztBearbeitetVon:userData.name,zuletztBearbeitetAm:firebase.firestore.FieldValue.serverTimestamp()});
-                                                    setData({...data,treatments:treatments2});
-                                                  } else {
-                                                    recordApplication(idx, mi);
-                                                  }
-                                                }}
-                                                style={{display:'inline-flex',alignItems:'center',gap:5,padding:'6px 10px 6px 8px',borderRadius:999,background:QV_BG[d.st],border:'2px solid '+QV_BD[d.st],cursor:canClick?'pointer':'default',userSelect:'none',animation:QV_ANM[d.st]||'none',opacity:d.st==='pending'?0.5:1,transition:'transform .12s'}}
-                                                title={d.st==='done-open'?'Rückgängig':locked?'Gesperrt':d.st==='pending'?'Noch nicht fällig':'Jetzt quittieren'}>
-                                                <span style={{fontSize:13,color:QV_COL[d.st],lineHeight:1}}>{QV_ICN[d.st]}</span>
-                                                <span style={{fontSize:10,fontWeight:700,fontFamily:'monospace',color:QV_COL[d.st],lineHeight:1}}>{tlHHMM(d.doseT)}</span>
-                                              </div>
-                                              {locked && <div style={{position:'absolute',top:-4,right:-4,width:13,height:13,borderRadius:'50%',background:'#1c1917',display:'flex',alignItems:'center',justifyContent:'center',fontSize:7,border:'1.5px solid #fff'}}>🔒</div>}
-                                            </div>
-                                          );
-                                        })}
+                                      <div onClick={()=>setTlOpenMi(v=>!v)}
+                                        style={{display:'flex',alignItems:'center',justifyContent:'center',gap:5,padding:'6px 12px',borderTop:'1px solid #ede9e6',fontSize:10,fontWeight:700,color:'#a8a29e',cursor:'pointer',background:'#f7f6f5',userSelect:'none'}}>
+                                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                        Timeline
+                                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{transition:'transform .25s',transform:tlOpenMi?'rotate(180deg)':'none'}}><polyline points="6 9 12 15 18 9"/></svg>
                                       </div>
                                     )}
-                                    {planned>0 && (
-                                      <div style={{height:3,background:'#f0f0f0',borderRadius:999,overflow:'hidden',marginTop:4}}>
-                                        <div style={{height:'100%',borderRadius:999,background:isDone?'#16a34a':'#3b82f6',width:(progress*100)+'%',transition:'width .4s'}}/>
-                                      </div>
-                                    )}
-                                    {lastApp && (
-                                      <div style={{fontSize:8,color:'#d6d3d1',fontFamily:'monospace',marginTop:3}}>
-                                        Zuletzt: {new Date(lastApp.doneAt).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit'})} {new Date(lastApp.doneAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})} · {lastApp.doneBy}
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-
-                                {/* ── Timeline Dropdown ── */}
-                                {isAktiv && (
-                                  <>
-                                    <div onClick={()=>setTlOpenMi(v=>!v)}
-                                      style={{display:'flex',alignItems:'center',justifyContent:'center',gap:5,padding:'6px 13px',borderTop:'1px solid #ede9e6',fontSize:10,fontWeight:700,color:showDone?'#a8a29e':'#78716c',cursor:'pointer',background:'#fffdfb',userSelect:'none'}}>
-                                      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                      Timeline
-                                      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{transition:'transform .25s',transform:tlOpenMi?'rotate(180deg)':'none'}}><polyline points="6 9 12 15 18 9"/></svg>
-                                    </div>
-                                    {tlOpenMi && (
-                                      <div style={{padding:'10px 13px',background:'#fffdfb',borderTop:'1px solid #ede9e6',opacity:showDone?0.7:1}}>
-                                        <div style={{position:'relative',borderRadius:8,height:44,overflow:'hidden',marginBottom:3}}>
-                                          {bounds.slice(0,-1).map((b,i) => {
-                                            const segSt = i===0 ? dots[0].st : dots[i-1].st;
-                                            return <div key={i} style={{position:'absolute',top:0,height:'100%',left:b+'%',width:(bounds[i+1]-b)+'%',background:TL_SEG[segSt]}}/>;
-                                          })}
-                                          {dots.map((d,i) => TL_LOCKED[d.st] ? (
-                                            <div key={'h'+i} style={{position:'absolute',top:0,left:(i===0?0:dots[i-1].pct)+'%',width:(d.pct-(i===0?0:dots[i-1].pct))+'%',height:'100%',background:'repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(0,0,0,.05) 4px,rgba(0,0,0,.05) 8px)',zIndex:2,pointerEvents:'none'}}/>
-                                          ) : null)}
-                                          {nowPct>0&&nowPct<100&&(
-                                            <div style={{position:'absolute',top:3,bottom:3,left:nowPct+'%',width:2.5,background:'#fff',borderRadius:2,zIndex:8,opacity:.9}}>
-                                              <div style={{position:'absolute',top:-5,left:'50%',transform:'translateX(-50%)',width:0,height:0,borderLeft:'4px solid transparent',borderRight:'4px solid transparent',borderTop:'5px solid #fff',opacity:.9}}/>
+                                  </React.Fragment>
+                                ) : (
+                                  <React.Fragment>
+                                    <div style={{padding:'9px 13px',borderTop:mi===0?'none':'1px solid #f5f5f4',background:'#fff'}}>
+                                      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:4}}>
+                                        <div style={{display:'flex',alignItems:'center',gap:6,flex:1,minWidth:0}}>
+                                          <span style={{fontSize:11,fontWeight:700,color:'#1c1917'}}>{m.medicationName}</span>
+                                          {hasOv && (
+                                            <div title="Gabe verpasst" style={{width:16,height:16,borderRadius:4,background:'#fff1f2',border:'1px solid #fecdd3',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                                              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#e11d48" strokeWidth="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                                             </div>
                                           )}
-                                          {dots.map(d => (
-                                            <div key={d.ci} style={{position:'absolute',left:d.pct+'%',top:0,bottom:0,transform:'translateX(-50%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',zIndex:7}}>
-                                              <div style={{fontSize:7,fontWeight:700,fontFamily:'monospace',color:TL_ICOL[d.st],lineHeight:1,marginBottom:3,whiteSpace:'nowrap'}}>{tlHHMM(d.doseT)}</div>
-                                              <div style={{position:'relative',width:21,height:21,borderRadius:'50%',background:TL_LOCKED[d.st]?'rgba(255,255,255,.6)':'rgba(255,255,255,.92)',boxShadow:TL_LOCKED[d.st]?'none':'0 1px 4px rgba(0,0,0,.12)',display:'flex',alignItems:'center',justifyContent:'center',opacity:d.st==='pending'?0.5:1}}>
-                                                <span style={{fontSize:d.st.startsWith('done')?10:12,color:TL_ICOL[d.st]}}>{TL_ICON[d.st]}</span>
-                                                {TL_LOCKED[d.st]&&<div style={{position:'absolute',bottom:-2,right:-2,width:10,height:10,borderRadius:'50%',background:'#1c1917',display:'flex',alignItems:'center',justifyContent:'center',fontSize:6}}>🔒</div>}
-                                              </div>
-                                            </div>
-                                          ))}
                                         </div>
-                                        <div style={{display:'flex',justifyContent:'space-between'}}>
-                                          {[0,0.25,0.5,0.75,1].map(f=>(
-                                            <span key={f} style={{fontSize:7,color:'#d6d3d1',fontFamily:'monospace'}}>{tlHHMM(dayStart+dayLen*f)}</span>
-                                          ))}
+                                        <div style={{display:'flex',alignItems:'center',gap:5,flexShrink:0}}>
+                                          {hasOv ? (
+                                            <span style={{fontSize:8,fontWeight:700,padding:'2px 7px',borderRadius:999,background:'#fee2e2',color:'#dc2626'}}>überfällig</span>
+                                          ) : hasDue ? (
+                                            <span style={{fontSize:8,fontWeight:700,padding:'2px 7px',borderRadius:999,background:'#fef3c7',color:'#92400e'}}>fällig</span>
+                                          ) : null}
+                                          {planned > 0 && (
+                                            <span style={{fontSize:9,fontWeight:700,color:'#a8a29e',fontFamily:"'DM Mono',monospace"}}>{completed}<span style={{fontWeight:400}}>/{planned}</span></span>
+                                          )}
                                         </div>
                                       </div>
+                                      <div style={{fontSize:9,color:'#a8a29e',marginBottom:5}}>{m.actualDose||m.dose} {m.unit} · {m.applicationRoute} · {m.frequency}</div>
+                                      {isAktiv && (
+                                        <div style={{display:'flex',gap:5,marginBottom:5,flexWrap:'wrap'}}>
+                                          {dots.map(d => {
+                                            const canClick = TL_CAN[d.st] && !isGuest;
+                                            const locked = TL_LOCKED[d.st];
+                                            return (
+                                              <div key={d.ci} style={{position:'relative'}}>
+                                                <div
+                                                  onClick={async () => {
+                                                    if (!canClick) return;
+                                                    if (d.st === 'done-open') {
+                                                      const treatments2 = JSON.parse(JSON.stringify(data.treatments||[]));
+                                                      const m2 = treatments2[idx].medications[mi];
+                                                      const apps2 = [...(m2.applications||[])];
+                                                      const li = apps2.map((a,ai)=>({a,ai})).reverse().find(({a})=>a.doneAt&&a.doneAt.startsWith(tlTodayStr))?.ai;
+                                                      if (li!==undefined) apps2.splice(li,1);
+                                                      m2.applications=apps2;
+                                                      m2.completedApplications=Math.max(0,(parseInt(m2.completedApplications)||1)-1);
+                                                      m2.done=false;
+                                                      await db.collection('hedgehogs').doc(hedgehog.id).update({treatments:treatments2,zuletztBearbeitetVon:userData.name,zuletztBearbeitetAm:firebase.firestore.FieldValue.serverTimestamp()});
+                                                      setData({...data,treatments:treatments2});
+                                                    } else {
+                                                      recordApplication(idx, mi);
+                                                    }
+                                                  }}
+                                                  style={{display:'inline-flex',alignItems:'center',gap:5,padding:'6px 10px 6px 8px',borderRadius:999,cursor:canClick?'pointer':'default',userSelect:'none',background:QV_BG[d.st],border:'2px solid '+QV_BD[d.st],animation:QV_ANM[d.st]||'none',opacity:d.st==='pending'?0.5:1}}>
+                                                  <span style={{fontSize:13,lineHeight:1,color:QV_COL[d.st]}}>{QV_ICN[d.st]}</span>
+                                                  <span style={{fontSize:10,fontWeight:700,fontFamily:"'DM Mono',monospace",lineHeight:1,color:QV_COL[d.st]}}>{tlHHMM(d.doseT)}</span>
+                                                </div>
+                                                {locked&&<div style={{position:'absolute',top:-4,right:-4,width:14,height:14,borderRadius:'50%',background:'#1c1917',display:'flex',alignItems:'center',justifyContent:'center',fontSize:7,border:'1.5px solid #fff'}}>🔒</div>}
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
+                                      )}
+                                      {planned > 0 && (
+                                        <div style={{height:3,background:'#f0f0f0',borderRadius:999,overflow:'hidden',marginTop:isAktiv?0:4}}>
+                                          <div style={{height:'100%',borderRadius:999,background:isDone?'#16a34a':'#3b82f6',width:(progress*100)+'%',transition:'width .4s'}}/>
+                                        </div>
+                                      )}
+                                      {lastApp && (
+                                        <div style={{fontSize:8,color:'#d6d3d1',fontFamily:"'DM Mono',monospace",marginTop:3}}>
+                                          Zuletzt: {new Date(lastApp.doneAt).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit'})} {new Date(lastApp.doneAt).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})} · {lastApp.doneBy}
+                                        </div>
+                                      )}
+                                    </div>
+                                    {isAktiv && (
+                                      <div onClick={()=>setTlOpenMi(v=>!v)}
+                                        style={{display:'flex',alignItems:'center',justifyContent:'center',gap:5,padding:'6px 12px',borderTop:'1px solid #ede9e6',fontSize:10,fontWeight:700,color:'#78716c',cursor:'pointer',background:'#fffdfb',userSelect:'none'}}>
+                                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                        Timeline
+                                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{transition:'transform .25s',transform:tlOpenMi?'rotate(180deg)':'none'}}><polyline points="6 9 12 15 18 9"/></svg>
+                                      </div>
                                     )}
-                                  </>
+                                  </React.Fragment>
                                 )}
-                              </div>
+                                {isAktiv && tlOpenMi && (
+                                  <div style={{padding:'10px 12px',background:'#fffdfb',borderTop:'1px solid #ede9e6',opacity:allDoneToday?0.7:1}}>
+                                    <div style={{position:'relative',borderRadius:8,height:44,overflow:'hidden',marginBottom:2}}>
+                                      {bounds.slice(0,-1).map((b,i) => {
+                                        const segSt = i===0 ? dots[0].st : dots[i-1].st;
+                                        return <div key={i} style={{position:'absolute',top:0,height:'100%',left:b+'%',width:(bounds[i+1]-b)+'%',background:TL_SEG[segSt]}}/>;
+                                      })}
+                                      {dots.map((d,i) => TL_LOCKED[d.st] ? (
+                                        <div key={'h'+i} style={{position:'absolute',top:0,left:(i===0?0:dots[i-1].pct)+'%',width:(d.pct-(i===0?0:dots[i-1].pct))+'%',height:'100%',background:'repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(0,0,0,.05) 4px,rgba(0,0,0,.05) 8px)',zIndex:2,pointerEvents:'none'}}/>
+                                      ) : null)}
+                                      {nowPct>0&&nowPct<100&&(
+                                        <div style={{position:'absolute',top:3,bottom:3,left:nowPct+'%',width:2.5,background:'#fff',borderRadius:2,zIndex:8,opacity:.9}}>
+                                          <div style={{position:'absolute',top:-5,left:'50%',transform:'translateX(-50%)',width:0,height:0,borderLeft:'4px solid transparent',borderRight:'4px solid transparent',borderTop:'5px solid #fff'}}/>
+                                        </div>
+                                      )}
+                                      {dots.map(d => {
+                                        const locked = TL_LOCKED[d.st];
+                                        const canClick = TL_CAN[d.st] && !isGuest;
+                                        return (
+                                          <div key={d.ci} style={{position:'absolute',left:d.pct+'%',top:0,bottom:0,transform:'translateX(-50%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',zIndex:7}}>
+                                            <div style={{fontSize:7,fontWeight:700,fontFamily:'monospace',color:TL_ICOL[d.st],lineHeight:1,marginBottom:3,whiteSpace:'nowrap'}}>{tlHHMM(d.doseT)}</div>
+                                            <div
+                                              onClick={async () => {
+                                                if (!canClick) return;
+                                                if (d.st === 'done-open') {
+                                                  const treatments2 = JSON.parse(JSON.stringify(data.treatments||[]));
+                                                  const m2 = treatments2[idx].medications[mi];
+                                                  const apps2 = [...(m2.applications||[])];
+                                                  const li = apps2.map((a,ai)=>({a,ai})).reverse().find(({a})=>a.doneAt&&a.doneAt.startsWith(tlTodayStr))?.ai;
+                                                  if (li!==undefined) apps2.splice(li,1);
+                                                  m2.applications=apps2;
+                                                  m2.completedApplications=Math.max(0,(parseInt(m2.completedApplications)||1)-1);
+                                                  m2.done=false;
+                                                  await db.collection('hedgehogs').doc(hedgehog.id).update({treatments:treatments2,zuletztBearbeitetVon:userData.name,zuletztBearbeitetAm:firebase.firestore.FieldValue.serverTimestamp()});
+                                                  setData({...data,treatments:treatments2});
+                                                } else {
+                                                  recordApplication(idx, mi);
+                                                }
+                                              }}
+                                              style={{position:'relative',width:21,height:21,borderRadius:'50%',background:locked?'rgba(255,255,255,.6)':'rgba(255,255,255,.92)',boxShadow:locked?'none':'0 1px 4px rgba(0,0,0,.12)',display:'flex',alignItems:'center',justifyContent:'center',cursor:canClick?'pointer':'default',animation:TL_ANIM[d.st]||'none',opacity:d.st==='pending'?0.5:1}}>
+                                              <span style={{fontSize:d.st.startsWith('done')?9:11,color:TL_ICOL[d.st]}}>{TL_ICON[d.st]}</span>
+                                              {locked&&<div style={{position:'absolute',bottom:-2,right:-2,width:10,height:10,borderRadius:'50%',background:'#1c1917',display:'flex',alignItems:'center',justifyContent:'center',fontSize:7}}>🔒</div>}
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                    <div style={{display:'flex',justifyContent:'space-between',padding:'0 2px'}}>
+                                      {[0,0.25,0.5,0.75,1].map(f => (
+                                        <span key={f} style={{fontSize:7,color:'#d6d3d1',fontFamily:'monospace'}}>{tlHHMM(dayStart+dayLen*f)}</span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </React.Fragment>
                             );
                           })}
 
-                          {/* ── Verlauf-Toggle ── */}                          {/* ── Verlauf-Toggle ── */}
+                          {/* ── Verlauf-Toggle ── */}
                           <div onClick={() => toggleVerlauf(idx)}
-                            style={{display:'flex',alignItems:'center',justifyContent:'center',gap:6,padding:'7px 14px',borderTop:'1px solid #e7e5e4',fontSize:10,fontWeight:700,color:'#78716c',cursor:'pointer',background:'#f2efec',userSelect:'none'}}>
+                            style={{display:'flex',alignItems:'center',justifyContent:'center',gap:6,padding:'9px 14px',borderTop:'1px solid #e7e5e4',fontSize:11,fontWeight:700,color:'#78716c',cursor:'pointer',background:'#f5f5f4',userSelect:'none'}}>
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                             {verlaufOpen ? 'Verlauf ausblenden' : 'Verlauf anzeigen'}
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{transition:'transform .3s',transform: verlaufOpen ? 'rotate(180deg)' : 'none'}}>
