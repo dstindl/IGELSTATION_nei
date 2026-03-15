@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.3.62 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.3.63 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -39,6 +39,7 @@ icon-192.png / icon-512.png          PWA-Icons
 deploy.sh                            GitHub Pages Ersteinrichtung
 update.sh                            Update-Deployment
 PROJEKTDOKU_all.md                   Diese Datei
+IGEL_STARTPROMPT.md                  Chat-Kontext-Prompt für neuen Chat
 ```
 
 ### Firestore Collections
@@ -65,7 +66,9 @@ med_haeufigkeiten      Häufigkeitsdefinitionen
 - **NIEMALS** doppelte `className` auf demselben Element
 - **NIEMALS** JSX als Wert in JS-Objekt-Literal
 - **NIEMALS** Template-Literale mit einfachen Anführungszeichen in `${}` → `padStart(2,'0')` bricht Babel! String-Verkettung verwenden: `+(n<10?'0':'')+n`
+- **NIEMALS** `padStart(2,'0')` direkt in JSX `{}` Ausdruck (auch außerhalb von Template-Literals gefährlich)
 - **NIEMALS** schließendes `</div>` ohne öffnendes `<div>` im JSX
+- **NIEMALS** Inline-Komponente mit eigenem `useState` innerhalb einer anderen Komponente definieren → führt zu Re-mount bei jedem Re-render des Elternteils (State-Reset)
 - **Braces-Balance** im gesamten Babel-Script muss 0 sein
 
 ### Firestore-Regeln
@@ -81,6 +84,16 @@ med_haeufigkeiten      Häufigkeitsdefinitionen
 ### Neue Komponenten
 - Immer **vor `UserProfile`** einfügen
 - Version-Bump Changelog: Anker auf **stabilen älteren Eintrag** — NIEMALS auf neue Version
+
+### State-Lifting Regel (ab v2.3.59)
+`verlaufOpen` und `expandedDays` in `TRow` (innerhalb HedgehogDetail) **müssen** in `HedgehogDetail` als Maps gehalten werden — sonst reset bei jedem Live-Uhr-Re-render (alle 10s):
+```javascript
+// In HedgehogDetail (NICHT in TRow):
+const [verlaufOpenMap,  setVerlaufOpenMap]  = useState({});
+const [expandedDaysMap, setExpandedDaysMap] = useState({});
+const toggleVerlauf   = (idx) => setVerlaufOpenMap(prev => ({...prev, [idx]: !prev[idx]}));
+const toggleExpandDay = (idx, key) => setExpandedDaysMap(prev => ({...prev, [idx+'__'+key]: !prev[idx+'__'+key]}));
+```
 
 ---
 
@@ -99,12 +112,13 @@ with open('index.html','r') as f: c=f.read()
 s=re.search(r'<script type="text/babel">(.*?)</script>',c,re.DOTALL).group(1)
 print("Braces: %d, Parens: %d" % (s.count('{')-s.count('}'), s.count('(')-s.count(')')))
 ```
+→ Beide Werte müssen **0** sein. Sonst Spinner!
 
 ### ZIP-Befehl
 ```bash
 cd /home/claude/igelstation && rm -f /home/claude/Igelstation.zip
 zip /home/claude/Igelstation.zip index.html igelpflegestation-vX_X_XX-altDB.html \
-  service-worker.js icon-192.png icon-512.png deploy.sh update.sh PROJEKTDOKU_all.md
+  service-worker.js icon-192.png icon-512.png deploy.sh update.sh PROJEKTDOKU_all.md IGEL_STARTPROMPT.md
 ```
 
 ---
@@ -130,13 +144,23 @@ zip /home/claude/Igelstation.zip index.html igelpflegestation-vX_X_XX-altDB.html
 #fafaf8   Warm Grau — pending (noch nicht fällig)
 ```
 
+### TL_* Konstanten (identisch in Pflegeplan und HedgehogDetail)
+```javascript
+const TL_SEG   = {'done-open':'#f0fdf4','done-locked':'#f0fdf4','due':'#fefce8','overdue-locked':'#fff1f2','pending':'#fafaf8'};
+const TL_ICOL  = {'done-open':'#166634','done-locked':'#166634','due':'#ca8a04','overdue-locked':'#e11d48','pending':'#d6d3d1'};
+const TL_ICON  = {'done-open':'✓','done-locked':'✓','due':'◎','overdue-locked':'●','pending':'○'};
+const TL_ANIM  = {'due':'qv-pulse-amber 2.2s ease-in-out infinite','overdue-locked':'qv-pulse-red 1.8s ease-in-out infinite'};
+const TL_LOCKED= {'done-locked':true,'overdue-locked':true};
+const TL_CAN   = {'done-open':true,'due':true};
+```
+
 ### Toleranz-Logik — 6 Zustände
 ```
-done-open     Erledigt, im Toleranzfenster     → rückgängig möglich (✓)
-done-locked   Erledigt, Fenster abgelaufen     → eingefroren grün (✓🔒)
-due           Fällig, im Toleranzfenster       → quittierbar (◎, pulsiert gelb)
-overdue-locked Verpasst, Fenster abgelaufen    → gesperrt rot (●🔒, Schraffur)
-pending       Noch nicht fällig                → grau, nicht klickbar (○)
+done-open      Erledigt, im Toleranzfenster     → rückgängig möglich (✓)
+done-locked    Erledigt, Fenster abgelaufen     → eingefroren grün (✓🔒)
+due            Fällig, im Toleranzfenster       → quittierbar (◎, pulsiert gelb)
+overdue-locked Verpasst, Fenster abgelaufen     → gesperrt rot (●🔒, Schraffur)
+pending        Noch nicht fällig                → grau, nicht klickbar (○)
 ```
 
 ### Timeline — CSS-Keyframes
@@ -158,8 +182,8 @@ DM Mono (500)   IDs, Gewicht, Code-Werte, Timeline-Zeitlabels
 
 ### States (Pflegeplan-Komponente)
 ```javascript
-const [dayStartH, setDayStartH] = React.useState(6);     // Tagesbeginn
-const [dayEndH,   setDayEndH]   = React.useState(22);     // Tagesende
+const [dayStartH, setDayStartH] = React.useState(6);
+const [dayEndH,   setDayEndH]   = React.useState(22);
 const [toleranceMins, setToleranceMins] = React.useState(120); // ±2h
 const [showDaySettings, setShowDaySettings] = React.useState(false);
 const [simTime, setSimTime] = React.useState(-1);         // -1=live
@@ -179,9 +203,7 @@ const tlSlotState = (task, di, cur, dayStart, dayLen) => {
   const t = tlDoseTime(di, task.freqPerDay, dayStart, dayLen);
   const tolSec = toleranceMins * 60;
   const inWindow = cur >= (t-tolSec) && cur <= (t+tolSec);
-  const pastWindow = cur > (t+tolSec);
-  
-  // Check if given: apps within this slot's window
+
   const slotGiven = task.applications.some(a => {
     const appSec = new Date(a.doneAt).getHours()*3600+...;
     return appSec >= (t-tolSec) && appSec <= (t+tolSec);
@@ -204,7 +226,7 @@ tasks.push({
 
 ### Design F Segmente
 - Balken geteilt in N+1 Segmente (N = Anzahl Gaben)
-- Segment 0 (links) = Farbe des ERSTEN Kreises (farbiger Anfangsbereich)
+- Segment 0 (links) = Farbe des ERSTEN Kreises
 - Segment i = Farbe von Kreis i-1
 - Weiße halbtransparente Kreise über Segmenten
 - Icons: ✓ erledigt, ◎ fällig, ● verpasst, ○ ausstehend
@@ -213,7 +235,7 @@ tasks.push({
 
 ---
 
-## 7. QR Quick-View (v2.3.37+)
+## 7. QR Quick-View (v2.3.61+)
 
 ### State in MainApp
 ```javascript
@@ -222,26 +244,56 @@ const [quickViewIgel, setQuickViewIgel] = useState(null);
 const [quickViewInitialAction, setQuickViewInitialAction] = useState(null);
 ```
 
-### Funktionen
+### Medikamente — Pills-Design (ab v2.3.61)
+Jede Gabe wird als **Pill-Chip** dargestellt: Icon (Symbol) + Uhrzeit nebeneinander.
+Farben analog TL_* Konstanten. Schloss-Badge oben rechts auf gesperrten Pills.
+Nur `QV_CAN = {'done-open':true,'due':true}` ist klickbar (innerhalb Toleranzfenster).
+
+```javascript
+const QV_DAY_START = 6*3600;
+const QV_DAY_END   = 22*3600;
+const QV_DAY_LEN   = QV_DAY_END - QV_DAY_START;
+const QV_TOL_MINS  = 120;  // ±2h — geplant: aus App-Settings lesen
+```
+
+### Badge-Logik (ab v2.3.62)
+```javascript
+const hasDue = slots.some(st => st === 'due');
+const hasOv  = slots.some(st => st === 'overdue-locked');
+// Badge-Text:
+// allDone  → 'erledigt'    (grün)
+// hasOv    → 'überfällig'  (rot)
+// hasDue   → 'fällig'      (gelb) ← NUR wenn Slot im Toleranzfenster
+// sonst    → 'ausstehend'  (grau)
+```
+
+### medState enthält applications[] (Pflicht ab v2.3.61)
+```javascript
+list.push({
+  ti, mi, name, detail, doneToday, todayCount, freqPerDay, wasGivenBefore,
+  applications: [...(m.applications||[])],  // ← PFLICHT für qvSlotState
+});
+```
+
+### Live-Uhr in QV (ab v2.3.61)
+```javascript
+const [qvNowSec, setQvNowSec] = React.useState(...);
+React.useEffect(() => {
+  const iv = setInterval(() => { setQvNowSec(getNowSec()); }, 10000);
+  return () => clearInterval(iv);
+}, []);
+```
+
+### Weitere Funktionen
 - Gewicht eintragen → `gewichtsverlauf[]` + `gewichtAktuell`
-- Medikamente quittieren (Kreise, live Firestore), reversibel
 - Notizen → `h.notizen[]`
 - Behandlung anlegen → `onOpenCard('startVorlage')` → Vorlage-Modal direkt
 - Footer-Button: `paddingBottom: calc(env(safe-area-inset-bottom, 0px) + 74px)`
 - `onOpenCard` liest frische Daten: `hedgehogs.find(x => x.id === h.id)`
 
-### Farben (Quick-View Kreise)
-```
-#dcfce7   Mintgrün  — erledigt (voller Kreis + grüner Haken)
-#fef9c3   Cremgelb  — fällig (pulsierend)
-#ffe4e6   Altrosa   — überfällig (pulsierend)
-#fafaf8   Grau      — pending
-```
-Keine Umrandung, keine inneren Punkte.
-
 ---
 
-## 8. Igelkarte (HedgehogDetail)
+## 8. Igelkarte (HedgehogDetail) — ab v2.3.58
 
 ### Props
 ```javascript
@@ -250,16 +302,40 @@ HedgehogDetail({ hedgehog, userData, users, onBack, onUpdate, initialEditMode, i
 
 ### initialAction
 ```javascript
-// showVorlageModal startet direkt wenn initialAction='startVorlage'
 const [showVorlageModal, setShowVorlageModal] = useState(
   () => initialAction === 'startVorlage' && !isGuest
 );
 ```
 
-### Behandlungs-Kreise (Igelkarte)
-Gleiche Warm-Farben wie Pflegeplan, reversibel:
-- `getDotSt(ci)` → bg/border/animation je nach wasGivenBefore + todayCount
-- Undo: entfernt letzten today-App aus applications[], setzt done=false
+### Timeline im Behandlungs-Tab (ab v2.3.58)
+Identisches Design F wie Pflegeplan. Jede Medikament-Zeile zeigt:
+- Timeline-Frame (56px) mit Farbsegmenten, Kreisen, Zeitmarker
+- Zeitachsen-Labels (5 Punkte)
+- Fortschrittsbalken Gesamtbehandlung (blau=aktiv, grün=fertig)
+- Warndreieck (⚠) im Karten-Header und an der Med-Zeile wenn `overdue-locked`
+
+### TL-State in HedgehogDetail (lokal)
+```javascript
+const [tlDayStartH, setTlDayStartH] = useState(6);
+const [tlDayEndH,   setTlDayEndH]   = useState(22);
+const [tlTolMins,   setTlTolMins]   = useState(120);
+const [tlSimTime,   setTlSimTime]   = useState(-1);
+const [tlNowSec,    setTlNowSec]    = useState(...);
+const [showTlPanel, setShowTlPanel] = useState(false);
+// Uhr-Button im Header öffnet Test-Panel (4 Regler: Tagesbeginn, Tagesende, Toleranz, Sim-Zeit)
+```
+
+### tlSlotState Signatur in HedgehogDetail
+```javascript
+const tlSlotState = (med, di) => {
+  // Liest tlDayStartH, tlDayEndH, tlTolMins, tlActiveSec aus Closure
+};
+```
+
+### Verlauf (ab v2.3.59)
+- Verpasste Gaben als rote Warneinträge (Warndreieck-Icon, rosa Hintergrund)
+- Sortierung: chronologisch aufsteigend (älteste zuerst, neueste unten)
+- Berechnung: für jeden vergangenen Tag (startDate → gestern): `freq - dayCount`
 
 ### Datenstruktur hedgehog
 ```javascript
@@ -316,11 +392,13 @@ print("Braces: %d, Parens: %d" % (s.count('{')-s.count('}'), s.count('(')-s.coun
 ```
 
 ### Häufige Ursachen (Erfahrungswerte)
-1. Braces ≠ 0 → Kaputten Changelog-Eintrag prüfen
+1. Braces ≠ 0 → kaputten Changelog-Eintrag prüfen
 2. Template-Literal mit `'0'` in `${}` → String-Verkettung stattdessen
-3. Schließendes `</div>` ohne öffnendes nach einem IIFE `})()}`
-4. `tlDotState` statt `tlSlotState` nach Migration
-5. `task.applications` fehlt in `tasks.push()` → tlSlotState crash
+3. `padStart(2,'0')` in JSX `{}` Ausdruck → `(n<10?'0':'')+n`
+4. Schließendes `</div>` ohne öffnendes nach einem IIFE `})()`
+5. `tlDotState` statt `tlSlotState` (veralteter Funktionsname nach Migration)
+6. `task.applications` fehlt in `tasks.push()` → tlSlotState crash
+7. `verlaufOpen`/`expandedDays` als lokaler State in `TRow` → reset alle 10s durch Live-Uhr
 
 ### Daten-Frische
 - `quickViewIgel` ist Snapshot → immer `hedgehogs.find(x => x.id === h.id)` nutzen
@@ -333,7 +411,12 @@ print("Braces: %d, Parens: %d" % (s.count('{')-s.count('}'), s.count('(')-s.coun
 
 | Version | Feature | Kernänderung |
 |---------|---------|-------------|
-| 2.3.62 | Igelkarte: Timeline in Behandlungs-Tab | Design F Timeline mit Toleranz-Logik, Warndreieck, Test-Panel (Uhr-Button) |
+| 2.3.63 | Igelkarte: Ring entfernt, kompaktere Karten | Fortschritts-Ring (Donut) aus Behandlungs-Header entfernt (redundant); Badge+Action in einer Zeile; Header-Padding 12→9px, Med-Zeilen 11→9px, Timeline 56→48px |
+| 2.3.62 | Fix: QV Badge ausstehend/fällig | Badge 'fällig' nur wenn Slot im Toleranzfenster liegt |
+| 2.3.61 | QR Quick-View: Pills + Toleranz-Logik | Pills-Design statt Kreise, nur ◎ fällig klickbar, Live-Uhr, applications[] in medState |
+| 2.3.60 | Fix: Verlauf-Sortierung | Chronologisch aufsteigend (älteste zuerst) |
+| 2.3.59 | Fix: Verlauf-Dropdown + verpasste Gaben | verlaufOpen aus TRow in HedgehogDetail gehoben, rote Warn-Einträge im Verlauf |
+| 2.3.58 | Igelkarte: Timeline Design F | Design F Timeline in Behandlungs-Tab, Warndreieck, Test-Panel (Uhr-Button) |
 | 2.3.57 | Fix: Spinner — fehlendes div | Zeitachse hatte kein öffnendes div nach IIFE |
 | 2.3.56 | Fix: Spinner — Template-Literal | padStart(2,'0') in Template-Literal → String-Verkettung |
 | 2.3.55 | Fix: Spinner — applications | applications-Feld in tasks.push() ergänzt |
@@ -361,10 +444,11 @@ print("Braces: %d, Parens: %d" % (s.count('{')-s.count('}'), s.count('(')-s.coun
 ## 12. Roadmap
 
 ### Offen / Nächste Prioritäten
-- [x] Timeline + Toleranz-Logik in Igelkarte Behandlungs-Tab übertragen ✅ v2.3.62
-- [ ] Toleranz-Einstellung in App-Einstellungen (nur Admin)
-- [ ] Tagesbeginn/Tagesende in App-Einstellungen (nur Admin)
-- [ ] Warndreieck dauerhaft in Igelkarte wenn Gabe verpasst (✅ bereits in v2.3.62 umgesetzt)
+- [x] Timeline + Toleranz-Logik in Igelkarte Behandlungs-Tab ✅ v2.3.58
+- [x] Warndreieck bei verpasster Gabe ✅ v2.3.58
+- [x] QR Quick-View Pills-Design + Toleranz ✅ v2.3.61
+- [ ] Toleranz-Einstellung in App-Einstellungen (nur Admin, persistent)
+- [ ] Tagesbeginn/Tagesende in App-Einstellungen (nur Admin, persistent)
 - [ ] completedApplications++ korrekt aus Pflegeplan
 - [ ] Diagnosefield: Dropdown statt Freitext
 - [ ] Auto-Navigation in neue Igelkarte nach Erfassung
@@ -385,13 +469,21 @@ height: 62px, position: fixed, bottom: 0, z-index: 9000
 Formulare: padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 74px)
 ```
 
+### Settings (localStorage)
+```javascript
+// Laden:
+try { return JSON.parse(localStorage.getItem('igel_settings') || '{}'); } catch { return {}; }
+// Speichern:
+try { localStorage.setItem('igel_settings', JSON.stringify(s)); } catch {}
+```
+
 ### ZIP-Befehl
 ```bash
 cd /home/claude/igelstation && rm -f /home/claude/Igelstation.zip
 zip /home/claude/Igelstation.zip index.html igelpflegestation-vX_X_XX-altDB.html \
-  service-worker.js icon-192.png icon-512.png deploy.sh update.sh PROJEKTDOKU_all.md
+  service-worker.js icon-192.png icon-512.png deploy.sh update.sh PROJEKTDOKU_all.md IGEL_STARTPROMPT.md
 ```
 
 ---
 
-*Zuletzt aktualisiert: März 2026 · v2.3.57*
+*Zuletzt aktualisiert: März 2026 · v2.3.63*
