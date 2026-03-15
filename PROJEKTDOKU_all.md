@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.3.64 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.3.62 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -52,7 +52,7 @@ diagnosisDatabase      Diagnosestammdaten
 med_gruppen            Medikamenten-Gruppen
 med_behandlungen       Behandlungs-Stammdaten
 med_arten              Applikationsarten
-med_haeufigkeiten      Häufigkeitsdefinitionen
+med_haeufigkeiten      Haeufigkeitsdefinitionen
 ```
 
 ---
@@ -60,47 +60,55 @@ med_haeufigkeiten      Häufigkeitsdefinitionen
 ## 3. Kritische Regeln
 
 ### Babel-Constraints (Spinner-Ursachen)
-- **NIEMALS** `data:image/base64` direkt in JSX → Babel-Crash
-- **NIEMALS** doppelte `const`-Deklaration im selben Scope
-- **NIEMALS** doppelte `className` auf demselben Element
+- **NIEMALS** data:image/base64 direkt in JSX -> Babel-Crash
+- **NIEMALS** doppelte const-Deklaration im selben Scope
+- **NIEMALS** doppelte className auf demselben Element
 - **NIEMALS** JSX als Wert in JS-Objekt-Literal
-- **NIEMALS** Template-Literale mit einfachen Anführungszeichen in `${}` → `padStart(2,'0')` bricht Babel! String-Verkettung verwenden: `+(n<10?'0':'')+n`
-- **NIEMALS** schließendes `</div>` ohne öffnendes `<div>` im JSX
-- **Braces-Balance** im gesamten Babel-Script muss 0 sein
+- **NIEMALS** Template-Literale mit einfachen Anfuehrungszeichen in ${} -> padStart(2,'0') bricht Babel! Stattdessen: (n<10?'0':'')+n
+- **NIEMALS** padStart(2,'0') direkt in JSX {} Ausdruck (auch ausserhalb Template-Literals gefaehrlich)
+- **NIEMALS** schliessendes </div> ohne oeffnendes im JSX
+- **NIEMALS** Inline-Komponenten mit eigenem State innerhalb anderer Komponenten (fuehrt zu Re-mount bei jedem Re-render des Elternteils)
+- Braces-Balance im gesamten Babel-Script muss 0 sein
 
 ### Firestore-Regeln
-- `serverTimestamp()` nicht in Arrays → `new Date().toISOString()` stattdessen
-- `orderBy()` ohne Index → 0 Ergebnisse → immer client-seitig sortieren
-- `app_todos` = EIN Dokument `main` mit `items[]` — keine separaten Dokumente
-- `arrayUnion()` für Append auf `gewichtsverlauf[]`
+- serverTimestamp() nicht in Arrays -> new Date().toISOString() stattdessen
+- orderBy() ohne Index -> 0 Ergebnisse -> immer client-seitig sortieren
+- app_todos = EIN Dokument main mit items[] Array — keine separaten Dokumente
+- arrayUnion() fuer Append auf gewichtsverlauf[]
 
 ### Navigation
-- Menü-Seiten `onClose`: **NIEMALS** `history.back()` → popstate-Konflikt
-- Korrekt: `history.replaceState({igelApp:true,level:1},'')` + `igelMenuOpen(false)`
+- Menue-Seiten onClose: NIEMALS history.back() -> popstate-Konflikt
+- Korrekt: history.replaceState({igelApp:true,level:1},'') + igelMenuOpen(false)
 
 ### Neue Komponenten
-- Immer **vor `UserProfile`** einfügen
-- Version-Bump Changelog: Anker auf **stabilen älteren Eintrag** — NIEMALS auf neue Version
+- Immer vor UserProfile einfuegen
+- Version-Bump Changelog: Anker auf stabilen aelteren Eintrag — NIEMALS auf neue Version
+
+### State-Lifting Regel (neu ab v2.3.59)
+- verlaufOpen und expandedDays in TRow (innerhalb HedgehogDetail) MUESSEN in HedgehogDetail als Maps gehalten werden
+- Sonst: reset bei jedem Live-Uhr-Re-render (alle 10s) -> Dropdown schliesst sich automatisch
+- Pattern: const [verlaufOpenMap, setVerlaufOpenMap] = useState({})
 
 ---
 
-## 4. Versions-Pflicht (alle 5 Stellen bei JEDER Änderung)
+## 4. Versions-Pflicht (alle 5 Stellen bei JEDER Aenderung)
 
-1. **Changelog-Array** im JSX (am Anfang einfügen)
-2. **LoadingScreen**: `>vX.X.XX</div>` im HTML-Splash
-3. **Menü-Footer**: `>Version X.X.XX</div>` (class="msheet-version")
-4. **Changelog-Header**: `Version X.X.XX · Cloud-basierte...` im JSX
-5. **Service Worker**: `igelpflegestation-vX.X.XX` in service-worker.js
+1. Changelog-Array im JSX (am Anfang einfuegen)
+2. LoadingScreen: >vX.X.XX</div> im HTML-Splash
+3. Menue-Footer: >Version X.X.XX</div> (class="msheet-version")
+4. Changelog-Header: Version X.X.XX - Cloud-basierte... im JSX
+5. Service Worker: igelpflegestation-vX.X.XX in service-worker.js
 
-### Balance-Check nach jeder Änderung
+### Balance-Check nach jeder Aenderung
 ```python
 import re
 with open('index.html','r') as f: c=f.read()
 s=re.search(r'<script type="text/babel">(.*?)</script>',c,re.DOTALL).group(1)
 print("Braces: %d, Parens: %d" % (s.count('{')-s.count('}'), s.count('(')-s.count(')')))
 ```
+Beide Werte muessen 0 sein. Sonst Spinner!
 
-### ZIP-Befehl
+### ZIP-Befehl (immer frisch)
 ```bash
 cd /home/claude/igelstation && rm -f /home/claude/Igelstation.zip
 zip /home/claude/Igelstation.zip index.html igelpflegestation-vX_X_XX-altDB.html \
@@ -115,153 +123,172 @@ zip /home/claude/Igelstation.zip index.html igelpflegestation-vX_X_XX-altDB.html
 ```
 #fafaf8   Hintergrund (Stone 50)
 #ffffff   Karten, Header
-#1c1917   Primär-Aktion, Text (Stone 900)
-#292524   Sekundär (Stone 800)
-#44403c   Text sekundär
+#1c1917   Primaer-Aktion, Text (Stone 900)
+#292524   Sekundaer (Stone 800)
+#44403c   Text sekundaer
 #a8a29e   Text gedimmt
 #e7e5e4   Trennlinien (gestrichelt)
 ```
 
-### Timeline Design F — Farbpalette (Toleranz-Logik)
+### Timeline Design F — Farbpalette
 ```
-#f0fdf4   Mintgrün  — done-open / done-locked (erledigt)
-#fefce8   Cremgelb  — due (fällig, im Toleranzfenster)
-#fff1f2   Altrosa   — overdue-locked (verpasst, gesperrt)
-#fafaf8   Warm Grau — pending (noch nicht fällig)
-```
-
-### Toleranz-Logik — 6 Zustände
-```
-done-open     Erledigt, im Toleranzfenster     → rückgängig möglich (✓)
-done-locked   Erledigt, Fenster abgelaufen     → eingefroren grün (✓🔒)
-due           Fällig, im Toleranzfenster       → quittierbar (◎, pulsiert gelb)
-overdue-locked Verpasst, Fenster abgelaufen    → gesperrt rot (●🔒, Schraffur)
-pending       Noch nicht fällig                → grau, nicht klickbar (○)
+#f0fdf4   Mintgruen  — done-open / done-locked (erledigt)
+#fefce8   Cremgelb   — due (faellig, im Toleranzfenster)
+#fff1f2   Altrosa    — overdue-locked (verpasst, gesperrt)
+#fafaf8   Warm Grau  — pending (noch nicht faellig)
 ```
 
-### Timeline — CSS-Keyframes
+### TL_* Konstanten (in Pflegeplan UND HedgehogDetail identisch definiert)
+```javascript
+const TL_SEG   = {'done-open':'#f0fdf4','done-locked':'#f0fdf4','due':'#fefce8','overdue-locked':'#fff1f2','pending':'#fafaf8'};
+const TL_ICOL  = {'done-open':'#166634','done-locked':'#166634','due':'#ca8a04','overdue-locked':'#e11d48','pending':'#d6d3d1'};
+const TL_ICON  = {'done-open':'✓','done-locked':'✓','due':'◎','overdue-locked':'●','pending':'○'};
+const TL_ANIM  = {'due':'qv-pulse-amber 2.2s ease-in-out infinite','overdue-locked':'qv-pulse-red 1.8s ease-in-out infinite'};
+const TL_LOCKED= {'done-locked':true,'overdue-locked':true};
+const TL_CAN   = {'done-open':true,'due':true};
+```
+
+### Toleranz-Logik — 5 Zustaende
+```
+done-open      Erledigt, noch im Fenster    -> rueckgaengig moeglich (check)
+done-locked    Erledigt, Fenster abgelaufen -> eingefroren gruen (check + Schloss)
+due            Faellig, im Fenster          -> quittierbar (Kreis, pulsiert gelb)
+overdue-locked Verpasst, Fenster abgelaufen -> gesperrt rot (Kreis + Schloss, Schraffur)
+pending        Noch nicht faellig           -> grau, nicht klickbar (Kreis leer)
+```
+
+### CSS-Keyframes (im HTML style-Tag, nicht in Babel)
 ```css
 @keyframes qv-pulse-red   { 0%,100%{opacity:1} 50%{opacity:.5} }
 @keyframes qv-pulse-amber { 0%,100%{opacity:1} 50%{opacity:.55} }
 ```
 
-### Typografie
-```
-DM Sans (800)   Display, Headings, Buttons
-Arial           Body-Text
-DM Mono (500)   IDs, Gewicht, Code-Werte, Timeline-Zeitlabels
-```
-
 ---
 
-## 6. Pflegeplan — Timeline (v2.3.52+)
+## 6. Pflegeplan (v2.3.52+)
 
-### States (Pflegeplan-Komponente)
+### State
 ```javascript
-const [dayStartH, setDayStartH] = React.useState(6);     // Tagesbeginn
-const [dayEndH,   setDayEndH]   = React.useState(22);     // Tagesende
-const [toleranceMins, setToleranceMins] = React.useState(120); // ±2h
+const [dayStartH, setDayStartH] = React.useState(6);
+const [dayEndH,   setDayEndH]   = React.useState(22);
+const [toleranceMins, setToleranceMins] = React.useState(120);
 const [showDaySettings, setShowDaySettings] = React.useState(false);
-const [simTime, setSimTime] = React.useState(-1);         // -1=live
+const [simTime, setSimTime] = React.useState(-1);
 const activeSec = simTime >= 0 ? simTime : nowSec;
 ```
 
-### Test-Panel (gelb gestrichelt, später Admin-Einstellungen)
-- Tagesbeginn-Regler (0–12 Uhr)
-- Tagesende-Regler (12–24 Uhr)
-- Toleranz-Regler (±15min – ±12h, Schritt 15min)
-- Uhrzeit-Sim-Regler + live-Button
-- Uhr-Icon-Button im Header zeigt aktive Zeit
+### Test-Panel (gelb gestrichelt)
+Enthaelt 4 Regler: Tagesbeginn (0-12), Tagesende (12-24), Toleranz (15min-12h), Sim-Zeit + live-Button.
+Geplant: in App-Einstellungen verschieben (nur Admin).
 
-### tlSlotState Logik
+### tlSlotState Signatur im Pflegeplan
 ```javascript
-const tlSlotState = (task, di, cur, dayStart, dayLen) => {
-  const t = tlDoseTime(di, task.freqPerDay, dayStart, dayLen);
-  const tolSec = toleranceMins * 60;
-  const inWindow = cur >= (t-tolSec) && cur <= (t+tolSec);
-  const pastWindow = cur > (t+tolSec);
-  
-  // Check if given: apps within this slot's window
-  const slotGiven = task.applications.some(a => {
-    const appSec = new Date(a.doneAt).getHours()*3600+...;
-    return appSec >= (t-tolSec) && appSec <= (t+tolSec);
-  }) || tapped.has(circleKey);
-
-  if (slotGiven) return inWindow ? 'done-open' : 'done-locked';
-  if (cur < t-tolSec) return 'pending';
-  if (inWindow) return 'due';
-  return 'overdue-locked';
-};
-```
-
-### WICHTIG: task.applications muss im tasks.push() enthalten sein
-```javascript
-tasks.push({
-  ...,
-  applications: m.applications || [],  // ← PFLICHT für tlSlotState
-});
+const tlSlotState = (task, di, cur, dayStart, dayLen) => { ... }
+// task.applications MUSS befuellt sein!
+tasks.push({ ..., applications: m.applications || [] });
 ```
 
 ### Design F Segmente
-- Balken geteilt in N+1 Segmente (N = Anzahl Gaben)
-- Segment 0 (links) = Farbe des ERSTEN Kreises (farbiger Anfangsbereich)
-- Segment i = Farbe von Kreis i-1
-- Weiße halbtransparente Kreise über Segmenten
-- Icons: ✓ erledigt, ◎ fällig, ● verpasst, ○ ausstehend
+- N+1 Segmente: Segment 0 = Farbe des 1. Kreises, Segment i = Farbe von Kreis i-1
+- Weiße halbtransparente Kreise mit Icon + Zeitlabel darueber
 - Schraffur auf gesperrten Segmenten
-- Weißer Zeitmarker mit Pfeil
+- Weisser Zeitmarker mit Pfeil
 
 ---
 
-## 7. QR Quick-View (v2.3.37+)
+## 7. Igelkarte — Behandlungs-Tab (v2.3.58+)
 
-### State in MainApp
+### Timeline in Medikament-Zeilen
+Identisches Design F wie Pflegeplan. Jede Medikament-Zeile zeigt:
+- Timeline-Frame (56px) mit Farbsegmenten, Kreisen, Zeitmarker
+- Zeitachsen-Labels (5 Punkte: 0%, 25%, 50%, 75%, 100%)
+- Fortschrittsbalken gesamt-Behandlung (blau=aktiv, gruen=fertig)
+- Warndreieck wenn Slot overdue-locked
+
+### State in HedgehogDetail (lokal, kein settings-Prop noetig)
 ```javascript
-const [showQuickView, setShowQuickView] = useState(false);
-const [quickViewIgel, setQuickViewIgel] = useState(null);
-const [quickViewInitialAction, setQuickViewInitialAction] = useState(null);
+const [tlDayStartH, setTlDayStartH] = useState(6);
+const [tlDayEndH,   setTlDayEndH]   = useState(22);
+const [tlTolMins,   setTlTolMins]   = useState(120);
+const [tlSimTime,   setTlSimTime]   = useState(-1);
+const [tlNowSec,    setTlNowSec]    = useState(...);
+const [showTlPanel, setShowTlPanel] = useState(false);
 ```
 
-### Funktionen
-- Gewicht eintragen → `gewichtsverlauf[]` + `gewichtAktuell`
-- Medikamente quittieren (Kreise, live Firestore), reversibel
-- Notizen → `h.notizen[]`
-- Behandlung anlegen → `onOpenCard('startVorlage')` → Vorlage-Modal direkt
-- Footer-Button: `paddingBottom: calc(env(safe-area-inset-bottom, 0px) + 74px)`
-- `onOpenCard` liest frische Daten: `hedgehogs.find(x => x.id === h.id)`
+### tlSlotState Signatur in HedgehogDetail
+```javascript
+const tlSlotState = (med, di) => {
+  // Liest tlDayStartH, tlDayEndH, tlTolMins, tlActiveSec direkt aus Closure
+};
+```
 
-### Farben (Quick-View Kreise)
+### verlaufOpen / expandedDays — LIFTED STATE (kritisch!)
+```javascript
+// In HedgehogDetail (NICHT in TRow!):
+const [verlaufOpenMap,  setVerlaufOpenMap]  = useState({});
+const [expandedDaysMap, setExpandedDaysMap] = useState({});
+const toggleVerlauf   = (idx) => setVerlaufOpenMap(prev => ({...prev, [idx]: !prev[idx]}));
+const toggleExpandDay = (idx, key) => setExpandedDaysMap(prev => ({...prev, [idx+'__'+key]: !prev[idx+'__'+key]}));
 ```
-#dcfce7   Mintgrün  — erledigt (voller Kreis + grüner Haken)
-#fef9c3   Cremgelb  — fällig (pulsierend)
-#ffe4e6   Altrosa   — überfällig (pulsierend)
-#fafaf8   Grau      — pending
-```
-Keine Umrandung, keine inneren Punkte.
+
+### Verlauf zeigt verpasste Gaben (v2.3.59+)
+- Fuer jeden vergangenen Tag (startDate → gestern): freq - dayCount = verpasste Gaben
+- Rote Warn-Eintraege in der Verlauf-Timeline
+- Sortierung: aufsteigend (aelteste zuerst)
+
+### Ring-Kreis im Karten-Header entfernt (v2.3.62)
+Der Fortschritts-Ring (Gaben-Zaehler) wurde aus dem Behandlungs-Karten-Header entfernt.
+Die Info steht bereits in der Med-Zeile (z.B. "9 / 20").
 
 ---
 
-## 8. Igelkarte (HedgehogDetail)
+## 8. QR Quick-View (v2.3.61+)
 
-### Props
+### Pills-Design
+Jede Gabe = Pill-Chip: Icon (Symbol) + Uhrzeit nebeneinander.
+Farben analog TL_* (done=gruen, due=gelb pulsierend, overdue=rot pulsierend, pending=grau).
+Schloss-Badge oben rechts auf gesperrten Pills.
+
+### Toleranz-Logik
 ```javascript
-HedgehogDetail({ hedgehog, userData, users, onBack, onUpdate, initialEditMode, initialAction })
+const QV_DAY_START = 6*3600;
+const QV_DAY_END   = 22*3600;
+const QV_DAY_LEN   = QV_DAY_END - QV_DAY_START;
+const QV_TOL_MINS  = 120;  // TODO: aus App-Settings lesen
+```
+Nur QV_CAN = {'done-open':true,'due':true} ist klickbar (innerhalb Toleranzfenster).
+
+### Badge-Logik (v2.3.62)
+```javascript
+const hasDue = slots.some(st => st === 'due');
+const hasOv  = slots.some(st => st === 'overdue-locked');
+// Badge-Text:
+// allDone -> "erledigt" (gruen)
+// hasOv   -> "ueberfaellig" (rot)
+// hasDue  -> "faellig" (gelb)  <- NUR wenn Slot IM Fenster
+// sonst   -> "ausstehend" (grau)
 ```
 
-### initialAction
+### medState enthaelt applications[]
 ```javascript
-// showVorlageModal startet direkt wenn initialAction='startVorlage'
-const [showVorlageModal, setShowVorlageModal] = useState(
-  () => initialAction === 'startVorlage' && !isGuest
-);
+list.push({
+  ti, mi, name, detail, doneToday, todayCount, freqPerDay, wasGivenBefore,
+  applications: [...(m.applications||[])],  // PFLICHT fuer qvSlotState
+});
 ```
 
-### Behandlungs-Kreise (Igelkarte)
-Gleiche Warm-Farben wie Pflegeplan, reversibel:
-- `getDotSt(ci)` → bg/border/animation je nach wasGivenBefore + todayCount
-- Undo: entfernt letzten today-App aus applications[], setzt done=false
+### Live-Uhr in QV (v2.3.61+)
+```javascript
+const [qvNowSec, setQvNowSec] = React.useState(...);
+React.useEffect(() => {
+  const iv = setInterval(() => { setQvNowSec(getNowSec()); }, 10000);
+  return () => clearInterval(iv);
+}, []);
+```
 
-### Datenstruktur hedgehog
+---
+
+## 9. Datenstruktur hedgehog
 ```javascript
 {
   id, name, fundtiernummer, igelId, aufnahmedatum, status,
@@ -283,7 +310,7 @@ Gleiche Warm-Farben wie Pflegeplan, reversibel:
 
 ---
 
-## 9. Rollen & Auth
+## 10. Rollen & Auth
 
 ```
 admin    Vollzugriff, Benutzerverwaltung, alle CRUD
@@ -291,23 +318,14 @@ pfleger  Standard: Igel anlegen/bearbeiten, Gaben quittieren
 gast     Nur lesen, keine Schreiboperationen
 ```
 
-```javascript
-SESSION_MS  = 8 * 60 * 60 * 1000
-SESSION_KEY = 'igelSessionLoginAt'
-```
+SESSION_MS = 8h, SESSION_KEY = 'igelSessionLoginAt'
 
-### Firebase Config
-```javascript
-apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"
-authDomain: "igelstation-3c3db.firebaseapp.com"
-projectId: "igelstation-3c3db"
-```
+Firebase: apiKey AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4 | projectId igelstation-3c3db
 
 ---
 
-## 10. Bekannte Fallstricke
+## 11. Spinner-Diagnose
 
-### Spinner-Diagnose
 ```python
 import re
 with open('index.html','r') as f: c=f.read()
@@ -315,83 +333,79 @@ s=re.search(r'<script type="text/babel">(.*?)</script>',c,re.DOTALL).group(1)
 print("Braces: %d, Parens: %d" % (s.count('{')-s.count('}'), s.count('(')-s.count(')')))
 ```
 
-### Häufige Ursachen (Erfahrungswerte)
-1. Braces ≠ 0 → Kaputten Changelog-Eintrag prüfen
-2. Template-Literal mit `'0'` in `${}` → String-Verkettung stattdessen
-3. Schließendes `</div>` ohne öffnendes nach einem IIFE `})()}`
-4. `tlDotState` statt `tlSlotState` nach Migration
-5. `task.applications` fehlt in `tasks.push()` → tlSlotState crash
-
-### Daten-Frische
-- `quickViewIgel` ist Snapshot → immer `hedgehogs.find(x => x.id === h.id)` nutzen
-- `tapped` Set ist optimistisch → nach Firestore-Write den Key entfernen (Doppelzählung!)
-- `effectiveDone = Math.min(freqPerDay, todayCount + tapped.count)`
+### Bekannte Ursachen
+1. Braces/Parens != 0 -> defekter Changelog-Eintrag oder fehlendes div
+2. padStart(2,'0') in JSX {} -> (n<10?'0':'')+n
+3. Fehlendes oeffnendes div nach IIFE })()
+4. task.applications fehlt in tasks.push() -> tlSlotState crash
+5. Inline-Komponente mit State in anderer Komponente -> Re-mount-Loop
+6. tlDotState statt tlSlotState (alter Funktionsname)
 
 ---
 
-## 11. Versionshistorie
+## 12. Versionshistorie
 
 | Version | Feature | Kernänderung |
 |---------|---------|-------------|
-| 2.3.64 | Igelkarte: Timeline in Behandlungs-Tab | Design F Timeline mit Toleranz-Logik, Warndreieck, Test-Panel (Uhr-Button) |
-| 2.3.57 | Fix: Spinner — fehlendes div | Zeitachse hatte kein öffnendes div nach IIFE |
-| 2.3.56 | Fix: Spinner — Template-Literal | padStart(2,'0') in Template-Literal → String-Verkettung |
-| 2.3.55 | Fix: Spinner — applications | applications-Feld in tasks.push() ergänzt |
-| 2.3.54 | Toleranz-Logik + 6 Zustände | Zeitfenster-gebundene Quittierung, 15min–12h Toleranz |
-| 2.3.53 | Design F Timeline | Farbsegmente, Anfang = Farbe des 1. Kreises |
-| 2.3.52 | 24h Timeline + Sim-Regler | Zeitachse mit Uhrzeit-Sim im Test-Panel |
-| 2.3.51 | Live-Uhr + Test-Panel | Uhr-Button, Tagesbeginn/Ende Regler |
-| 2.3.50 | Fix: Doppel-Quittierung | tapped nach Firestore-Write entfernen |
-| 2.3.49 | Linker Farbbalken entfernt | Nur noch Kreise kommunizieren Status |
-| 2.3.48 | Fortschrittsbalken + Kreis-Fix | effectiveDone konsistent, Amber statt Rot |
-| 2.3.47 | Rote Badges entfernt | Kein Rot mehr außer Kreisen |
-| 2.3.46 | QRQuickView zurück + Kreise | QRQuickView wiederhergestellt (war gelöscht) |
-| 2.3.45 | Pflegeplan Warm + Toggle | Stone-Design, reversibles Toggle |
-| 2.3.44 | QR Quick-View Grüne Kreise | initialAction=startVorlage öffnet Vorlage-Modal |
-| 2.3.43 | QR Quick-View Fälligkeitsfarben | Kreise mit Grün/Amber/Rot/Grau |
+| 2.3.62 | Fix QV Badge | Badge 'faellig' nur wenn Slot im Toleranzfenster |
+| 2.3.61 | QV Pills + Toleranz | Pills-Design, nur due klickbar, Live-Uhr in QV |
+| 2.3.60 | Fix Verlauf-Sortierung | Chronologisch aufsteigend |
+| 2.3.59 | Fix Verlauf-Dropdown + verpasste Gaben | verlaufOpen aus TRow gehoben, rote Warn-Eintraege |
+| 2.3.58 | Igelkarte Timeline | Design F in Behandlungs-Tab, Warndreieck, Test-Panel |
+| 2.3.57 | Fix Spinner fehlendes div | div nach IIFE fehlte |
+| 2.3.56 | Fix Spinner Template-Literal | padStart in Template-Literal |
+| 2.3.55 | Fix applications in tasks | applications fehlte -> tlSlotState crash |
+| 2.3.54 | Toleranz-Logik 6 Zustaende | Zeitfenster-Quittierung |
+| 2.3.53 | Design F Timeline | Farbsegmente |
+| 2.3.52 | 24h Timeline + Sim | Zeitachse mit Sim-Regler |
 | 2.3.37 | QR Quick-View | Bottom Sheet nach QR-Scan |
-| 2.3.30 | Bottom-Navigation | Scroll-hiding, safe-area-inset |
-| 2.2.00 | TreatmentWizard | 4-Schritt, Dosisberechnung |
+| 2.3.30 | Bottom-Navigation | Scroll-hiding |
+| 2.2.00 | TreatmentWizard | 4-Schritt Dosisberechnung |
 | 2.0.00 | Datenbank-Hub | Stammdaten-Hierarchie |
 | 1.8.00 | RBAC + Donut-Chart | Rollenbasierte Zugriffskontrolle |
-| 1.0.00 | Launch | Firebase, Igel CRUD, Auth |
 
 ---
 
-## 12. Roadmap
+## 13. Roadmap
 
-### Offen / Nächste Prioritäten
-- [x] Timeline + Toleranz-Logik in Igelkarte Behandlungs-Tab übertragen ✅ v2.3.64
-- [ ] Toleranz-Einstellung in App-Einstellungen (nur Admin)
-- [ ] Tagesbeginn/Tagesende in App-Einstellungen (nur Admin)
-- [ ] Warndreieck dauerhaft in Igelkarte wenn Gabe verpasst (✅ bereits in v2.3.64 umgesetzt)
+### Offen
+- [x] Timeline in Igelkarte Behandlungs-Tab (v2.3.58)
+- [x] Warndreieck bei verpasster Gabe (v2.3.58)
+- [x] QR Quick-View Pills-Design (v2.3.61)
+- [ ] Toleranz + Tagesbeginn/-ende in App-Einstellungen persistent (nur Admin)
 - [ ] completedApplications++ korrekt aus Pflegeplan
-- [ ] Diagnosefield: Dropdown statt Freitext
+- [ ] Diagnosefield Dropdown statt Freitext
 - [ ] Auto-Navigation in neue Igelkarte nach Erfassung
 - [ ] Printable Datenblatt pro Igel
 
 ### Mittelfristig
-- [ ] Push-Notifications für fällige Gaben
-- [ ] Foto-Upload pro Igel
-- [ ] Statistiken: Erfolgsquoten, Behandlungsdauern
+- [ ] Push-Notifications
+- [ ] Foto-Upload
+- [ ] Statistiken
 
 ---
 
-## 13. Code-Referenzen
+## 14. Code-Referenzen
 
 ### BottomBar
-```
-height: 62px, position: fixed, bottom: 0, z-index: 9000
-Formulare: padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 74px)
+height 62px, position fixed, bottom 0, z-index 9000
+Formulare: padding-bottom calc(env(safe-area-inset-bottom, 0px) + 74px)
+
+### Settings (localStorage)
+```javascript
+// laden:
+try { return JSON.parse(localStorage.getItem('igel_settings') || '{}'); } catch { return {}; }
+// speichern:
+try { localStorage.setItem('igel_settings', JSON.stringify(s)); } catch {}
 ```
 
-### ZIP-Befehl
-```bash
-cd /home/claude/igelstation && rm -f /home/claude/Igelstation.zip
-zip /home/claude/Igelstation.zip index.html igelpflegestation-vX_X_XX-altDB.html \
-  service-worker.js icon-192.png icon-512.png deploy.sh update.sh PROJEKTDOKU_all.md
+### updateSetting in MainApp
+```javascript
+const updateSetting = (key, val) => {
+  const next = { ...settings, [key]: val };
+  setSettings(next);
+  saveSettings(next);
+};
 ```
 
----
-
-*Zuletzt aktualisiert: März 2026 · v2.3.57*
+*Zuletzt aktualisiert: Maerz 2026 - v2.3.62*
