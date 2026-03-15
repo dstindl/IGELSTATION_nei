@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.3.66 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.3.67 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -411,6 +411,7 @@ print("Braces: %d, Parens: %d" % (s.count('{')-s.count('}'), s.count('(')-s.coun
 
 | Version | Feature | Kernänderung |
 |---------|---------|-------------|
+| 2.3.67 | Fix: QR-Scanner Header | Titel zentriert, 2px Border, einheitlicher Stil |
 | 2.3.66 | Design: Alle Seiten-Header vereinheitlicht | fontSize 15/fontWeight 800/DM Sans, borderBottom 2px #e7e5e4, Titel absolut zentriert auf allen Seiten |
 | 2.3.65 | Fix: BottomBar-Navigation aus Igelkarte | setSelected(null) fehlte in __igelAction für pflegeplan/neu/qr — Igelkarte blieb sichtbar |
 | 2.3.64 | Einstellungen: Timeline-Parameter zentralisiert | Neue Unterseite Einstellungen → Behandlungen → Timeline; Shared State via localStorage; Pflegeplan + Igelkarte gespiegelt; Testpanels bleiben aktiv |
@@ -499,4 +500,4 @@ Timeline-Parameter werden in `igel_settings` (localStorage) gespeichert:
 // Testpanels in beiden Komponenten bleiben aktiv und sind synchronisiert
 ```
 
-*Zuletzt aktualisiert: März 2026 · v2.3.66*
+*Zuletzt aktualisiert: März 2026 · v2.3.67*
