@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.3.77 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.3.78 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -411,6 +411,7 @@ print("Braces: %d, Parens: %d" % (s.count('{')-s.count('}'), s.count('(')-s.coun
 
 | Version | Feature | Kernänderung |
 |---------|---------|-------------|
+| 2.3.78 | BottomBar + Menü Redesign | Menü-Button raus, Bestand rein, Labels, Swipe-Up öffnet Menü, 3-Punkte in allen Headers, Herkunfts-Label in Igelkarte, detailOrigin bestand, Hauptseite-Header |
 | 2.3.77 | Igel erfassen: Design-Refresh | DM Sans, 8px Labels, warm stone Inputs, Cards ohne blaue Border, Status als Chips, inline Fehlertexte, Stepper schwarz, Adress-Suggestions inline styles |
 | 2.3.76 | Pflegeplan: Filter als Dropdown | Toggle-Strip: zugeklappt mit farbigem Icon + Mini-Chip-Summary + Zurücksetzen-Button; Chevron zeigt Auf/Zu; filterOpen default false |
 | 2.3.75 | Fix: Filter-Chips pfleger-sensitiv | dueCnt/overCnt/doneCnt + availMeds/availDiags aus pfleger-gefilterter Basis — kein Widerspruch zwischen Chip-Count und Ergebnis |
@@ -508,7 +509,7 @@ Timeline-Parameter werden in `igel_settings` (localStorage) gespeichert:
 // Testpanels in beiden Komponenten bleiben aktiv und sind synchronisiert
 ```
 
-*Zuletzt aktualisiert: März 2026 · v2.3.77*
+*Zuletzt aktualisiert: März 2026 · v2.3.78*
 
 ### Igel-Farbpalette (ab v2.3.72)
 ```javascript
