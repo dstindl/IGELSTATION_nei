@@ -1,4 +1,4 @@
-const CACHE_NAME = 'igelpflegestation-v2.3.70';
+const CACHE_NAME = 'igelpflegestation-v2.3.71';
 const urlsToCache = [
   './icon-192.png',
   './icon-512.png'
