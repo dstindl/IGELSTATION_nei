@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.4.07 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.4.08 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -895,6 +895,7 @@ Firebase: `apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"`, projectId: `igels
 
 | Version | Feature |
 |---------|---------|
+| 2.4.08 | Fix: Info-Tab Whitescreen — `React.useState` in JSX-IIFE → State + validateAndSave nach Top-Level gehoben |
 | 2.4.07 | Info-Tab: Labels, Nominatim Autocomplete, Telefon-Vorwahl, Autofill, Pflichtfelder, Segmented Geschlecht, Sticky Save-Bar |
 | 2.4.06 | Fix: `const filtered` fehlte in MedikamentDB Liste |
 | 2.4.05 | Fix: dangerouslySetInnerHTML HTML-String → JSX-Children |
@@ -942,4 +943,4 @@ Firebase: `apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"`, projectId: `igels
 
 ---
 
-*Zuletzt aktualisiert: März 2026 · v2.4.07*
+*Zuletzt aktualisiert: März 2026 · v2.4.08*
