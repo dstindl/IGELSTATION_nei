@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.3.89 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.3.90 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -411,6 +411,7 @@ print("Braces: %d, Parens: %d" % (s.count('{')-s.count('}'), s.count('(')-s.coun
 
 | Version | Feature | Kernänderung |
 |---------|---------|-------------|
+| 2.3.90 | Menü: Kachel-Grid Design | 2×3 Kacheln statt Liste; Profil-Header; Admin-Kacheln; To-Do Badge; Abmelden rot |
 | 2.3.89 | Fix: Android-Zurück Igelbestand | showBestand in _backState ergänzt — Android-Taste schließt Bestand korrekt |
 | 2.3.88 | Fix: Dashboard-Filter + Schnellzugriff | Betreuer+Status-Filter wirkt auf Heute-Kacheln; Schnellzugriff größer (padding 18px, font 13px) |
 | 2.3.87 | Filter-Erweiterungen + Icon | Dashboard-Filter: Heute-Chips (Fällig/Überfällig/Erledigt) + klickbare Kacheln; Pflegeplan: Suchfeld; Bestand-Icon → Listen-Icon |
@@ -520,7 +521,7 @@ Timeline-Parameter werden in `igel_settings` (localStorage) gespeichert:
 // Testpanels in beiden Komponenten bleiben aktiv und sind synchronisiert
 ```
 
-*Zuletzt aktualisiert: März 2026 · v2.3.89*
+*Zuletzt aktualisiert: März 2026 · v2.3.90*
 
 ### Igel-Farbpalette (ab v2.3.72)
 ```javascript
