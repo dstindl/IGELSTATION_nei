@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.3.91 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.3.92 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -411,6 +411,7 @@ print("Braces: %d, Parens: %d" % (s.count('{')-s.count('}'), s.count('(')-s.coun
 
 | Version | Feature | Kernänderung |
 |---------|---------|-------------|
+| 2.3.92 | Profil: Passwort ändern | Sicherheits-Sektion mit aufklappbarem Panel, Reauthentifizierung, Validierung, Feedback |
 | 2.3.91 | Redesign Profil+Datenbank+Einstellungen+Benutzer | Whitescreen-Fix Profil; UserProfile-Komponente neu; Datenbank warm-stone; Einstellungen mit Icons; Benutzer-Karten mit Badges |
 | 2.3.90 | Menü: Kachel-Grid Design | 2×3 Kacheln statt Liste; Profil-Header; Admin-Kacheln; To-Do Badge; Abmelden rot |
 | 2.3.89 | Fix: Android-Zurück Igelbestand | showBestand in _backState ergänzt — Android-Taste schließt Bestand korrekt |
@@ -522,7 +523,7 @@ Timeline-Parameter werden in `igel_settings` (localStorage) gespeichert:
 // Testpanels in beiden Komponenten bleiben aktiv und sind synchronisiert
 ```
 
-*Zuletzt aktualisiert: März 2026 · v2.3.91*
+*Zuletzt aktualisiert: März 2026 · v2.3.92*
 
 ### Igel-Farbpalette (ab v2.3.72)
 ```javascript
