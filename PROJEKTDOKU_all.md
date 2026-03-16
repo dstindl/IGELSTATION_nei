@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.3.85 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.3.86 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -411,6 +411,7 @@ print("Braces: %d, Parens: %d" % (s.count('{')-s.count('}'), s.count('(')-s.coun
 
 | Version | Feature | Kernänderung |
 |---------|---------|-------------|
+| 2.3.86 | Dashboard Filter + Igelkarte | Aufklappbarer Filter (Status+Betreuer) in Dashboard-Karte; Donut reagiert auf Filter; Schnellzugriff mit Pfeil-Icon; Igelbestand-Karte ohne IgelId, Pfleger-Name mit Icon |
 | 2.3.85 | Igelbestand + Dashboard | IgelBestand-Komponente (Filter Status/Betreuer/Gewicht, Suche, Igelkarten mit Banner+Trend+Diagnosen); Dashboard vereinfacht: Donut+Heute-Kacheln+Schnellzugriff |
 | 2.3.84 | Fix: Hamburger Igel erfassen | Hamburger-Icon in Schritt 1 + Schritt 2 von AddHedgehogForm ergänzt — alle Screens konsistent |
 | 2.3.83 | UI-Korrekturen | 3 Punkte → Hamburger überall, kein grauer Kreis; QR-Scanner Blitz neben Taschenlampe; Schrittzähler 1/2 unter Titel |
@@ -516,7 +517,7 @@ Timeline-Parameter werden in `igel_settings` (localStorage) gespeichert:
 // Testpanels in beiden Komponenten bleiben aktiv und sind synchronisiert
 ```
 
-*Zuletzt aktualisiert: März 2026 · v2.3.85*
+*Zuletzt aktualisiert: März 2026 · v2.3.86*
 
 ### Igel-Farbpalette (ab v2.3.72)
 ```javascript
