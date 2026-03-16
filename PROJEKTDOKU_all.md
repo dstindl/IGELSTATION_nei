@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.3.82 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.3.83 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -411,6 +411,7 @@ print("Braces: %d, Parens: %d" % (s.count('{')-s.count('}'), s.count('(')-s.coun
 
 | Version | Feature | Kernänderung |
 |---------|---------|-------------|
+| 2.3.83 | UI-Korrekturen | 3 Punkte → Hamburger überall, kein grauer Kreis; QR-Scanner Blitz neben Taschenlampe; Schrittzähler 1/2 unter Titel |
 | 2.3.82 | Menü: reines Overlay | igelMenuToggle ohne __igelCloseAllExceptMenu, kein history.pushState, Swipe-Down direkt igelMenuClose() — Hintergrundseite bleibt immer offen |
 | 2.3.81 | Fix: Swipe-Gesten Feintuning | Nicht-passiver touchmove auf BottomBar → preventDefault() ab 8px → kein Seiten-Scroll beim Hochswipen; Cooldown auch bei Menu-Close → kein Bar-Flicker nach Swipe-Down |
 | 2.3.80 | Fix: Swipe-Down + BottomBar-Flicker | Swipe-Down nur history.back() → kein doppelter Close + kein Beenden-Dialog; 600ms Cooldown nach BottomBar-Klick → kein Hide-Effekt |
@@ -513,7 +514,7 @@ Timeline-Parameter werden in `igel_settings` (localStorage) gespeichert:
 // Testpanels in beiden Komponenten bleiben aktiv und sind synchronisiert
 ```
 
-*Zuletzt aktualisiert: März 2026 · v2.3.82*
+*Zuletzt aktualisiert: März 2026 · v2.3.83*
 
 ### Igel-Farbpalette (ab v2.3.72)
 ```javascript
