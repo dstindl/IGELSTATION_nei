@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.3.93 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.3.95 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -411,6 +411,8 @@ print("Braces: %d, Parens: %d" % (s.count('{')-s.count('}'), s.count('(')-s.coun
 
 | Version | Feature | Kernänderung |
 |---------|---------|-------------|
+| 2.3.95 | Igelfarbe: Dropdown-Auswahl bei Anlage | Farb-Dropdown in Schritt 1 (nach Name): 8 Farben mit Namen (Kakao-Moos), Häkchen bei Auswahl, Live-Vorschau; form.igelColor in State |
+| 2.3.94 | Igelfarbe konsistent | igelColor bei Anlage in Firestore gespeichert; getIgelColor() deterministisch aus igelId; Bestand+Pflegeplan nutzen gleiche Farbe |
 | 2.3.93 | Profil: Passwort ohne Reauthentifizierung | Aktuelles-Passwort-Feld entfernt; direkt updatePassword(); Fehlerfall requires-recent-login abgefangen |
 | 2.3.92 | Profil: Passwort ändern | Sicherheits-Sektion mit aufklappbarem Panel, Reauthentifizierung, Validierung, Feedback |
 | 2.3.91 | Redesign Profil+Datenbank+Einstellungen+Benutzer | Whitescreen-Fix Profil; UserProfile-Komponente neu; Datenbank warm-stone; Einstellungen mit Icons; Benutzer-Karten mit Badges |
@@ -524,7 +526,7 @@ Timeline-Parameter werden in `igel_settings` (localStorage) gespeichert:
 // Testpanels in beiden Komponenten bleiben aktiv und sind synchronisiert
 ```
 
-*Zuletzt aktualisiert: März 2026 · v2.3.93*
+*Zuletzt aktualisiert: März 2026 · v2.3.95*
 
 ### Igel-Farbpalette (ab v2.3.72)
 ```javascript
