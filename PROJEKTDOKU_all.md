@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.3.95 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.3.96 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
