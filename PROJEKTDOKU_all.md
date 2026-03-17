@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.4.09 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.4.10 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -107,39 +107,479 @@ print("Braces: %d, Parens: %d" % (s.count('{')-s.count('}'), s.count('(')-s.coun
 
 ---
 
-## 4. Design System — Warm Stone (Standard ab v2.4.x)
+## 4. Design System — Warm Stone Elevated (ABSOLUTER STANDARD ab v2.4.09)
 
-Verbindlicher Standard für alle neuen und überarbeiteten Komponenten. Bei Unklarheit: bestehende v2.4.x-Komponenten als Referenz nehmen.
+> **Diese Werte sind der einzige erlaubte Stil für alle neuen und überarbeiteten Komponenten.**
+> Abweichungen nur mit expliziter Entscheidung. Bei Unklarheit: bestehende v2.4.09-Komponenten als einzige Referenz.
 
-### 4.1 Farben
+---
 
-**Basis-Palette:**
+### 4.1 Seiten-Hintergründe
+
+**Alle Scroll-Bereiche / Page-Backgrounds:**
+```javascript
+background: '#e8e5e1'   // ÜBERALL — Pflegeplan, Igelkarte, Bestand, Datenbank, Einstellungen,
+                        // Formulare, Profil, Benutzer, Changelog — keine Ausnahmen
 ```
-#fafaf8   Seitenhintergrund
-#ffffff   Karten, Header-Bars, Inputs
-#f5f5f4   Sub-Karten, sekundäre Hintergründe
-#e7e5e4   Standard-Rahmen, Trennlinien (row borders)
-#d6d3d1   Gedimmte Rahmen, leere Werte (–)
-#a8a29e   Labels über Feldern, Subtext, Zähler
-#78716c   Sekundärer Text, inaktive Seg-Buttons
-#57534e   Tertiärer Text, Meta-Daten
-#44403c   Primärer Body-Text
-#1c1917   Primärfarbe: Buttons, aktive States, Stift-aktiv
+Tailwind-Override (für Legacy-Klassen): `.bg-gray-50 { background: #e8e5e1 !important; }`
+
+---
+
+### 4.2 Vollständige Farbpalette
+
+**Hintergründe (von hell nach mittel):**
 ```
+#ffffff   Karten, Header-Bars, Sticky-Leisten, Inputs, Modals, Bottom-Sheets
+#fafaf8   Input-Felder, Textarea-Felder, inaktive Toggle-Zustände
+          → NICHT als Seiten-Hintergrund verwenden (zu hell, kein Kontrast)
+#f5f5f4   Sub-Karten (z.B. Med-Einträge in TreatmentDB), Pill-Chips, Timeline-Panels
+#f0eeec   Row-Trennlinien innerhalb weißer Karten (borderBottom), Karten:active
+#e8e5e1   SEITEN-HINTERGRUND (einziger erlaubter Wert) ← NEU ab v2.4.09
+#dddad6   Filter-Bars, sekundäre sticky Leisten auf e8e5e1-Hintergrund
+```
+
+**Rahmen (von dezent nach kräftig):**
+```
+#f0eeec   Row-Trennlinien INNERHALB weißer Karten (border-bottom zwischen Zeilen)
+#e7e5e4   Standard-Trennlinien, Header-Border-Bottom, Segmented-Control-Hintergrund
+#c9c5c1   KARTEN-RAHMEN — alle Haupt-Karten auf e8e5e1-Hintergrund ← NEU ab v2.4.09
+#1c1917   Fokus-Rahmen (Inputs), aktive Sub-Karten, aktive Toggle-Buttons
+```
+
+**Text (von gedimmt nach primär):**
+```
+#d6d3d1   Platzhalter leere Werte (–), deaktivierte Elemente
+#a8a29e   Labels über Feldern, Section-Labels, Zähler, Subtext
+#78716c   Sekundärer Text, inaktive Seg-Buttons, Meta-Angaben
+#57534e   Tertiärer Text, Diagnose-Chips, Zeitangaben
+#44403c   Primärer Body-Text (fließtext)
+#1c1917   Primärfarbe: Buttons, Überschriften, aktive States, Primär-Icons
+```
+
+---
+
+### 4.3 Karten — PFLICHT-Standard
+
+**Haupt-Karte (auf e8e5e1-Hintergrund):**
+```javascript
+{
+  background: '#fff',
+  borderRadius: 14,
+  border: '1.5px solid #c9c5c1',       // ← NEU: kräftiger Rahmen
+  boxShadow: '0 8px 28px rgba(28,25,23,.18)',  // ← NEU: starker Shadow
+  overflow: 'hidden'
+}
+```
+> **Merke:** Rahmen 1.5px (nicht 1px), Farbe #c9c5c1 (nicht #e7e5e4), Shadow 8px/28px (nicht 2px/8px).
+
+**Sub-Karte (innerhalb weißer Karte, z.B. Med-Einträge):**
+```javascript
+{
+  background: '#f5f5f4',
+  borderRadius: 12,
+  border: '1.5px solid #e7e5e4',       // feiner als Haupt-Karte
+  padding: 12
+}
+// Aktiv/fokussiert: border: '1.5px solid #1c1917'
+```
+
+**Kompakte Info-Karte (Meta-Daten, Verlauf):**
+```javascript
+{
+  background: '#f5f5f4',
+  borderRadius: 14,
+  padding: '11px 14px'
+  // kein Shadow, kein border — liegt auf e8e5e1, braucht keine Abhebung
+}
+```
+
+---
+
+### 4.4 Seiten-Header — PFLICHT-Standard
+
+Jede Vollseite hat einen **sticky Header** mit zentriertem Titel:
+
+```javascript
+// Wrapper
+{
+  position: 'sticky', top: 0,
+  background: '#fff',
+  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+  padding: '10px 16px',
+  borderBottom: '2px solid #e7e5e4',   // immer 2px, nie 1px
+  zIndex: 10
+}
+
+// Titel (absolut zentriert — NICHT flexbox-center)
+{
+  position: 'absolute', left: '50%', transform: 'translateX(-50%)',
+  fontSize: 15, fontWeight: 800, color: '#1c1917',
+  whiteSpace: 'nowrap', fontFamily: "'DM Sans',sans-serif"
+}
+```
+
+**Header-Buttons:**
+```javascript
+// Zurück-Button (links)
+{ width:36, height:36, borderRadius:'50%', background:'#f5f5f4', border:'none',
+  cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center' }
+// Icon: chevron-left, stroke #1c1917, strokeWidth 2.5
+
+// Plus-Button / Neu-Anlage (rechts)
+{ width:36, height:36, borderRadius:10, background:'#1c1917', border:'none',
+  cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center' }
+// Icon: plus, stroke #fff, strokeWidth 2.5
+
+// Platzhalter wenn kein rechter Button
+{ width:36 }  // leeres div für Zentrierung des Titels
+```
+
+---
+
+### 4.5 Buttons
+
+**Primär-Button (Speichern, Bestätigen):**
+```javascript
+{
+  background: '#1c1917', color: '#fff',
+  borderRadius: 12, padding: 11,        // bei Save-Bar
+  fontSize: 13, fontWeight: 800,
+  border: 'none', cursor: 'pointer', fontFamily: 'inherit'
+}
+// Disabled: { background: '#a8a29e' }
+// Saving: { background: '#a8a29e' }
+```
+
+**Sekundär-Button (Abbrechen, neutral):**
+```javascript
+{
+  background: '#f5f5f4', color: '#78716c',
+  borderRadius: 12, padding: 11,
+  fontSize: 13, fontWeight: 700,
+  border: 'none', cursor: 'pointer', fontFamily: 'inherit'
+}
+```
+
+**Destruktiv-Button (Löschen):**
+```javascript
+{
+  background: '#e11d48', color: '#fff',
+  borderRadius: 12, padding: 11,
+  fontSize: 13, fontWeight: 800,
+  border: 'none', cursor: 'pointer', fontFamily: 'inherit'
+}
+```
+
+**Icon-Button (Stift / Löschen in Karten-Fußzeile):**
+```javascript
+// Stift
+{ width:30, height:30, borderRadius:8, border:'1.5px solid #e7e5e4',
+  background:'#fff', display:'flex', alignItems:'center', justifyContent:'center' }
+// Icon: stroke #78716c, strokeWidth 2.5
+
+// Löschen
+{ width:30, height:30, borderRadius:8, border:'1.5px solid #fecdd3',
+  background:'#fff1f2', display:'flex', alignItems:'center', justifyContent:'center' }
+// Icon: stroke #e11d48, strokeWidth 2.5
+```
+
+**Kleiner Text-Link-Button (z.B. "Erste Vorlage erstellen →"):**
+```javascript
+{ fontSize:12, fontWeight:700, color:'#1c1917', background:'none',
+  border:'none', cursor:'pointer', textDecoration:'underline', fontFamily:'inherit' }
+```
+
+---
+
+### 4.6 Section-Labels
+
+```javascript
+{
+  fontSize: 8, fontWeight: 800, color: '#a8a29e',
+  textTransform: 'uppercase', letterSpacing: '.1em',
+  padding: '2px 0 6px'
+}
+```
+Section-Labels stehen **außerhalb** der Karte, direkt über ihr. Sie strukturieren die Seite in benannte Blöcke.
+
+---
+
+### 4.7 Karten-Zeilen (Rows)
+
+Alle Zeilen innerhalb weißer Karten folgen diesem Pattern:
+
+```javascript
+// Standard-Zeile (mit Trennlinie)
+{ padding: '10px 14px', borderBottom: '1px solid #f0eeec' }
+
+// Letzte Zeile (ohne Trennlinie)
+{ padding: '10px 14px' }
+
+// Edit-Zeile (etwas kleiner padding für Input)
+{ padding: '9px 14px', borderBottom: '1px solid #f0eeec' }
+```
+
+> **Regel:** Trennlinien innerhalb weißer Karten immer `#f0eeec` (nicht #e7e5e4 — zu dunkel innerhalb weiß).
+
+---
+
+### 4.8 Felder-Labels (über jedem Input)
+
+```javascript
+{
+  fontSize: 9, fontWeight: 700, color: '#a8a29e',
+  textTransform: 'uppercase', letterSpacing: '.05em',
+  marginBottom: 3
+}
+// Pflichtfeld-Marker: <span style={{color:'#e11d48'}}>*</span>
+```
+
+---
+
+### 4.9 Inputs & Selects
+
+**Text-Input:**
+```javascript
+{
+  border: '1.5px solid #e7e5e4',
+  borderRadius: 10,
+  padding: '9px 12px',
+  fontSize: 13, fontWeight: 600,
+  outline: 'none',
+  background: '#fafaf8',            // IMMER #fafaf8 für Inputs (nicht e8e5e1!)
+  color: '#1c1917',
+  fontFamily: 'inherit',
+  width: '100%'
+}
+// Mit Fehler: { border:'1.5px solid #fca5a5', background:'#fff1f2' }
+```
+
+**Select (immer mit Chevron):**
+```javascript
+// Select: gleich wie Input + { appearance:'none', paddingRight:28 }
+// Wrapper: { position:'relative' }
+// Chevron: <svg style={{position:'absolute',right:10,top:'50%',
+//   transform:'translateY(-50%)',pointerEvents:'none'}}
+//   width="11" height="11" stroke="#a8a29e" strokeWidth="2.5">
+//   <polyline points="6 9 12 15 18 9"/></svg>
+```
+
+**Textarea:**
+```javascript
+{ ...Input, resize:'none', minHeight:70 }
+```
+
+---
+
+### 4.10 Segmented Controls
+
+```javascript
+// Container
+{ display:'flex', padding:2, background:'#e7e5e4', borderRadius:9, gap:1 }
+
+// Button aktiv
+{
+  flex:1, padding:'7px', borderRadius:7,
+  background:'#1c1917', color:'#fff',
+  fontSize:10, fontWeight:700,
+  border:'none', cursor:'pointer', fontFamily:'inherit',
+  transition:'all .15s'
+}
+
+// Button inaktiv
+{ background:'transparent', color:'#78716c' }
+```
+Für farbige Segmented Controls (z.B. Schweregrad): aktiv = jeweilige Severity-Farbe (bg/text).
+
+---
+
+### 4.11 Badges / Pills
+
+```javascript
+{
+  display: 'inline-flex', alignItems: 'center',
+  padding: '2px 7px',
+  borderRadius: 999,
+  fontSize: 9, fontWeight: 700,
+  whiteSpace: 'nowrap'
+}
+```
+Farben je nach Kontext (Severity, Status, Kategorie) — immer mit passendem border.
+
+---
+
+### 4.12 Sticky Save-Bar
+
+```javascript
+// Wrapper
+{
+  position: 'sticky', bottom: 0,
+  background: '#fff',
+  borderTop: '1px solid #e7e5e4',
+  padding: '10px 12px',
+  display: 'flex', gap: 8,
+  paddingBottom: 'calc(10px + env(safe-area-inset-bottom,0px))'
+}
+// Speichern: { flex:2, ...Primär-Button }
+// Abbrechen: { flex:1, ...Sekundär-Button }
+```
+
+---
+
+### 4.13 Löschen-Bestätigung (Bottom-Sheet — KEIN Modal)
+
+```javascript
+// Overlay
+{
+  position: 'fixed', inset: 0,
+  background: 'rgba(0,0,0,.45)', zIndex: 60,
+  display: 'flex', alignItems: 'flex-end',
+  justifyContent: 'center', padding: 12
+}
+
+// Sheet (stopPropagation auf click)
+{
+  background: '#fff',
+  borderRadius: 18,
+  width: '100%', maxWidth: 400,
+  padding: 20
+}
+```
+
+---
+
+### 4.14 Suchfeld
+
+```javascript
+// Wrapper: { position:'relative' }
+// Icon:    <svg style={{position:'absolute',left:10,top:'50%',transform:'translateY(-50%)'}}>
+// Input:   { ...Input, padding:'9px 12px 9px 32px' }  // extra padding links für Icon
+```
+
+---
+
+### 4.15 Trennlinien & Abstandsregeln
+
+```
+Karten-Abstand (gap): 9–10px
+Row-Trennlinie:  1px solid #f0eeec  (innerhalb weißer Karte)
+Header-Trennlinie: 2px solid #e7e5e4  (Header-Unterseite — immer 2px)
+Section-Abstand: 10px gap zwischen Sections
+Body-Padding:    12px ringsum (Scroll-Bereiche)
+```
+
+---
+
+### 4.16 Banners (Flow / Info / Fehler)
+
+**Flow-Banner (amber — Workflow-Reihenfolge):**
+```javascript
+{
+  background:'#fffbeb', border:'1px solid #fde68a',
+  borderRadius:12, padding:'10px 12px'
+}
+// Titel: fontSize:8, fontWeight:800, color:'#92400e', textTransform:'uppercase'
+// Text:  fontSize:10, color:'#92400e', lineHeight:1.5
+```
+
+**Info-Banner (blau — Erklärungen):**
+```javascript
+{
+  display:'flex', alignItems:'flex-start', gap:9,
+  background:'#eff6ff', border:'1px solid #bfdbfe',
+  borderRadius:12, padding:'10px 12px',
+  fontSize:10, color:'#1e40af', lineHeight:1.55
+}
+// Icon: info-circle, stroke:#3b82f6
+// WICHTIG: Text als JSX-Children (nie dangerouslySetInnerHTML mit HTML-Tags!)
+```
+
+**Fehler-Banner (rot):**
+```javascript
+{
+  display:'flex', alignItems:'center', gap:8,
+  background:'#fff1f2', border:'1px solid #fecdd3',
+  borderRadius:12, padding:'10px 13px',
+  fontSize:11, fontWeight:700, color:'#e11d48'
+}
+```
+
+---
+
+### 4.17 Formular-Standard-Struktur
+
+```
+1. Sticky Header (Zurück + Titel)
+2. FlowBanner [amber]   — nur bei Datenbank-Formularen
+3. Section A → Section-Label + Karte mit Zeilen (Label → Feld)
+4. InfoBanner [blau]    — direkt vor erklärungsbedürftigem Abschnitt
+5. Section B → Section-Label + Karte
+6. Fehler-Banner [rot]  — nur wenn Pflichtfelder fehlen
+7. Sticky Save-Bar
+```
+
+---
+
+### 4.18 Listen-Standard-Struktur
+
+```
+1. Sticky Header (Zurück + Titel + Plus-Button)
+2. Suchfeld (im body-Padding)
+3. Counter-Label (Section-Label-Stil, "3 Einträge")
+4. Karten-Liste (gap:10px)
+   Karte:
+   ├─ Inhalt-Bereich (Name, Badges, Meta)
+   └─ Fußzeile (padding:8px 13px, borderTop:1px solid #f0eeec)
+      ├─ Links: Meta-Angaben (Zähler, Verwendungen)
+      └─ Rechts: Stift + Löschen Icon-Buttons
+5. Leer-Zustand: weiße Karte, Text + optionaler CTA
+```
+
+---
+
+### 4.19 Render-Funktionen — ZWINGEND
+
+Babel Standalone crasht wenn JSX-Komponenten innerhalb anderer mit `const X = () =>` definiert werden.
+
+```javascript
+// FALSCH → Whitescreen:
+const FlowBanner = ({ step }) => (<div>...</div>);
+
+// RICHTIG:
+const renderFlowBanner = (step) => (<div>...</div>);
+// Aufruf: {renderFlowBanner(2)}
+```
+
+---
+
+### 4.20 Datenbank-Workflow (Reihenfolge — überall konsistent)
+
+```
+Schritt 1 → Diagnosen anlegen
+Schritt 2 → Medikamente anlegen + mit Diagnosen verknüpfen
+Schritt 3 → Behandlungsvorlagen bauen
+Schritt 4 → Behandlung am Igel anwenden
+```
+
+---
+
+### 4.21 Igel-Farbpalette (Karten-Banner)
+
+```javascript
+const IGEL_COLORS = ['#5c5248','#6b4f38','#4a6352','#5c4a6b','#7a5c34','#4a5568','#5a4a3a','#3d5a4a'];
+const COLOR_NAMES = ['Kakao','Kastanie','Salbei','Pflaume','Umber','Schiefer','Mokka','Moos'];
+```
+Banner immer mit `color:'#fff'` auf diesen Hintergründen.
+
+---
+
+### 4.22 Severity / Status Farben
 
 **Severity-Badges:**
 ```
 Leicht:  bg:#dcfce7  text:#166634  border:#86efac
 Mittel:  bg:#fef3c7  text:#92400e  border:#fde68a
 Schwer:  bg:#fee2e2  text:#dc2626  border:#fca5a5
-```
-
-**Banner:**
-```
-Flow (amber):   bg:#fffbeb  border:#fde68a  text:#92400e   — Workflow-Schritte
-Info (blau):    bg:#eff6ff  border:#bfdbfe  text:#1e40af   — Erklärungen
-Fehler (rot):   bg:#fff1f2  border:#fecdd3  text:#e11d48   — Pflichtfeld-Fehler
-Erfolg (grün):  bg:#f0fdf4  border:#bbf7d0  text:#166634
 ```
 
 **Status-Badges Igel:**
@@ -152,162 +592,14 @@ Ausgewildert:        bg:#f0fdf4  text:#15803d
 Verstorben:          bg:#fee2e2  text:#dc2626  border:#fca5a5
 ```
 
-**Timeline-Farben:**
+**Timeline-Zustände:**
 ```javascript
-const TL_SEG  = { 'done-open':'#f0fdf4','done-locked':'#f0fdf4','due':'#fefce8','overdue-locked':'#fff1f2','pending':'#fafaf8' };
-const TL_ICOL = { 'done-open':'#166634','done-locked':'#166634','due':'#ca8a04','overdue-locked':'#e11d48','pending':'#d6d3d1' };
-const QV_BG   = { 'done-open':'#dcfce7','done-locked':'#dcfce7','due':'#fefce8','overdue-locked':'#fff1f2','pending':'#fafaf8' };
-const QV_BD   = { 'done-open':'#86efac','done-locked':'#86efac','due':'#fde68a','overdue-locked':'#fecdd3','pending':'#e7e5e4' };
+const TL_SEG  = {'done-open':'#f0fdf4','done-locked':'#f0fdf4','due':'#fefce8','overdue-locked':'#fff1f2','pending':'#fafaf8'};
+const TL_ICOL = {'done-open':'#166634','done-locked':'#166634','due':'#ca8a04','overdue-locked':'#e11d48','pending':'#d6d3d1'};
+const TL_LOCKED = {'done-locked':true,'overdue-locked':true};
+const TL_CAN    = {'done-open':true,'due':true};
 ```
 
-### 4.2 Typografie
-
-```
-DM Sans 800   Seiten-Titel (15px), Karten-Überschriften, Buttons
-DM Sans 700   Section-Labels, Feldwerte fett
-DM Sans 600   Feldwerte Lese-Modus
-DM Mono 500   IDs (IGL-xxx), Gewicht, Uhrzeiten, Code-Werte
-```
-
-**Label-Standard (über jedem Formularfeld):**
-```javascript
-{ fontSize:9, fontWeight:700, color:'#a8a29e', textTransform:'uppercase',
-  letterSpacing:'.05em', marginBottom: 3 }
-```
-
-### 4.3 Komponenten-Patterns (Referenz-Code)
-
-**Standard-Karte:**
-```javascript
-{ background:'#fff', borderRadius:14, border:'1px solid #e7e5e4',
-  boxShadow:'0 2px 8px rgba(28,25,23,.07)', overflow:'hidden' }
-```
-
-**Sub-Karte (z.B. Med-Eintrag in TreatmentDB):**
-```javascript
-{ background:'#f5f5f4', borderRadius:12, border:'1.5px solid #e7e5e4', padding:12 }
-// Aktiv/fokussiert → border:'1.5px solid #1c1917'
-```
-
-**Seiten-Header (sticky, Titel absolut zentriert):**
-```javascript
-// Wrapper:
-{ position:'sticky', top:0, background:'#fff', display:'flex', alignItems:'center',
-  justifyContent:'space-between', padding:'10px 16px',
-  borderBottom:'2px solid #e7e5e4', zIndex:10 }
-// Titel:
-{ position:'absolute', left:'50%', transform:'translateX(-50%)', fontSize:15,
-  fontWeight:800, color:'#1c1917', whiteSpace:'nowrap', fontFamily:"'DM Sans',sans-serif" }
-// Zurück-Button: { width:36, height:36, borderRadius:'50%', background:'#f5f5f4', border:'none' }
-// Plus-Button:   { width:36, height:36, borderRadius:10,   background:'#1c1917', border:'none' }
-```
-
-**Section-Label:**
-```javascript
-{ fontSize:8, fontWeight:800, color:'#a8a29e', textTransform:'uppercase',
-  letterSpacing:'.1em', padding:'2px 0 6px' }
-```
-
-**Karten-Zeile:**
-```javascript
-// Standard: { padding:'10px 14px', borderBottom:'1px solid #f0eeec' }
-// Letzte:   { padding:'10px 14px' }  // kein border
-```
-
-**Input:**
-```javascript
-{ border:'1.5px solid #e7e5e4', borderRadius:10, padding:'9px 12px', fontSize:13,
-  outline:'none', background:'#fafaf8', color:'#1c1917', fontFamily:'inherit', width:'100%' }
-// Fehler: { border:'1.5px solid #fca5a5', background:'#fff1f2' }
-```
-
-**Select (immer mit Chevron-SVG, position:relative auf Wrapper):**
-```javascript
-{ ...Input, appearance:'none', paddingRight:28 }
-// + <svg style={{position:'absolute',right:10,top:'50%',transform:'translateY(-50%)',pointerEvents:'none'}}
-//      width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" strokeWidth="2.5">
-//   <polyline points="6 9 12 15 18 9"/></svg>
-```
-
-**Segmented Control:**
-```javascript
-// Container: { display:'flex', padding:2, background:'#e7e5e4', borderRadius:9, gap:1 }
-// Aktiv:     { flex:1, padding:'7px', borderRadius:7, background:'#1c1917', color:'#fff',
-//              fontSize:10, fontWeight:700, border:'none', cursor:'pointer', transition:'all .15s' }
-// Inaktiv:   { background:'transparent', color:'#78716c' }
-```
-
-**Sticky Save-Bar:**
-```javascript
-{ position:'sticky', bottom:0, background:'#fff', borderTop:'1px solid #e7e5e4',
-  padding:'10px 12px', display:'flex', gap:8,
-  paddingBottom:'calc(10px + env(safe-area-inset-bottom,0px))' }
-// Speichern: { flex:2, background:'#1c1917', color:'#fff', fontWeight:800, fontSize:13 }
-// Abbrechen: { flex:1, background:'#f5f5f4', color:'#78716c', fontWeight:700, fontSize:13 }
-```
-
-**Löschen-Bestätigung (Bottom-Sheet statt Modal):**
-```javascript
-// Overlay:  { position:'fixed', inset:0, background:'rgba(0,0,0,.45)', zIndex:60,
-//             display:'flex', alignItems:'flex-end', padding:12 }
-// Sheet:    { background:'#fff', borderRadius:18, width:'100%', maxWidth:400, padding:20 }
-// Löschen-Button: { background:'#e11d48', color:'#fff' }
-```
-
-### 4.4 Formular-Standard-Struktur
-
-```
-1. Sticky Header (Zurück + Titel)
-2. FlowBanner [amber]   — bei Datenbank-Formularen (Schritt 1/2/3/4 Workflow)
-3. Section A → Karte mit beschrifteten Zeilen (Label + Feld)
-4. Section B → Karte
-5. InfoBanner [blau]    — direkt vor erklärungsbedürftigem Abschnitt
-6. Section C → Karte
-7. Fehler-Banner [rot]  — nur bei Pflichtfeld-Validierungsfehler
-8. Sticky Save-Bar
-```
-
-### 4.5 Listen-Standard-Struktur
-
-```
-1. Sticky Header (Zurück + Titel + Plus-Button)
-2. Suchfeld
-3. Counter-Label ("3 Einträge")
-4. Karten-Liste (gap 9–10px)
-   └─ Karte: Name/Titel + optional Subtext
-   └─ Badges (Kategorie, Dosis, Schweregrad etc.)
-   └─ Fußzeile: Meta links + Stift/Löschen rechts
-5. Leer-Zustand mit CTA-Button
-```
-
-### 4.6 Render-Funktionen vs. Inline-Komponenten — KRITISCH
-
-Babel Standalone crasht, wenn JSX-Komponenten innerhalb anderer Komponenten mit `const X = () =>` definiert werden. **Immer render-Funktionen:**
-
-```javascript
-// FALSCH → Whitescreen:
-const FlowBanner = ({ step }) => (<div>...</div>);
-// Aufruf: <FlowBanner step={2} />
-
-// RICHTIG:
-const renderFlowBanner = (step) => (<div>...</div>);
-// Aufruf: {renderFlowBanner(2)}
-```
-
-Ausnahme: Komponenten auf oberster Ebene außerhalb anderer Komponenten (z.B. `DiagnoseDB`, `MedikamentDB`) sind OK.
-
-### 4.7 Datenbank-Workflow-Reihenfolge
-
-```
-Schritt 1 → Diagnosen anlegen          (beschreibt Krankheitsbild)
-Schritt 2 → Medikamente anlegen        (mit Diagnosen verknüpfen → Assistent-Vorschlag)
-Schritt 3 → Behandlungsvorlagen bauen  (Diagnose + Medikamente kombinieren)
-Schritt 4 → Behandlung am Igel         (Vorlage auf Igel anwenden)
-```
-
-Diese Reihenfolge gilt überall: DatenbankHub (Diagnosen vor Medikamenten), FlowBanner in Formularen, Ersteinrichtungs-Banner.
-
----
 
 ## 5. Kritische Regeln
 
@@ -793,6 +1085,68 @@ Timeline-Parameter persistent in localStorage `igel_settings`:
 
 `openInEditMode`: bool — Igelkarte öffnet standardmäßig im Edit-Modus
 
+### 8.16 BatchBearbeitung (v2.4.10+)
+
+**Zweck:** Massenbearbeitung mehrerer Igelkarten gleichzeitig. Nur für Admins zugänglich.
+
+**Props:** `{ userData, users, hedgehogs, onClose }`
+
+**States:**
+```javascript
+step          'overview' | 'select' | 'configure' | 'result'
+selectedIds   Set<string>  — ausgewählte Igel-IDs
+chosenAction  'pfleger' | 'status' | 'notiz' | 'delete'
+configValue   String — neuer Wert (Pfleger-Name / Status-Key / Notiz-Text)
+statusFilter  'active' | 'all'  — Filterung der Auswahl-Liste
+search        String
+saving        bool
+result        { ok, fail, action, value } | null
+```
+
+**Verfügbare Aktionen:**
+```
+pfleger  → batch.update: betreuer + changeHistory-Eintrag
+status   → batch.update: status + statusHistory + changeHistory
+notiz    → batch.update: notizen (append mit ---\n Trennlinie)
+delete   → batch.delete (permanent, kein Rollback)
+```
+
+**Firestore-Schreibweise:** Firestore `batch()` — alle Igel in einem Atomic-Write. `changeHistory` via `arrayUnion()`. `statusHistory` via `arrayUnion()`. `serverTimestamp()` NICHT in Arrays → `new Date().toISOString()`.
+
+**Menü-Integration:**
+- HTML-Kachel `ms-batch-admin` → `display:flex` wenn isAdmin, sonst `display:none`
+- HTML-Kachel `ms-batch-locked` → `display:flex` wenn NICHT isAdmin (ausgegraut + Schloss)
+- Window-Global: `window.__igelBatch()` → `__igelCloseAll()` + `setShowBatchBearbeitung(true)` + `history.pushState`
+- popstate: `s.showBatchBearbeitung → setShowBatchBearbeitung(false) + Menü öffnen`
+
+**Fallstricke:**
+- `dangerouslySetInnerHTML={{__html:a.iconPath}}` für SVG-Pfade in Action-Kacheln — Babel-safe weil kein `<tag>` in Template-Literal
+- `selectedHedgehogs` muss aus `hedgehogs.filter(h=>selectedIds.has(h.id))` kommen — nicht aus `displayHedgehogs` (die sind gefiltert!)
+- Bei `delete`: kein `configValue` nötig — Button trotzdem aktiv
+
+**Pfade:**
+```
+Menü-Kachel (Admin) → BatchBearbeitung Übersicht
+  → Aktion klicken → Igel auswählen (Step select)
+  → Weiter → Konfigurieren (Step configure)
+  → Anwenden → Ergebnis (Step result)
+  → Fertig → onClose() → Menü
+```
+
+---
+
+## Menü-Struktur (ab v2.4.10)
+
+| Kachel | Sichtbar für | Aktion |
+|--------|-------------|--------|
+| Stammdaten | alle | DatenbankHub (früher: „Datenbank") |
+| Benutzer | alle (Funktion nur Admin) | UserManagement |
+| Einstellungen | alle | SettingsDialog |
+| Changelog | alle | Changelog |
+| To-Do | nur Admin | TodoList |
+| Sammelbearbeitung | Admin: amber aktiv; andere: ausgegraut | BatchBearbeitung |
+| ~~App-Spezifikation~~ | permanent ausgeblendet | — |
+
 ---
 
 ## 9. Datenstrukturen
@@ -895,7 +1249,8 @@ Firebase: `apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"`, projectId: `igels
 
 | Version | Feature |
 |---------|---------|
-| 2.4.09 | Option D Kontrast global | Seitenhintergründe #e8e5e1, Karten-Border 1.5px #c9c5c1, Shadow 0 8px 28px .18 auf allen Seiten |
+| 2.4.10 | Sammelbearbeitung + Menü | BatchBearbeitung-Komponente, Menü Datenbank→Stammdaten, DesignSpec ausgeblendet, Batch-Aktionen Pfleger/Status/Notiz/Löschen |
+| 2.4.09 | Option D: Kontrast-Redesign global — NEUER STANDARD | Seitenhintergründe #e8e5e1, Karten 1.5px #c9c5c1, Shadow 0 8px 28px .18, Design-System Abschnitt 4 vollständig überarbeitet | | Seitenhintergründe #e8e5e1, Karten-Border 1.5px #c9c5c1, Shadow 0 8px 28px .18 auf allen Seiten |
 | 2.4.08 | Fix: Info-Tab Whitescreen — `React.useState` in JSX-IIFE → State + validateAndSave nach Top-Level gehoben |
 | 2.4.07 | Info-Tab: Labels, Nominatim Autocomplete, Telefon-Vorwahl, Autofill, Pflichtfelder, Segmented Geschlecht, Sticky Save-Bar |
 | 2.4.06 | Fix: `const filtered` fehlte in MedikamentDB Liste |
