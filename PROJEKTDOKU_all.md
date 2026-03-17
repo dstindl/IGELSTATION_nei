@@ -1,6 +1,137 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.4.10 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.4.14 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+
+---
+
+## ⚠️ PRE-FLIGHT: VOR JEDER UMSETZUNG — ZWINGEND
+
+> **Diese Checkliste wird von Claude bei JEDER Implementierung stillschweigend abgearbeitet, bevor die erste Zeile Code geschrieben wird. Keine Ausnahmen.**
+
+### Schritt 1 — Betroffenen Code lesen
+Vor jeder Änderung die relevante Stelle mit `view` oder `grep -n` lesen.
+Nie aus dem Gedächtnis schreiben — der Code im File ist Realität, nicht der letzte Chat-Kontext.
+
+### Schritt 2 — Babel-Constraints prüfen (mental oder per grep)
+- [ ] Neue Komponente innerhalb anderer? → muss `renderX()` werden, nie `const X = () =>`
+- [ ] SVG-Attribute? → camelCase (`strokeWidth`, nicht `stroke-width`)
+- [ ] `padStart` in Template-Literal `${}`? → String-Verkettung statt padStart
+- [ ] `dangerouslySetInnerHTML` mit HTML-Tag-Strings? → JSX-Children
+- [ ] `useState` in `.map()`? → Top-Level heben
+- [ ] HTML-Tags (`<path>`, `<circle>` etc.) in JS-Strings? → echte JSX-SVGs
+
+### Schritt 3 — State-Sicherheit prüfen
+Bei jeder Änderung die States betrifft:
+- [ ] Neuer State: **addieren**, nie einen bestehenden ersetzen
+- [ ] Prüfen ob der alte State-Setter noch irgendwo referenziert wird: `grep -n "setShowXxx"` 
+- [ ] Neuer State in `_backState.current` aufnehmen?
+- [ ] Neuer State in `__igelCloseAll` + `__igelCloseAllExceptMenu` aufnehmen?
+- [ ] Neuer State im popstate-Handler behandelt?
+
+### Schritt 4 — str_replace Sicherheit
+- [ ] `grep -c "old_str_anker"` → muss genau `1` ergeben, nie `0` oder `>1`
+- [ ] Kontext der Zielstelle gelesen — kein benachbarter Code wird unbeabsichtigt entfernt?
+
+### Schritt 5 — Nach der Änderung (Pflicht, keine Ausnahme)
+```bash
+python3 -c "
+import re
+with open('/home/claude/igelstation/index.html','r') as f: c=f.read()
+s=re.search(r'<script type=\"text/babel\">(.*?)</script>',c,re.DOTALL).group(1)
+print('Braces: %d, Parens: %d' % (s.count('{')-s.count('}'), s.count('(')-s.count(')')))
+"
+# Beide müssen 0 sein. Bei Abweichung: sofort rückgängig, nie deployen.
+```
+
+Bei State-Änderungen zusätzlich:
+```bash
+python3 -c "
+with open('/home/claude/igelstation/index.html','r') as f: c=f.read()
+states=['showDesignSpec','showBatchBearbeitung','showDatenbankHub','showMedikamentDB',
+        'showDiagnoseDB','showTreatmentDB','showUserMgmt','showSettings','showChangelog',
+        'showTodoList','showProfile','showAddForm','showQRScanner','showPflegeplan','showBestand']
+[print(('OK  ' if ('const ['+s) in c else 'FEHLT!'), s) for s in states]
+"
+```
+
+### Schritt 6 — Version + Changelog + ZIP
+
+**Alle 5 Versions-Stellen bumpen (Pflicht):**
+```
+1. Changelog-Array im JSX     — neuer Eintrag ganz oben
+2. LoadingScreen              — vX.X.XX
+3. Menü-Footer                — Version X.X.XX (class="msheet-version")
+4. Changelog-Header-Text      — Version X.X.XX · Cloud-basierte...
+5. service-worker.js          — igelpflegestation-vX.X.XX
+```
+
+**Changelog-Eintrag:** Kurze, präzise Beschreibung was geändert wurde. Bei Bug-Fixes: Ursache nennen. Bei Features: was es tut. Bei Whitescreens: was crashte und warum.
+
+**PROJEKTDOKU_all.md aktualisieren:**
+- Versionshistorie-Tabelle: neuer Eintrag
+- Betroffene Komponenten-Abschnitte (Abschnitt 8): States / Logik / Fallstricke ergänzen
+- Neue Bugs/Fixes in Abschnitt 5.1 Tabelle aufnehmen
+
+**Dann ZIP neu bauen:**
+```bash
+cd /home/claude/igelstation && rm -f /home/claude/Igelstation.zip
+zip /home/claude/Igelstation.zip index.html service-worker.js \
+  icon-192.png icon-512.png deploy.sh update.sh PROJEKTDOKU_all.md IGEL_STARTPROMPT.md
+```
+Nie ZIP ohne Versions-Bump und Changelog-Eintrag ausliefern.
+
+### Schritt 7 — Verifikation vor Auslieferung (Post-Implementation Recheck)
+
+Vor dem finalen ZIP-Build die PRE-FLIGHT-Checkliste nochmals aktiv durchgehen — nicht als Erinnerung, sondern als echte Verifikation gegen den tatsächlichen Code:
+
+```bash
+# 1. Balance-Check (Pflicht)
+python3 -c "
+import re
+with open('/home/claude/igelstation/index.html','r') as f: c=f.read()
+s=re.search(r'<script type=\"text/babel\">(.*?)</script>',c,re.DOTALL).group(1)
+b=s.count('{')-s.count('}'); p=s.count('(')-s.count(')')
+print('Braces:',b,'Parens:',p, '→','OK' if b==0 and p==0 else 'FEHLER!')
+"
+
+# 2. Keine Inline-Komponenten in geändertem Code
+grep -n "const [A-Z][a-zA-Z]* = (" /home/claude/igelstation/index.html | grep -v "^[0-9]*:    const [A-Z][a-zA-Z]* = (" | head -5
+
+# 3. Kein aktives dangerouslySetInnerHTML im Babel-Script (Changelog-Texte ausschließen)
+python3 -c "
+import re
+with open('/home/claude/igelstation/index.html','r') as f: c=f.read()
+script=re.search(r'<script type=.text/babel.>(.*?)</script>',c,re.DOTALL).group(1)
+hits=re.findall(r'dangerouslySetInnerHTML\s*=\s*\{',script)
+print('dangerouslySetInnerHTML aktiv:',len(hits),'→','OK' if not hits else 'PRUEFEN: '+str(hits))
+"
+
+# 4. State-Vollständigkeit
+python3 -c "
+with open('/home/claude/igelstation/index.html','r') as f: c=f.read()
+states=['showDesignSpec','showBatchBearbeitung','showDatenbankHub','showMedikamentDB',
+        'showDiagnoseDB','showTreatmentDB','showUserMgmt','showSettings','showChangelog',
+        'showTodoList','showProfile','showAddForm','showQRScanner','showPflegeplan','showBestand']
+issues=[s for s in states if ('const ['+s) not in c]
+print('States OK' if not issues else 'FEHLT: '+str(issues))
+"
+
+# 5. Versions-Konsistenz (nur strukturelle Stellen, nicht Changelog-Text)
+python3 -c "
+import re
+with open('/home/claude/igelstation/index.html','r') as f: c=f.read()
+with open('/home/claude/igelstation/service-worker.js','r') as f: sw=f.read()
+v1=re.search(r'igelpflegestation-v([\d.]+)',sw)
+v2=re.search(r'msheet-version[^v]*v?([\d.]+)',c)
+v3=re.search(r'>v([\d.]+)</',c)
+vers=set(filter(None,[v1 and v1.group(1),v2 and v2.group(1),v3 and v3.group(1)]))
+print('Versionen (SW+Menu+Loading):',vers,'→','OK' if len(vers)==1 else 'INKONSISTENT!')
+"
+```
+
+**Erst wenn alle 5 Checks grün sind → ZIP bauen → ausliefern.**
+
+Bei einem fehlgeschlagenen Check: Problem beheben, Schritt 7 erneut ausführen. Nie mit bekanntem Issue ausliefern.
 
 ---
 
@@ -639,6 +770,48 @@ const TL_CAN    = {'done-open':true,'due':true};
 - State der neuen Komponente in `_backState.current` aufnehmen
 - popstate-Handler in MainApp ergänzen
 
+### 5.5 str_replace — Sicherheitsregeln (PFLICHT)
+
+Jede `str_replace`-Operation an `index.html` muss folgende Verifikationsschritte durchlaufen, bevor die Änderung als fertig gilt:
+
+**Vor dem Replace:**
+1. Mit `grep -n` oder `view` prüfen: Kommt der `old_str` **genau einmal** vor? Bei mehrfachem Vorkommen schlägt das Replace fehl oder trifft die falsche Stelle.
+2. Den Kontext um die Zielstelle lesen — sicherstellen dass kein benachbarter Code unbeabsichtigt entfernt wird.
+
+**Nach jedem Replace sofort ausführen:**
+```python
+# Balance-Check (Pflicht nach jeder Änderung)
+python3 -c "
+import re
+with open('index.html','r') as f: c=f.read()
+s=re.search(r'<script type=\"text/babel\">(.*?)</script>',c,re.DOTALL).group(1)
+print('Braces: %d, Parens: %d' % (s.count('{')-s.count('}'), s.count('(')-s.count(')')))
+"
+# Beide müssen 0 sein — sonst sofort rückgängig machen
+
+# State-Vollständigkeits-Check nach State-Änderungen:
+python3 -c "
+with open('index.html','r') as f: c=f.read()
+states = ['showDesignSpec','showBatchBearbeitung','showDatenbankHub','showMedikamentDB',
+          'showDiagnoseDB','showTreatmentDB','showUserMgmt','showSettings','showChangelog',
+          'showTodoList','showProfile','showAddForm','showQRScanner','showPflegeplan','showBestand']
+for s in states:
+    ok = ('const ['+s) in c
+    print(('OK' if ok else 'FEHLT!'), s)
+"
+```
+
+**Kritische Fallen bei str_replace:**
+
+| Situation | Risiko | Gegenmaßnahme |
+|-----------|--------|---------------|
+| State A ersetzen durch State B | State A-Setter noch in closeAll/popstate → ReferenceError | Immer **ergänzen**, nie ersetzen; alten State behalten |
+| `old_str` kommt mehrfach vor | Falsches Replace | vorher `grep -c` zählen |
+| Langer `old_str` mit Sonderzeichen | Match schlägt lautlos fehl | Immer mit kurzem, eindeutigem Anker arbeiten |
+| State aus `_backState` entfernen aber Setter bleibt | Stale-Closure-Warnung | State + alle Setter + _backState-Eintrag + popstate-Eintrag + closeAll-Eintrag zusammen ändern |
+
+**Goldene Regel:** Wenn ein State-Name neu eingeführt wird, niemals den Replace auf eine Zeile beschränken die auch einen anderen State-Namen enthält. Immer **addieren**, nie substituieren.
+
 ---
 
 ## 6. Whitescreen-Diagnose (Checkliste)
@@ -651,6 +824,7 @@ const TL_CAN    = {'done-open':true,'due':true};
 6. SVG-Attribute mit Bindestrichen? → camelCase
 7. `useState` in `.map()`? → Top-Level heben
 8. Edit-Formular unsichtbar? → Bedingung `(showNewModal || editingId) && isAdmin`
+9. **State-Setter referenced but undeclared?** → Nach jedem State-Refactoring alle `set*`-Aufrufe in closeAll, closeAllExceptMenu, _backState, popstate gegen deklarierte States abgleichen (v2.4.13-Bug)
 
 ---
 
@@ -1249,6 +1423,10 @@ Firebase: `apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"`, projectId: `igels
 
 | Version | Feature |
 |---------|---------|
+| 2.4.14 | Sicherheit AdminSetup: Race-Condition + Doppelprüfung | null statt false bei Fehler/Timeout, strict equality, Gegencheck vor Account-Anlage |
+| 2.4.13 | Fix: showDesignSpec entfernt statt ergänzt → ReferenceError → Whitescreen | str_replace-Sicherheitsregeln in Abschnitt 5.5 dokumentiert |
+| 2.4.12 | Fix: Header als Inline-Komponente → renderHeader() render-Funktion |
+| 2.4.11 | Fix: dangerouslySetInnerHTML iconPath-Strings → renderActionIcon() |
 | 2.4.10 | Sammelbearbeitung + Menü | BatchBearbeitung-Komponente, Menü Datenbank→Stammdaten, DesignSpec ausgeblendet, Batch-Aktionen Pfleger/Status/Notiz/Löschen |
 | 2.4.09 | Option D: Kontrast-Redesign global — NEUER STANDARD | Seitenhintergründe #e8e5e1, Karten 1.5px #c9c5c1, Shadow 0 8px 28px .18, Design-System Abschnitt 4 vollständig überarbeitet | | Seitenhintergründe #e8e5e1, Karten-Border 1.5px #c9c5c1, Shadow 0 8px 28px .18 auf allen Seiten |
 | 2.4.08 | Fix: Info-Tab Whitescreen — `React.useState` in JSX-IIFE → State + validateAndSave nach Top-Level gehoben |
