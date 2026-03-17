@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.4.18 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.4.17 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -1423,7 +1423,6 @@ Firebase: `apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"`, projectId: `igels
 
 | Version | Feature |
 |---------|---------|
-| 2.4.18 | Export: showSaveFilePicker, Speicherort-Karte, Fehler-Toast, 8s, HH-MM-SS Timestamp |
 | 2.4.17 | Export: grüner Toast nach Download, withExportConfirm(), auto-dismiss 4s |
 | 2.4.16 | Export-Seite: Info-Banner, Igelkarten/Stammdaten/Komplettbackup, Import-Platzhalter |
 | 2.4.15 | Sammelbearbeitung: Behandlung starten + Export-Sektion | batchTreatmentDB, downloadCSV, 5 Export-Funktionen, behandlung in applyAction |
