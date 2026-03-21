@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.4.18 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.5.22 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -1449,6 +1449,18 @@ Firebase: `apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"`, projectId: `igels
 
 | Version | Feature |
 |---------|---------|
+| 2.5.22 | Fix: Anwesenheit auf Feiertag sichtbar; chipStyle priorisiert Entry über ft; !ft-Guards in Track entfernt; Bundesland-Dropdown (openholidaysapi); planConfig.bundesland |
+| 2.5.21 | Feiertage editierbar: Edit-Kalender + Zeitband-Klick; Admin Feiertagskalender-Sektion |
+| 2.5.20 | Meine Woche: Konzept B — farbiger Datum-Chip (50px), Status-Dot-Zeile entfernt, Track height:32 |
+| 2.5.19 | Edit-View: Mobile-Layout-Fix; sticky Save-Bar + marginBottom; Kalender height:36 |
+| 2.5.18 | Edit-View Konzept B: Kalender+Multi-Select, Anwesend/Abwesend-Kacheln, Akkordeon-Schichten, Pill-Chips |
+| 2.5.17 | Fix: Spinner renderTeamGrid — 3 überflüssige </div>-Tags; div-Balance-Check eingeführt |
+| 2.5.16 | Team: F/S-Buchstaben entfernt; Frühschicht/Spätschicht-Label; Multi-Tage überschreibt immer |
+| 2.5.15 | Team: Coverage als Karte; Du-Legende entfernt |
+| 2.5.14 | Abwesend-Kategorie (löscht Eintrag); Team Du-Band; Stat-Kacheln größer |
+| 2.5.13 | Zeitband 0–24h; Edit-Button entfernt; Schicht-Start/End-Linien |
+| 2.5.12 | Fix: renderTeamGrid </div>; Schraffur weg; vertikale Trennlinie |
+| 2.5.11 | UI-Fixes: Ist-Stunden kein h; Admin-Einstellungen overflow-fix; Time-Badge schwarz |
 | 2.4.18 | Export: showSaveFilePicker, Speicherort-Karte, Fehler-Toast, 8s, HH-MM-SS Timestamp |
 | 2.4.17 | Export: grüner Toast nach Download, withExportConfirm(), auto-dismiss 4s |
 | 2.4.16 | Export-Seite: Info-Banner, Igelkarten/Stammdaten/Komplettbackup, Import-Platzhalter |
