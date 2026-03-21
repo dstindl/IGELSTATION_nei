@@ -1482,3 +1482,33 @@ Firebase: `apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"`, projectId: `igels
 ---
 
 *Zuletzt aktualisiert: März 2026 · v2.4.08*
+
+---
+
+## Konzept: Anwesenheitsplan (v2.5.x)
+
+**Konzept-Dateien:** `konzept_anwesenheitsplan.html`, `konzept_anwesenheit_v1.html`, `KONZEPT_ANWESENHEITSPLAN.md`
+
+**Gewähltes Design:** Kombination A+B — Zeitband (Meine Woche) + Grid (Team-Übersicht) + Karten (Detail/Edit)
+
+**Firestore Collections:**
+- `anwesenheit` — Dokument-ID: `{userId}_{date}_{shift}` · Felder: userId, date, shift, status, timeFrom, timeTo, note, updatedAt
+- `planConfig/settings` — Schichtzeiten, Mindestbesetzung, Vorlaufzeit, Bundesland, Feiertage
+- `feiertage/{year}_{bundesland}` — gecachte Feiertage von openholidaysapi.org
+- `planVorlage/standard` — wöchentliche Vorlage je Pfleger
+
+**MainApp-Integration:**
+- State: `const [showAnwesenheit, setShowAnwesenheit] = useState(false);`
+- _backState Priorität: nach showBatchBearbeitung, vor showUserMgmt
+- Global: `window.__igelAnwesenheit()`
+- Menü: neue Kachel „Anwesenheit"
+
+**Versionsplanung:** v2.5.00 (Grundgerüst) → v2.5.07 (Polish)
+
+**Offene Entscheidungen vor Start:**
+1. BottomBar-Button oder nur Menü?
+2. Selbsteintragung durch alle Pfleger oder nur Admin?
+3. Sperr-Logik ab X Stunden vor Schicht
+4. Wochenende: immer gesperrt oder optional?
+5. Plan-Vorlage wird vorausgefüllt?
+
