@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.5.26 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.5.27 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -1449,6 +1449,7 @@ Firebase: `apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"`, projectId: `igels
 
 | Version | Feature |
 |---------|---------|
+| 2.5.27 | Fix: History Sheet bottom über BottomBar (62px); Infotext Verlauf unter Legende |
 | 2.5.26 | Abweichung gelb (Balken + Legende); History-Sheet scrollbar; Meine Woche Legende aktualisiert |
 | 2.5.25 | Fix: History orderBy entfernt; Team absent→Früh/Spät; Kalender Farbcodierung; Firestore delete eigene Einträge |
 | 2.5.24 | Firestore Rules: anwesenheit_history (read=auth, create=activeUser+own, update/delete=false) |
