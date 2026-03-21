@@ -756,6 +756,32 @@ const TL_CAN    = {'done-open':true,'due':true};
 - `arrayUnion()` für Append auf `gewichtsverlauf[]`
 - `firebase.firestore.FieldValue.serverTimestamp()` für `zuletztBearbeitetAm` OK (kein Array)
 
+
+### 5.2a Firestore Security Rules
+
+Die Rules-Datei `firestore.rules` muss in Firebase Console unter **Firestore → Rules** eingefügt werden.
+
+**Wichtig für Anwesenheitsplan:** Die `anwesenheit` Collection braucht diese Regel:
+```
+match /anwesenheit/{docId} {
+  allow read: if isAuthenticated();
+  allow create, update: if isActiveUser() &&
+    request.resource.data.userId == request.auth.uid;
+  allow delete: if isAdmin();
+}
+```
+
+Ohne diese Regel → `Missing or insufficient permissions` beim Speichern.
+
+**Alle Collections in firestore.rules:**
+- `hedgehogs` — read: auth, write: activeUser
+- `users` — read: auth, write: admin || eigener Doc
+- `diagnosisDatabase`, `medicationDatabase`, `treatmentDatabase` — read: auth, write: activeUser
+- `anwesenheit` — read: auth, write: activeUser (nur eigene userId)
+- `planConfig`, `feiertage`, `planVorlage` — read: auth, write: admin
+- `app_todos`, `invites` — read: auth, write: admin
+- `auditLog` — read: admin, create: auth, update/delete: false
+
 ### 5.3 Navigation-Regeln
 
 - `onClose` in allen Menü-Seiten ruft **ausschließlich `history.back()`** auf — nie State direkt setzen
