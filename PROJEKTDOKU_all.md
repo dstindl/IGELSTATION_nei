@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.5.24 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.5.25 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -1449,6 +1449,7 @@ Firebase: `apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"`, projectId: `igels
 
 | Version | Feature |
 |---------|---------|
+| 2.5.25 | Fix: History orderBy entfernt; Team absent→Früh/Spät; Kalender Farbcodierung; Firestore delete eigene Einträge |
 | 2.5.24 | Firestore Rules: anwesenheit_history (read=auth, create=activeUser+own, update/delete=false) |
 | 2.5.23 | Team-Übersicht: Konzept A (Datum-Chips) + Verlauf-Sheet; anwesenheit_history Collection; saveEntry schreibt History |
 | 2.5.22 | Fix: Anwesenheit auf Feiertag sichtbar; chipStyle priorisiert Entry über ft; !ft-Guards in Track entfernt; Bundesland-Dropdown (openholidaysapi); planConfig.bundesland |
