@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.5.22 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.5.23 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -1449,6 +1449,7 @@ Firebase: `apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"`, projectId: `igels
 
 | Version | Feature |
 |---------|---------|
+| 2.5.23 | Team-Übersicht: Konzept A (Datum-Chips) + Verlauf-Sheet; anwesenheit_history Collection; saveEntry schreibt History |
 | 2.5.22 | Fix: Anwesenheit auf Feiertag sichtbar; chipStyle priorisiert Entry über ft; !ft-Guards in Track entfernt; Bundesland-Dropdown (openholidaysapi); planConfig.bundesland |
 | 2.5.21 | Feiertage editierbar: Edit-Kalender + Zeitband-Klick; Admin Feiertagskalender-Sektion |
 | 2.5.20 | Meine Woche: Konzept B — farbiger Datum-Chip (50px), Status-Dot-Zeile entfernt, Track height:32 |
