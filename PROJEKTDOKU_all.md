@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.5.40 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.5.41 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -1449,6 +1449,7 @@ Firebase: `apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"`, projectId: `igels
 
 | Version | Feature |
 |---------|---------|
+| 2.5.41 | Fix: absent/Geplant wurde in saveEntry gelöscht statt gespeichert |
 | 2.5.40 | Geplant: grauer Vollbalken #d8d5d2 mit Text |
 | 2.5.39 | absent: #d8d5d2 dunkler grau + A, kein Schraffur |
 | 2.5.38 | Fix: absent Priorität 1 in Team-Grid; u.id als userId-Key |
