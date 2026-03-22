@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.5.44 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.5.45 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -1449,6 +1449,7 @@ Firebase: `apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"`, projectId: `igels
 
 | Version | Feature |
 |---------|---------|
+| 2.5.45 | Fix Whitescreen: ICS+Cleanup in MainApp; Kacheln in Daten-Export |
 | 2.5.44 | Kalender-Export (.ics) + Bereinigung + Absprung aus Anwesenheitsplan |
 | 2.5.43 | Notiz-Bereich aus Edit-View entfernt |
 | 2.5.42 | Pill Geplant dunkelgrau; Track: Geplant abwesend |
