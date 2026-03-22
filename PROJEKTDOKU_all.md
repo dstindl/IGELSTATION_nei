@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.5.51 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.5.52 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -1449,6 +1449,7 @@ Firebase: `apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"`, projectId: `igels
 
 | Version | Feature |
 |---------|---------|
+| 2.5.52 | Löschbutton mehrere Tage; Back anwKalender→export |
 | 2.5.51 | Step-Reset Fix; Wochenstart Mo; Löschbutton Edit; ICS MIME |
 | 2.5.50 | ICS floating time; Routing Back korrekt; window.__batchSetStep |
 | 2.5.49 | ICS Google-fix; rote Überschrift; Zurück-Button fix |
