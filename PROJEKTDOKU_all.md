@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.5.28 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.5.29 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -1449,6 +1449,7 @@ Firebase: `apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"`, projectId: `igels
 
 | Version | Feature |
 |---------|---------|
+| 2.5.29 | Meine Woche: 1:1 Farb-Mapping (Team-Zellen), kein Chip-Border, ◇ Geplant, amber Zeitbadge, Schicht-Labels |
 | 2.5.28 | Einstellungen: Anwesenheitsplan-Kachel; adminOrigin-Routing; Gelb #fde68a vereinheitlicht |
 | 2.5.27 | Fix: History Sheet bottom über BottomBar (62px); Infotext Verlauf unter Legende |
 | 2.5.26 | Abweichung gelb (Balken + Legende); History-Sheet scrollbar; Meine Woche Legende aktualisiert |
