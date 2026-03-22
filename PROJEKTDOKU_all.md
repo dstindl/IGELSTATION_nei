@@ -743,6 +743,8 @@ const TL_CAN    = {'done-open':true,'due':true};
 | `const X = ()=>` (Inline-Komponente) innerhalb anderer | Whitescreen | `renderX()` Funktion |
 | `const filtered` fehlt vor `return` | Whitescreen (ReferenceError) | Immer nach Refactoring prüfen |
 | SVG-Attribute mit Bindestrichen (`stroke-width`) | Crash | camelCase: `strokeWidth`, `strokeLinecap` |
+
+| `useState` nach `useEffect`/`useRef` im selben Component | Spinner | Alle `useState` müssen VOR erstem `useEffect`/`useRef` stehen |
 | `useState` in `.map()` Callback | Crash | Auf Top-Level heben |
 | Doppelte `const`-Deklaration im selben Scope | Spinner | Namen prüfen |
 | `data:image/base64` direkt in JSX | Crash | Extern referenzieren |
@@ -1454,6 +1456,7 @@ Firebase: `apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"`, projectId: `igels
 | 2.5.58 | Fix Spinner: useState vor useEffect; onClose via Ref |
 | 2.5.57 | Fix: useState Hook aus Conditional entfernt (Spinner-Ursache) |
 | 2.5.56 | ICS nur Anwesenheit mit Zeiten; Zeitraum-Löschen unter Export |
+| 2.5.56 | ICS nur Anwesenheit mit Zeiten; Zeitraum-Löschen; Hook-Fix 7 Components |
 | 2.5.55 | Routing origin-bewusst: batchOrigin State |
 | 2.5.54 | Fix: user.uid an BatchBearbeitung übergeben |
 | 2.5.53 | ICS Summary führend Igelstation; Back Meine Woche fix |

@@ -3244,44 +3244,6 @@
         const [from,to] = icsRangePreset==='custom' ? [icsCustomFrom,icsCustomTo] : (presets[icsRangePreset]?.() || ['','']);
         const cutoff = (()=>{ const d=new Date(); d.setMonth(d.getMonth()-cleanupMonths); return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); })();
 
-        // Export: userId only → client-side date filter (kein Composite Index nötig)
-        const doExport = async () => {
-          setIcsLoading(true);
-          try {
-            const uid = userData.uid || '';
-            const snap = await db.collection('anwesenheit').where('userId','==',uid).get();
-            const docs = snap.docs.map(d=>d.data()).filter(e=>e.date>=from && e.date<=to);
-            const shL = s => s==='fruh'?'Fruehschicht':s==='spat'?'Spaetschicht':'Abwesend';
-            const stL = s => ({real:'Anwesend',planned:'Geplant',urlaub:'Urlaub',krank:'Krank',absent:'Geplant abwesend'})[s]||s;
-            // Floating local time (keine TZID, kein Z) — kein VTIMEZONE nötig, Google akzeptiert das
-            const toLocal = (dt,t) => { const [y,m,d]=dt.split('-'); const [hh,mm]=(t||'00:00').split(':'); return y+m+d+'T'+(hh||'00')+(mm||'00')+'00'; };
-            // Ganztags: DTEND = nächster Tag (RFC 5545: Ende ist exklusiv)
-            const nextDay = dt => { const d=new Date(dt+'T12:00:00'); d.setDate(d.getDate()+1); const p=n=>(n<10?'0':'')+n; return d.getFullYear()+''+p(d.getMonth()+1)+''+p(d.getDate()); };
-            const dtstamp = (()=>{ const n=new Date(); const p=n2=>(n2<10?'0':'')+n2; return n.getUTCFullYear()+''+p(n.getUTCMonth()+1)+''+p(n.getUTCDate())+'T'+p(n.getUTCHours())+p(n.getUTCMinutes())+p(n.getUTCSeconds())+'Z'; })();
-            const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Igelstation//DE','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
-            docs.forEach(e=>{
-              const allDay = !e.timeFrom || !e.timeTo;
-              const summary = 'Igelstation - '+(e.shift==='absent'?stL(e.status):shL(e.shift)+' '+stL(e.status));
-              lines.push('BEGIN:VEVENT',
-                'UID:igelstation-'+uid+'-'+e.date+'-'+e.shift+'@igelstation',
-                'DTSTAMP:'+dtstamp,
-                allDay ? 'DTSTART;VALUE=DATE:'+e.date.replace(/-/g,'') : 'DTSTART:'+toLocal(e.date,e.timeFrom),
-                allDay ? 'DTEND;VALUE=DATE:'+nextDay(e.date)           : 'DTEND:'+toLocal(e.date,e.timeTo),
-                'SUMMARY:'+summary,
-                'CATEGORIES:IGELSTATION',
-                'END:VEVENT');
-            });
-            lines.push('END:VCALENDAR');
-            const blob = new Blob([lines.join('\r\n')],{type:'text/calendar'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href=url; a.download='igelstation-'+fmtD(today)+'.ics';
-            document.body.appendChild(a); a.click(); document.body.removeChild(a);
-            setTimeout(()=>URL.revokeObjectURL(url),1000);
-            setIcsDone(true);
-          } catch(e){ alert('Fehler: '+e.message); }
-          setIcsLoading(false); setIcsConfirm(false);
-        };
-
         // Export: nur Anwesenheits-Einträge (real/planned), keine Abwesenheiten
         const doExport = async () => {
           setIcsLoading(true);
@@ -10976,7 +10938,7 @@
           { version:'2.5.58', label:'Fix Spinner: alle useState vor useEffect in BatchBearbeitung', items:['14 useState-Calls standen nach useEffect — verletzt Rules of Hooks', 'onClose via useRef statt Dependency — verhindert unnötige Re-Runs', 'goToAnwKalender nach allen States/Effects'] },
           { version:'2.5.57', label:'Fix: useState aus Conditional-Block herausgezogen', items:['deleteRange States in BatchBearbeitung (kein Hook-in-Conditional)'] },
           { version:'2.5.56', label:'ICS nur Anwesenheit mit Zeiten + Zeitraum-Löschen', items:['ICS: nur real/planned fruh/spat mit timeFrom/timeTo', 'ICS: immer DTSTART/DTEND mit Uhrzeit — kein allDay mehr', 'Zeitraum-Löschen Button unter ICS-Download mit Confirm-Popup', 'Gleicher Filter für Löschen wie für Export'] },
-          { version:'2.5.55', label:'Routing origin-bewusst: Meine Woche→MeineWoche, Sammelbearbeitung→Daten-Export', items:['batchOrigin State: anwesenheit|menu', 'popstate + onClose + __batchBack: origin-gesteuert', 'anwKalender Back: initialStep=anwKalender→onClose, sonst→setStep(export)'] },
+          { version:'2.5.56', label:'Routing origin-bewusst: Meine Woche→MeineWoche, Sammelbearbeitung→Daten-Export', items:['batchOrigin State: anwesenheit|menu', 'popstate + onClose + __batchBack: origin-gesteuert', 'anwKalender Back: initialStep=anwKalender→onClose, sonst→setStep(export)'] },
           { version:'2.5.54', label:'Fix: user.uid an BatchBearbeitung für ICS Export', items:['BatchBearbeitung: userData={{...userData, uid:user.uid}} statt userData'] },
           { version:'2.5.53', label:'ICS führend Igelstation + Back Meine Woche fix', items:['ICS Summary: Igelstation - Fruehschicht Anwesend', 'BatchBearbeitung onClose: kein Menü wenn showAnwesenheit=true', 'popstate: kein window.igelMenuOpen wenn Anwesenheit offen'] },
           { version:'2.5.52', label:'Löschbutton mehrere Tage + Back-Routing Fix', items:['Löschbutton: alle editCalSelected Tage löschen', 'Confirm-Text für mehrere Tage', 'window.__batchGetStep für popstate-Routing', 'popstate: batchStep=anwKalender → export statt Menü'] },
