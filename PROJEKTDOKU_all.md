@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.5.59 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.5.60 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -1449,6 +1449,7 @@ Firebase: `apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"`, projectId: `igels
 
 | Version | Feature |
 |---------|---------|
+| 2.5.60 | Fix: BatchBearbeitung alle useState wirklich vor useEffect |
 | 2.5.59 | Hook-Reihenfolge in 7 Components korrigiert (60 useState verschoben) |
 | 2.5.58 | Fix Spinner: useState vor useEffect; onClose via Ref |
 | 2.5.57 | Fix: useState Hook aus Conditional entfernt (Spinner-Ursache) |
