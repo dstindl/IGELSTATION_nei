@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.5.37 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.5.38 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -1449,6 +1449,7 @@ Firebase: `apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"`, projectId: `igels
 
 | Version | Feature |
 |---------|---------|
+| 2.5.38 | Fix: absent Priorität 1 in Team-Grid; u.id als userId-Key |
 | 2.5.37 | Pill Abwesend→Geplant; openEditFor via getMyDayEntry; matchUser() robuster |
 | 2.5.36 | Urlaub-Modus fix (matchMe); Hint-Texte entfernt; absent in Früh+Spät |
 | 2.5.35 | Urlaub-Vorauswahl fix; Tag-Anzeige ohne Kalender; cross-shift Abweichung gelb in beiden Schichten |
