@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.5.56 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.5.57 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -1449,6 +1449,7 @@ Firebase: `apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"`, projectId: `igels
 
 | Version | Feature |
 |---------|---------|
+| 2.5.57 | Fix: useState Hook aus Conditional entfernt (Spinner-Ursache) |
 | 2.5.56 | ICS nur Anwesenheit mit Zeiten; Zeitraum-Löschen unter Export |
 | 2.5.55 | Routing origin-bewusst: batchOrigin State |
 | 2.5.54 | Fix: user.uid an BatchBearbeitung übergeben |
