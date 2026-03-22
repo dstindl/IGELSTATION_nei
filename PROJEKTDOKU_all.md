@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.5.42 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.5.44 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -1449,6 +1449,8 @@ Firebase: `apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"`, projectId: `igels
 
 | Version | Feature |
 |---------|---------|
+| 2.5.44 | Kalender-Export (.ics) + Bereinigung + Absprung aus Anwesenheitsplan |
+| 2.5.43 | Notiz-Bereich aus Edit-View entfernt |
 | 2.5.42 | Pill Geplant dunkelgrau; Track: Geplant abwesend |
 | 2.5.41 | Fix: absent/Geplant wurde in saveEntry gelöscht statt gespeichert |
 | 2.5.40 | Geplant: grauer Vollbalken #d8d5d2 mit Text |
