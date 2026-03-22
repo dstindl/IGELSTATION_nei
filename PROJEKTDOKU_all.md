@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.5.32 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.5.33 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -1449,6 +1449,7 @@ Firebase: `apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"`, projectId: `igels
 
 | Version | Feature |
 |---------|---------|
+| 2.5.33 | Team Zeit zweizeilig; Multi-Select schwarz/weiß; openEditFor Abwesenheits-Modus-Fix |
 | 2.5.32 | Meine Woche: Chip Variante 1 monochrom+Heute schwarz; Früh/Spät als Bubbles |
 | 2.5.31 | Team: ①leer grau ②geplant+◇ ③abw Zeitbadge ④Legende ohne Früh/Spät |
 | 2.5.30 | Team: Bubble-Dot vor Frühschicht/Spätschicht entfernt |
