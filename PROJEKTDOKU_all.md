@@ -1,6 +1,6 @@
 # Igelpflegestation Pro — Projektdokumentation
 
-**Version:** 2.5.42 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
+**Version:** 2.5.55 | **Stand:** März 2026 | **Entwickler:** Denis-Alexander Stindl
 
 ---
 
@@ -1449,6 +1449,19 @@ Firebase: `apiKey: "AIzaSyD1LbzZGypzSYvRC-RRNvT2JUTpPRMM8E4"`, projectId: `igels
 
 | Version | Feature |
 |---------|---------|
+| 2.5.55 | Routing origin-bewusst: batchOrigin State |
+| 2.5.54 | Fix: user.uid an BatchBearbeitung übergeben |
+| 2.5.53 | ICS Summary führend Igelstation; Back Meine Woche fix |
+| 2.5.52 | Löschbutton mehrere Tage; Back anwKalender→export |
+| 2.5.51 | Step-Reset Fix; Wochenstart Mo; Löschbutton Edit; ICS MIME |
+| 2.5.50 | ICS floating time; Routing Back korrekt; window.__batchSetStep |
+| 2.5.49 | ICS Google-fix; rote Überschrift; Zurück-Button fix |
+| 2.5.48 | anwKalender Subpage; kein Composite Index; eine Kalender-Kachel |
+| 2.5.47 | ICS+Cleanup als interne Steps; kein doppeltes Komplettbackup; Header→__igelBatchExport |
+| 2.5.46 | Fix: onOpenAnwExport Prop; Header window.__igelDatenbank; Anwesenheitsplan vor Komplettbackup |
+| 2.5.45 | Fix Whitescreen: ICS+Cleanup in MainApp; Kacheln in Daten-Export |
+| 2.5.44 | Kalender-Export (.ics) + Bereinigung + Absprung aus Anwesenheitsplan |
+| 2.5.43 | Notiz-Bereich aus Edit-View entfernt |
 | 2.5.42 | Pill Geplant dunkelgrau; Track: Geplant abwesend |
 | 2.5.41 | Fix: absent/Geplant wurde in saveEntry gelöscht statt gespeichert |
 | 2.5.40 | Geplant: grauer Vollbalken #d8d5d2 mit Text |
