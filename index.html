@@ -5987,7 +5987,15 @@
       const [dashFilterOpen, setDashFilterOpen] = useState(false);
       const [dashFilterStatus, setDashFilterStatus] = useState(new Set());
       const [dashFilterBetreuer, setDashFilterBetreuer] = useState('');
-      const [dashFilterHeute, setDashFilterHeute] = useState(new Set()); // 'faellig','ueberfaellig','erledigt'
+      const [dashFilterHeute, setDashFilterHeute] = useState(new Set()); // 'faellig','ueberfaellig'
+      // Dashboard Anwesenheits-Kachel
+      const [dashAnwOffset, setDashAnwOffset]       = useState(0);
+      const [dashAnwesenheiten, setDashAnwesenheiten] = useState([]);
+      const [dashPlanConfig, setDashPlanConfig]     = useState({fruhVon:'06:00',fruhBis:'14:00',spatVon:'14:00',spatBis:'22:00',minFruh:2,minSpat:2,offenTage:[1,2,3,4,5]});
+      const [dashAnwTeamExp, setDashAnwTeamExp]     = useState(false);
+      const [dashAnwMwExp, setDashAnwMwExp]         = useState(false);
+      const [dashAnwTeamSel, setDashAnwTeamSel]     = useState(null);
+      const [dashAnwMwSel, setDashAnwMwSel]         = useState(null);,'erledigt'
       const [filterOpen, setFilterOpen] = useState(false);
       const [statusFilterPills, setStatusFilterPills] = useState([]);
       const [showStatusFilterDialog, setShowStatusFilterDialog] = useState(false);
@@ -6637,17 +6645,18 @@
             const donutFilter = [...dashFilterStatus];
 
             return (
-              <div style={{padding:'12px 12px 0',display:'flex',flexDirection:'column',gap:10}}>
+              <div style={{padding:'12px 12px 0',display:'flex',flexDirection:'column',gap:0}}>
 
-                {/* STATUS-KARTE: Filter + Donut in einer Karte */}
-                <div style={{background:'#fff',borderRadius:14,border:'1.5px solid #c9c5c1',boxShadow:'0 8px 28px rgba(28,25,23,.18)',overflow:'hidden'}}>
+                {/* ── IGELBESTAND ── */}
+                <div style={{{fontSize:8,fontWeight:800,color:'#78716c',textTransform:'uppercase',letterSpacing:'.12em',padding:'4px 1px 5px'}}}>Igelbestand</div>
+                <div style={{{background:'#fff',borderRadius:14,border:'1.5px solid #c9c5c1',boxShadow:'0 4px 18px rgba(28,25,23,.1)',overflow:'hidden',marginBottom:8}}}>
 
                   {/* Filter Toggle */}
                   <div onClick={() => setDashFilterOpen(v=>!v)}
                     style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'9px 12px',cursor:'pointer',userSelect:'none',borderBottom:'1px solid #f0eeec'}}>
                     <div style={{display:'flex',alignItems:'center',gap:8,minWidth:0,flex:1}}>
-                      <div style={{width:28,height:28,borderRadius:8,background:hasDashFilter?dashFIconBg:'#f5f5f4',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,transition:'background .15s'}}>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={hasDashFilter?dashFIconStroke:'#78716c'} strokeWidth="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+                      <div style={{width:26,height:26,borderRadius:7,background:hasDashFilter?dashFIconBg:'#f5f5f4',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={hasDashFilter?dashFIconStroke:'#78716c'} strokeWidth="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
                       </div>
                       {hasDashFilter ? (
                         <div style={{display:'flex',alignItems:'center',gap:5,flexWrap:'wrap',flex:1,minWidth:0}}>
@@ -6661,12 +6670,12 @@
                           {dashFilterHeute.has('erledigt') && <span style={{display:'inline-flex',alignItems:'center',padding:'3px 8px',borderRadius:999,fontSize:9,fontWeight:700,background:'#dcfce7',color:'#166634',border:'1px solid #86efac',whiteSpace:'nowrap'}}>Erledigt</span>}
                         </div>
                       ) : (
-                        <span style={{fontSize:12,fontWeight:700,color:'#a8a29e'}}>Filter</span>
+                        <span style={{fontSize:11,fontWeight:600,color:'#a8a29e'}}>Filter</span>
                       )}
                     </div>
                     <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0,marginLeft:6}}>
                       {hasDashFilter && <button onClick={e=>{e.stopPropagation();clearDashFilter();}} style={{fontSize:9,fontWeight:700,color:'#e11d48',background:'none',border:'none',cursor:'pointer',fontFamily:'inherit',padding:'2px 4px',whiteSpace:'nowrap'}}>Zurücksetzen</button>}
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" strokeWidth="2.5"
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#c9c5c1" strokeWidth="2.5"
                         style={{transition:'transform .22s',transform:dashFilterOpen?'none':'rotate(180deg)'}}><polyline points="6 9 12 15 18 9"/></svg>
                     </div>
                   </div>
@@ -6685,11 +6694,11 @@
                           ].map(({val,label,on,off}) => {
                             const cnt = (hedgehogs||[]).filter(h=>h.status===val).length;
                             const isOn = dashFilterStatus.has(val);
-                            const c = isOn ? on : off;
+                            const cfgC = isOn ? on : off;
                             return (
                               <div key={val} onClick={()=>setDashFilterStatus(prev=>{const n=new Set(prev);n.has(val)?n.delete(val):n.add(val);return n;})}
                                 style={{display:'inline-flex',alignItems:'center',gap:4,padding:'5px 9px',borderRadius:999,fontSize:10,fontWeight:700,cursor:'pointer',userSelect:'none',transition:'all .15s',
-                                  background:c.bg,color:c.color,border:'1.5px solid '+c.border,opacity:isOn?1:.6}}>
+                                  background:cfgC.bg,color:cfgC.color,border:'1.5px solid '+cfgC.border,opacity:isOn?1:.6}}>
                                 {label} <span style={{fontSize:9,fontWeight:800,opacity:.7,fontFamily:"'DM Mono',monospace"}}>({cnt})</span>
                               </div>
                             );
@@ -6714,27 +6723,6 @@
                           </div>
                         </div>
                       )}
-                      {/* Heute-Status */}
-                      <div>
-                        <div style={{fontSize:8,fontWeight:800,color:'#a8a29e',textTransform:'uppercase',letterSpacing:'.1em',marginBottom:4}}>Heute</div>
-                        <div style={{display:'flex',gap:5,flexWrap:'wrap'}}>
-                          {[
-                            {val:'faellig',label:'Fällig',cnt:dueCnt,on:{bg:'#fef3c7',color:'#92400e',border:'#fde68a'},off:{bg:'#fef9ec',color:'#92400e',border:'#fde68a'}},
-                            {val:'ueberfaellig',label:'Überfällig',cnt:overCnt,on:{bg:'#fee2e2',color:'#dc2626',border:'#fca5a5'},off:{bg:'#fef2f2',color:'#dc2626',border:'#fca5a5'}},
-                            {val:'erledigt',label:'Erledigt',cnt:doneCnt,on:{bg:'#dcfce7',color:'#166634',border:'#86efac'},off:{bg:'#f0fdf4',color:'#166634',border:'#bbf7d0'}},
-                          ].map(({val,label,cnt,on,off}) => {
-                            const isOn = dashFilterHeute.has(val);
-                            const c = isOn ? on : off;
-                            return (
-                              <div key={val} onClick={()=>setDashFilterHeute(prev=>{const n=new Set(prev);n.has(val)?n.delete(val):n.add(val);return n;})}
-                                style={{display:'inline-flex',alignItems:'center',gap:4,padding:'5px 9px',borderRadius:999,fontSize:10,fontWeight:700,cursor:'pointer',userSelect:'none',transition:'all .15s',
-                                  background:c.bg,color:c.color,border:'1.5px solid '+c.border,opacity:isOn?1:.6}}>
-                                {label} <span style={{fontSize:9,fontWeight:800,opacity:.7,fontFamily:"'DM Mono',monospace"}}>({cnt})</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
                     </div>
                   )}
 
@@ -6753,56 +6741,304 @@
                   </div>
                 </div>
 
-                {/* Heute Kacheln — klickbar als Filter-Toggle */}
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8}}>
-                  {[
-                    {val:'faellig',label:'Fällig',cnt:dueCnt,valColor:'#92400e',barColor:'#fde68a',activeColor:'#fef3c7',activeBorder:'#fde68a'},
-                    {val:'ueberfaellig',label:'Überfällig',cnt:overCnt,valColor:'#e11d48',barColor:'#fca5a5',activeColor:'#fee2e2',activeBorder:'#fca5a5'},
-                    {val:'erledigt',label:'Erledigt',cnt:doneCnt,valColor:'#166634',barColor:'#86efac',activeColor:'#dcfce7',activeBorder:'#86efac'},
-                  ].map(({val,label,cnt,valColor,barColor,activeColor,activeBorder}) => {
-                    const isOn = dashFilterHeute.has(val);
+                {/* ── PFLEGESTATUS HEUTE ── */}
+                <div style={{{fontSize:8,fontWeight:800,color:'#78716c',textTransform:'uppercase',letterSpacing:'.12em',padding:'10px 1px 5px'}}}>Pflegestatus Heute</div>
+                <div style={{{background:'#fff',borderRadius:14,border:'1.5px solid #c9c5c1',boxShadow:'0 4px 18px rgba(28,25,23,.1)',overflow:'hidden',marginBottom:8}}}>
+                  {/* Pills */}
+                  <div style={{display:'flex',gap:6,padding:'10px 13px',borderBottom:'1px solid #f0eeec'}}>
+                    {[
+                      {val:'faellig',label:'Fällig',cnt:dueCnt,valCol:'#92400e',bg:'#fffbeb',bc:'#fde68a'},
+                      {val:'ueberfaellig',label:'Überfällig',cnt:overCnt,valCol:'#e11d48',bg:'#fff1f2',bc:'#fecdd3'},
+                      {val:'erledigt',label:'Erledigt',cnt:doneCnt,valCol:'#166634',bg:'#f0fdf4',bc:'#86efac'},
+                    ].map(({val,label,cnt,valCol,bg,bc}) => {
+                      const isOn = dashFilterHeute.has(val);
+                      return (
+                        <div key={val} onClick={()=>setDashFilterHeute(prev=>{const n=new Set(prev);n.has(val)?n.delete(val):n.add(val);return n;})}
+                          style={{flex:1,borderRadius:9,padding:'8px 6px',display:'flex',flexDirection:'column',alignItems:'center',gap:1,border:'1.5px solid '+(isOn?bc:'#e7e5e4'),background:isOn?bg:'#fff',cursor:'pointer',transition:'all .15s'}}>
+                          <div style={{fontSize:18,fontWeight:800,fontFamily:"'DM Mono',monospace",lineHeight:1,color:cnt>0?valCol:'#c9c5c1'}}>{cnt}</div>
+                          <div style={{fontSize:7,fontWeight:800,textTransform:'uppercase',letterSpacing:'.06em',color:'#a8a29e'}}>{label}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {/* Nächste Behandlungen */}
+                  {(() => {
+                    const nextT = [];
+                    (hedgehogs||[]).forEach(h => {
+                      if (dashFilterBetreuer && h.betreuer !== dashFilterBetreuer) return;
+                      if (dashFilterStatus.size > 0 && !dashFilterStatus.has(h.status)) return;
+                      (h.treatments||[]).forEach(t => {
+                        if (t.status !== 'aktiv') return;
+                        (t.medications||[]).forEach(m => {
+                          if (m.done) return;
+                          const selApps = (m.applications||[]).filter(a => a.doneAt && a.doneAt.startsWith(todayStr));
+                          const f = (m.frequency||'').toLowerCase();
+                          const freq = f.includes('4x')?4:f.includes('3x')?3:f.includes('2x')?2:1;
+                          const doneToday = selApps.length >= freq;
+                          const lastApp = (m.applications||[]).slice(-1)[0]||null;
+                          const overdue = !doneToday && lastApp && lastApp.doneAt && lastApp.doneAt.split('T')[0] < todayStr;
+                          if (!doneToday) nextT.push({ name: h.name||'–', overdue, id: h.id });
+                        });
+                      });
+                    });
+                    // Deduplizieren: nur einmal pro Igel
+                    const seen = new Set();
+                    const deduped = nextT.filter(t => { if(seen.has(t.id)) return false; seen.add(t.id); return true; });
+                    deduped.sort((a,b) => (b.overdue?1:0)-(a.overdue?1:0));
+                    if (deduped.length === 0) return (
+                      <div style={{padding:'10px 13px 10px',fontSize:10,color:'#a8a29e',fontWeight:500}}>Alle Behandlungen erledigt</div>
+                    );
                     return (
-                      <div key={val} onClick={()=>setDashFilterHeute(prev=>{const n=new Set(prev);n.has(val)?n.delete(val):n.add(val);return n;})}
-                        style={{background:isOn?activeColor:'#fff',borderRadius:12,border:'1px solid '+(isOn?activeBorder:'#e7e5e4'),padding:'10px 8px',cursor:'pointer',transition:'all .15s',userSelect:'none'}}>
-                        <div style={{fontSize:18,fontWeight:800,color:cnt>0?valColor:'#d6d3d1'}}>{cnt}</div>
-                        <div style={{fontSize:8,fontWeight:700,color:'#a8a29e',marginTop:3,textTransform:'uppercase',letterSpacing:'.04em'}}>{label}</div>
-                        <div style={{height:3,background:cnt>0?barColor:'#f5f5f4',borderRadius:999,marginTop:5}}></div>
+                      <div>
+                        <div style={{fontSize:7,fontWeight:800,color:'#b8b4af',textTransform:'uppercase',letterSpacing:'.1em',padding:'7px 13px 3px'}}>Nächste Behandlungen</div>
+                        {deduped.slice(0,3).map((t,i) => (
+                          <div key={t.id+i} onClick={() => window.__igelAction && window.__igelAction('pflegeplan')}
+                            style={{display:'flex',alignItems:'center',gap:10,padding:'5px 13px',borderTop:i===0?'none':'1px solid #f5f4f3',cursor:'pointer'}}>
+                            <span style={{fontSize:9,fontWeight:600,fontFamily:"'DM Mono',monospace",color:'#b8b4af',flexShrink:0,width:14}}>{'·'}</span>
+                            <span style={{fontSize:10,fontWeight:600,color:'#1c1917',flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{t.name}</span>
+                            <span style={{fontSize:7,fontWeight:800,padding:'1px 6px',borderRadius:999,flexShrink:0,background:t.overdue?'#fee2e2':'#fef3c7',color:t.overdue?'#dc2626':'#92400e'}}>{t.overdue?'überfällig':'fällig'}</span>
+                          </div>
+                        ))}
+                        <div style={{height:6}}></div>
                       </div>
                     );
-                  })}
+                  })()}
                 </div>
 
-                {/* Schnellzugriff — mehr Abstand + Pfeil-Icon */}
-                <div style={{background:'#fff',borderRadius:14,border:'1px solid #e7e5e4',overflow:'hidden',boxShadow:'0 8px 28px rgba(28,25,23,.18)',marginBottom:16}}>
-                  <div style={{display:'flex'}}>
-                    <div style={{flex:1,padding:'18px 16px',borderRight:'1px solid #e7e5e4',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'space-between',gap:8}}
-                         onClick={() => window.__igelAction && window.__igelAction('pflegeplan')}>
-                      <div style={{display:'flex',flexDirection:'column',gap:5}}>
-                        <div style={{display:'flex',alignItems:'center',gap:8}}>
-                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#78716c" strokeWidth="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="8 14 11 17 16 12"/></svg>
-                          <span style={{fontSize:13,fontWeight:800,color:'#1c1917'}}>Pflegeplan</span>
+                {/* ── ANWESENHEIT ── */}
+                <div style={{{fontSize:8,fontWeight:800,color:'#78716c',textTransform:'uppercase',letterSpacing:'.12em',padding:'10px 1px 5px'}}}>Anwesenheit</div>
+                {(() => {
+                  // Hilfsfunktionen
+                  const getWS = (off) => {
+                    const d = new Date(); const day = d.getDay();
+                    const diff = day === 0 ? -6 : 1 - day;
+                    d.setDate(d.getDate() + diff + off * 7); d.setHours(0,0,0,0); return d;
+                  };
+                  const dStr = (d) => {
+                    const y=d.getFullYear(), m=d.getMonth()+1, dd=d.getDate();
+                    return y+'-'+(m<10?'0':'')+m+'-'+(dd<10?'0':'')+dd;
+                  };
+                  const DAY_NAMES = ['Mo','Di','Mi','Do','Fr'];
+                  const weekStart = getWS(dashAnwOffset);
+                  const weekDays = Array.from({length:5}, (_,i) => { const d=new Date(weekStart); d.setDate(d.getDate()+i); return d; });
+                  const toMin = s => { const p=(s||'0:0').split(':'); return (+p[0])*60+(+p[1]||0); };
+                  const cfg = dashPlanConfig;
+                  const getPresent = (ds, shift) => {
+                    const sVon = shift==='fruh' ? toMin(cfg.fruhVon||'06:00') : toMin(cfg.spatVon||'14:00');
+                    const sBis = shift==='fruh' ? toMin(cfg.fruhBis||'14:00') : toMin(cfg.spatBis||'22:00');
+                    return dashAnwesenheiten.filter(a => {
+                      if (a.date!==ds) return false;
+                      if (a.status!=='real' && a.status!=='planned') return false;
+                      if (a.shift===shift) return true;
+                      const v=toMin(a.timeFrom||'0:0'), b=toMin(a.timeTo||'0:0');
+                      return v<sBis && b>sVon;
+                    });
+                  };
+                  const getCov = (ds, shift) => {
+                    const cnt = getPresent(ds, shift).length;
+                    const min = shift==='fruh' ? (cfg.minFruh||2) : (cfg.minSpat||2);
+                    if (cnt===0) return 'none'; if (cnt<min) return 'warn'; return 'ok';
+                  };
+                  const getDayGap = (ds) => {
+                    const ft = getCov(ds,'fruh'); const st = getCov(ds,'spat');
+                    if (ft==='none'||st==='none') return 'none';
+                    if (ft==='warn'||st==='warn') return 'warn';
+                    return 'ok';
+                  };
+                  const getMyShift = (ds) => {
+                    const uid = user ? user.uid : null;
+                    if (!uid) return null;
+                    const fe = dashAnwesenheiten.find(a=>a.date===ds&&a.shift==='fruh'&&a.userId===uid&&a.status!=='absent');
+                    const se = dashAnwesenheiten.find(a=>a.date===ds&&a.shift==='spat'&&a.userId===uid&&a.status!=='absent');
+                    if (fe) return {time:(cfg.fruhVon||'06:00')+'–'+(cfg.fruhBis||'14:00'),sub:'Frühdienst',shift:'fruh'};
+                    if (se) return {time:(cfg.spatVon||'14:00')+'–'+(cfg.spatBis||'22:00'),sub:'Spätdienst',shift:'spat'};
+                    return null;
+                  };
+                  // Teamstatus & Tage
+                  const teamDays = weekDays.map((d,i) => {
+                    const ds = dStr(d);
+                    const gap = getDayGap(ds);
+                    const fruhGap = getCov(ds,'fruh') !== 'ok';
+                    const spatGap = getCov(ds,'spat') !== 'ok';
+                    const detail = fruhGap&&spatGap ? 'Früh + Spät' : fruhGap ? 'Frühdienst' : spatGap ? 'Spätdienst' : '';
+                    return { d: DAY_NAMES[i], date: d.getDate(), ds, gap, detail, type: getCov(ds,'fruh')==='none'||getCov(ds,'spat')==='none' ? 'fehlt' : 'warn' };
+                  });
+                  const gapDays = teamDays.filter(td=>td.gap!=='ok');
+                  const teamOk = gapDays.length === 0;
+                  const myDays = weekDays.map((d,i) => {
+                    const ds = dStr(d);
+                    const shift = getMyShift(ds);
+                    return { d: DAY_NAMES[i], date: d.getDate(), ds, shift };
+                  });
+                  const myShiftDays = myDays.filter(md=>md.shift);
+                  // KW-Label
+                  const kwStart = weekStart;
+                  const dt = new Date(kwStart); dt.setDate(dt.getDate()+3-(dt.getDay()+6)%7);
+                  const w1 = new Date(dt.getFullYear(),0,4);
+                  const kw = 1+Math.round(((dt-w1)/86400000-3+(w1.getDay()+6)%7)/7);
+                  const kwRelLabels = ['Diese Woche','Nächste Woche','Übernächste Woche','In 3 Wochen','In 4 Wochen'];
+                  const kwRel = kwRelLabels[dashAnwOffset] || ('KW '+kw);
+                  // Erste Lücke / Erster Einsatz
+                  const firstGap = gapDays[0] || null;
+                  const firstMy = myShiftDays[0] || null;
+                  // SVG Haken
+                  const SvgCheck = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#166634" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
+                  // Inline renderDayIcon — KEINE Komponente mit State!
+                  const dayIconStyle = (bdr, fg, bg) => ({
+                    width:36, height:36, borderRadius:9, border:'1.5px solid '+bdr,
+                    background:bg||'transparent', color:fg,
+                    display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', flexShrink:0
+                  });
+                  const smDayStyle = (bdr, fg) => ({
+                    flex:1, height:28, borderRadius:6, border:'1.5px solid '+bdr,
+                    background:'transparent', color:fg,
+                    display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+                    cursor:'pointer', fontSize:0
+                  });
+                  const tileStyle = (bdr) => ({
+                    borderRadius:11, padding:'10px 8px 9px',
+                    border:'1.5px solid '+bdr, background:'#fff',
+                    cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center',
+                    minHeight:108, position:'relative', flex:1, transition:'transform .1s'
+                  });
+                  return (
+                    <div style={{background:'#fff',borderRadius:14,border:'1.5px solid #c9c5c1',boxShadow:'0 4px 18px rgba(28,25,23,.1)',overflow:'hidden',marginBottom:8}}>
+                      {/* KW-Header */}
+                      <div style={{display:'flex',alignItems:'center',padding:'10px 13px',borderBottom:'1px solid #f0eeec'}}>
+                        <span style={{fontSize:12,fontWeight:800,color:'#1c1917',flex:1}}>Anwesenheit</span>
+                        <button disabled={dashAnwOffset===0} onClick={()=>setDashAnwOffset(v=>v-1)}
+                          style={{background:'none',border:'none',cursor:dashAnwOffset===0?'default':'pointer',display:'flex',alignItems:'center',padding:'4px',borderRadius:5,color:dashAnwOffset===0?'#e7e5e4':'#a8a29e',opacity:dashAnwOffset===0?.25:1}}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                        </button>
+                        <div style={{textAlign:'center'}}>
+                          <span style={{fontSize:9,fontWeight:700,color:'#57534e',display:'block',whiteSpace:'nowrap',minWidth:84}}>{kwRel}</span>
+                          <span style={{fontSize:7,fontWeight:700,fontFamily:"'DM Mono',monospace",color:'#b8b4af',display:'block',marginTop:1}}>KW {kw}</span>
                         </div>
-                        <span style={{fontSize:10,color:'#a8a29e'}}>{dueCnt+overCnt > 0 ? `${dueCnt+overCnt} ausstehend` : 'Alles erledigt'}</span>
+                        <button disabled={dashAnwOffset>=4} onClick={()=>setDashAnwOffset(v=>v+1)}
+                          style={{background:'none',border:'none',cursor:dashAnwOffset>=4?'default':'pointer',display:'flex',alignItems:'center',padding:'4px',borderRadius:5,color:dashAnwOffset>=4?'#e7e5e4':'#a8a29e',opacity:dashAnwOffset>=4?.25:1}}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
                       </div>
-                      <div style={{width:30,height:30,borderRadius:9,background:'#f5f5f4',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#78716c" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                      {/* Tiles */}
+                      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:7,padding:'9px 13px 11px'}}>
+                        {/* Team-Tile */}
+                        <div style={{...tileStyle(teamOk?'#86efac':'#fde68a')}} onClick={dashAnwTeamExp?null:()=>setDashAnwTeamExp(true)}>
+                          {/* Toggle-Icon oben rechts */}
+                          {!dashAnwTeamExp && (
+                            <div style={{position:'absolute',top:8,right:8,opacity:.3,pointerEvents:'none'}}>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1c1917" strokeWidth="2.5" strokeLinecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+                            </div>
+                          )}
+                          {dashAnwTeamExp && (
+                            <button onClick={e=>{e.stopPropagation();setDashAnwTeamExp(false);setDashAnwTeamSel(null);}}
+                              style={{position:'absolute',top:8,right:8,border:'none',background:'none',cursor:'pointer',color:'#a8a29e',padding:2,display:'flex',zIndex:2}}>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="18 15 12 9 6 15"/></svg>
+                            </button>
+                          )}
+                          {/* Sec Label */}
+                          <div style={{fontSize:7,fontWeight:800,fontFamily:"'DM Mono',monospace",textTransform:'uppercase',letterSpacing:'.07em',color:teamOk?'#166634':'#92400e',opacity:1,marginBottom:7,textAlign:'center',width:'100%'}}>Team</div>
+                          {/* Kompakt */}
+                          {!dashAnwTeamExp && (
+                            <div style={{display:'flex',flexDirection:'column',alignItems:'center',width:'100%'}}>
+                              {teamOk ? (
+                                <div style={dayIconStyle('#86efac','#166634')}>
+                                  <SvgCheck/>
+                                </div>
+                              ) : firstGap ? (
+                                <div style={dayIconStyle('#fde68a','#92400e')}>
+                                  <div style={{fontSize:6,fontWeight:800,textTransform:'uppercase',letterSpacing:'.04em',lineHeight:1}}>{firstGap.d}</div>
+                                  <div style={{fontSize:12,fontWeight:800,fontFamily:"'DM Mono',monospace",lineHeight:1.2}}>{(firstGap.date<10?'0':'')+firstGap.date}</div>
+                                </div>
+                              ) : null}
+                              <div style={{fontSize:7,fontWeight:700,color:'#a8a29e',textTransform:'uppercase',letterSpacing:'.06em',marginTop:7,marginBottom:1,textAlign:'center',width:'100%'}}>Nächste Unterbesetzung</div>
+                              <div style={{fontSize:10,fontWeight:800,fontFamily:"'DM Mono',monospace",textAlign:'center',color:teamOk?'#166634':'#92400e'}}>{teamOk ? 'keine' : firstGap ? (firstGap.d+' · '+firstGap.detail) : '–'}</div>
+                            </div>
+                          )}
+                          {/* Expand */}
+                          {dashAnwTeamExp && (
+                            <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',flex:1,width:'100%',position:'absolute',inset:0,padding:'28px 6px 8px'}}>
+                              <div style={{display:'flex',gap:3,width:'100%',justifyContent:'center'}}>
+                                {teamDays.map((td,i) => (
+                                  <div key={i}
+                                    onClick={td.gap!=='ok' ? e=>{e.stopPropagation();setDashAnwTeamSel(dashAnwTeamSel===i?null:i);} : null}
+                                    style={{...smDayStyle(td.gap==='ok'?'#e7e5e4':td.type==='fehlt'?'#fca5a5':'#fde68a', td.gap==='ok'?'#c9c5c1':td.type==='fehlt'?'#dc2626':'#92400e'),
+                                      opacity:td.gap==='ok'?.3:1, cursor:td.gap!=='ok'?'pointer':'default',
+                                      outline:dashAnwTeamSel===i?'2.5px solid #1c1917':'none', outlineOffset:1}}>
+                                    <div style={{fontSize:5,fontWeight:800,textTransform:'uppercase',display:'block',textAlign:'center',lineHeight:1}}>{td.d}</div>
+                                    <div style={{fontSize:9,fontWeight:800,fontFamily:"'DM Mono',monospace",display:'block',textAlign:'center',lineHeight:1.2}}>{(td.date<10?'0':'')+td.date}</div>
+                                  </div>
+                                ))}
+                              </div>
+                              {dashAnwTeamSel !== null && teamDays[dashAnwTeamSel] && teamDays[dashAnwTeamSel].gap !== 'ok' && (
+                                <div style={{width:'100%',marginTop:8,textAlign:'center'}}>
+                                  <div style={{fontSize:7,fontWeight:700,color:'#a8a29e',textTransform:'uppercase',letterSpacing:'.06em',marginBottom:1}}>Nächste Unterbesetzung</div>
+                                  <div style={{fontSize:10,fontWeight:800,fontFamily:"'DM Mono',monospace",color:teamDays[dashAnwTeamSel].type==='fehlt'?'#dc2626':'#92400e'}}>{teamDays[dashAnwTeamSel].d+' · '+teamDays[dashAnwTeamSel].detail}</div>
+                                  <div style={{fontSize:8,fontWeight:500,marginTop:2,opacity:.65,color:'#78716c'}}>{teamDays[dashAnwTeamSel].type==='fehlt'?'Kein Mitarbeiter eingeplant':'Mindestbesetzung nicht erreicht'}</div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Meine Woche */}
+                        <div style={{...tileStyle('#e7e5e4')}} onClick={dashAnwMwExp?null:()=>setDashAnwMwExp(true)}>
+                          {!dashAnwMwExp && (
+                            <div style={{position:'absolute',top:8,right:8,opacity:.3,pointerEvents:'none'}}>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1c1917" strokeWidth="2.5" strokeLinecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+                            </div>
+                          )}
+                          {dashAnwMwExp && (
+                            <button onClick={e=>{e.stopPropagation();setDashAnwMwExp(false);setDashAnwMwSel(null);}}
+                              style={{position:'absolute',top:8,right:8,border:'none',background:'none',cursor:'pointer',color:'#a8a29e',padding:2,display:'flex',zIndex:2}}>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="18 15 12 9 6 15"/></svg>
+                            </button>
+                          )}
+                          <div style={{fontSize:7,fontWeight:800,fontFamily:"'DM Mono',monospace",textTransform:'uppercase',letterSpacing:'.07em',color:'#78716c',opacity:1,marginBottom:7,textAlign:'center',width:'100%'}}>Meine Woche</div>
+                          {!dashAnwMwExp && (
+                            <div style={{display:'flex',flexDirection:'column',alignItems:'center',width:'100%'}}>
+                              {firstMy ? (
+                                <div style={dayIconStyle('#86efac','#166634')}>
+                                  <div style={{fontSize:6,fontWeight:800,textTransform:'uppercase',letterSpacing:'.04em',lineHeight:1}}>{firstMy.d}</div>
+                                  <div style={{fontSize:12,fontWeight:800,fontFamily:"'DM Mono',monospace",lineHeight:1.2}}>{(firstMy.date<10?'0':'')+firstMy.date}</div>
+                                </div>
+                              ) : (
+                                <div style={dayIconStyle('#e7e5e4','#a8a29e')}>
+                                  <div style={{fontSize:15,lineHeight:1}}>–</div>
+                                </div>
+                              )}
+                              <div style={{fontSize:7,fontWeight:700,color:'#a8a29e',textTransform:'uppercase',letterSpacing:'.06em',marginTop:7,marginBottom:1,textAlign:'center',width:'100%'}}>Nächster Einsatz</div>
+                              <div style={{fontSize:10,fontWeight:800,fontFamily:"'DM Mono',monospace",textAlign:'center',color:'#1c1917'}}>{firstMy ? firstMy.shift.time : 'Nicht geplant'}</div>
+                            </div>
+                          )}
+                          {dashAnwMwExp && (
+                            <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',flex:1,width:'100%',position:'absolute',inset:0,padding:'28px 6px 8px'}}>
+                              <div style={{display:'flex',gap:3,width:'100%',justifyContent:'center'}}>
+                                {myDays.map((md,i) => (
+                                  <div key={i}
+                                    onClick={md.shift ? e=>{e.stopPropagation();setDashAnwMwSel(dashAnwMwSel===i?null:i);} : null}
+                                    style={{...smDayStyle(md.shift?'#86efac':'#e7e5e4', md.shift?'#166634':'#c9c5c1'),
+                                      opacity:md.shift?1:.3, cursor:md.shift?'pointer':'default',
+                                      outline:dashAnwMwSel===i?'2.5px solid #1c1917':'none', outlineOffset:1}}>
+                                    <div style={{fontSize:5,fontWeight:800,textTransform:'uppercase',display:'block',textAlign:'center',lineHeight:1}}>{md.d}</div>
+                                    <div style={{fontSize:9,fontWeight:800,fontFamily:"'DM Mono',monospace",display:'block',textAlign:'center',lineHeight:1.2}}>{(md.date<10?'0':'')+md.date}</div>
+                                  </div>
+                                ))}
+                              </div>
+                              {dashAnwMwSel !== null && myDays[dashAnwMwSel] && myDays[dashAnwMwSel].shift && (
+                                <div style={{width:'100%',marginTop:8,textAlign:'center'}}>
+                                  <div style={{fontSize:7,fontWeight:700,color:'#a8a29e',textTransform:'uppercase',letterSpacing:'.06em',marginBottom:1}}>Nächster Einsatz</div>
+                                  <div style={{fontSize:10,fontWeight:800,fontFamily:"'DM Mono',monospace",color:'#1c1917'}}>{myDays[dashAnwMwSel].shift.time}</div>
+                                  <div style={{fontSize:8,fontWeight:500,marginTop:2,opacity:.65,color:'#78716c'}}>{myDays[dashAnwMwSel].shift.sub}</div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <div style={{flex:1,padding:'18px 16px',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'space-between',gap:8}}
-                         onClick={() => window.__igelAction && window.__igelAction('bestand')}>
-                      <div style={{display:'flex',flexDirection:'column',gap:5}}>
-                        <div style={{display:'flex',alignItems:'center',gap:8}}>
-                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#78716c" strokeWidth="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
-                          <span style={{fontSize:13,fontWeight:800,color:'#1c1917'}}>Bestand</span>
-                        </div>
-                        <span style={{fontSize:10,color:'#a8a29e'}}>{aktiveIgel.length} aktiv</span>
-                      </div>
-                      <div style={{width:30,height:30,borderRadius:9,background:'#f5f5f4',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#78716c" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                  );
+                })()}
+
 
               </div>
             );
@@ -7223,7 +7459,7 @@
               <div className="bg-gray-50 rounded-xl p-4">
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">App</p>
                 <p style={{fontSize:13,fontWeight:700,color:"#1c1917"}}>Igelpflegestation Pro</p>
-                <p className="text-xs text-gray-400 mt-0.5">Version 2.5.70 · Cloud-basierte Tierpflege-Software</p>
+                <p className="text-xs text-gray-400 mt-0.5">Version 2.5.71 · Cloud-basierte Tierpflege-Software</p>
               </div>
 
               <div className="border-t border-gray-100"></div>
@@ -10713,7 +10949,8 @@
       // ── Changelog-Subview ────────────────────────────────────────
       if (showChangelog) {
         const ALL_ENTRIES = [
-          { version:'2.5.70', label:'Debug-Screen entfernt', items:['LoadingScreen: Phasen-Anzeige entfernt — nur noch Spinner sichtbar'] },
+          { version:'2.5.71', label:'Dashboard: Sektions-Labels, Pills, Nächste Behandlungen, Anwesenheits-Kachel live', items:['Gruppe-Labels: Igelbestand / Pflegestatus Heute / Anwesenheit','Pills statt Kacheln für Fällig/Überfällig/Erledigt','Nächste Behandlungen im Pflegestatus','Anwesenheits-Kachel: Team + Meine Woche mit Expand-View','KW-Navigation, Detailview auf Klick','Schnellzugriff-Buttons entfernt'] },
+          { version:'2.5.71', label:'Debug-Screen entfernt', items:['LoadingScreen: Phasen-Anzeige entfernt — nur noch Spinner sichtbar'] },
           { version:'2.5.64', label:'Routing origin-bewusst: Meine Woche→MeineWoche, Sammelbearbeitung→Daten-Export', items:['batchOrigin State: anwesenheit|menu', 'popstate + onClose + __batchBack: origin-gesteuert', 'anwKalender Back: initialStep=anwKalender→onClose, sonst→setStep(export)'] },
           { version:'2.5.54', label:'Fix: user.uid an BatchBearbeitung für ICS Export', items:['BatchBearbeitung: userData={{...userData, uid:user.uid}} statt userData'] },
           { version:'2.5.53', label:'ICS führend Igelstation + Back Meine Woche fix', items:['ICS Summary: Igelstation - Fruehschicht Anwesend', 'BatchBearbeitung onClose: kein Menü wenn showAnwesenheit=true', 'popstate: kein window.igelMenuOpen wenn Anwesenheit offen'] },
